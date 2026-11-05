@@ -3,6 +3,7 @@
 
     python3 save.py PLAN.json [--dry-run] [--yes] [--json]
     python3 save.py --undo [ID] [--yes] [--unfreeze]
+    python3 save.py --lock        make every sent tailoring read-only (a save and an undo do this by themselves)
 
 PLAN.json:
     {"id": "2026-11-04-acme-backend", "reason": "one line", "note": "text of the dated note",
@@ -285,6 +286,7 @@ def save(plan, items, root, as_json):
         restore(root, manifest)
         fail(f"the save failed ({e}); the old files were put back")
     mirror(root, bdir, pid)
+    rd.lock_frozen(root)  # a tailoring that is now sent becomes read-only on disk
     preflight(root)
     result = {"id": pid, "status": "saved", "files": [{"path": r, "action": a} for r, a, _ in items],
               "undo": f"save.py --undo {pid}"}
@@ -444,6 +446,7 @@ def undo(root, pid, yes, unfreeze):
     if sent:
         note += ["", "Unfroze (--unfreeze): " + ", ".join(f"{h[0]} was {h[1]}" for _, h in sent)]
     write_atomic(os.path.join(root, "changes", m["id"] + "-undo.md"), ("\n".join(note) + "\n").encode("utf-8"))
+    rd.lock_frozen(root)  # a tailoring that is now sent becomes read-only on disk
     preflight(root)
     print(f"Undid {m['id']}: {len(m['changed']) + len(m['deleted'])} file(s) restored, {len(m['created'])} removed.")
     if sent:
@@ -455,7 +458,13 @@ def main(argv):
         print(__doc__)
         return 0
     yes, dry, as_json, unfreeze = "--yes" in argv, "--dry-run" in argv, "--json" in argv, "--unfreeze" in argv
-    rest = [a for a in argv if a not in ("--yes", "--dry-run", "--json", "--unfreeze")]
+    rest = [a for a in argv if a not in ("--yes", "--dry-run", "--json", "--unfreeze", "--lock")]
+    if "--lock" in argv:
+        if rest:
+            fail("usage: save.py --lock")
+        locked = rd.lock_frozen(rd.data_root())
+        print("\n".join(f"locked (read-only): {p}" for p in locked) if locked else "nothing to lock: every sent tailoring is already read-only")
+        return 0
     if unfreeze and "--undo" not in rest:
         fail("--unfreeze only applies to --undo")
     if unfreeze and not yes:

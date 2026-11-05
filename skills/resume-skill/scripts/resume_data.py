@@ -10,7 +10,7 @@ Stdlib only. Used by build_docx.py, export.py, check.py, preflight.py and save.p
 
 The data folder comes from where.py (RESUME_SKILL_DATA, saved location, default). Pass root= to use another.
 """
-import copy, glob, json, os, sys
+import copy, glob, json, os, stat, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import where  # noqa: E402
@@ -59,6 +59,28 @@ def version_names(root=None):
 def tailoring_slugs(root=None):
     root = root or data_root()
     return sorted(os.path.basename(os.path.dirname(f)) for f in glob.glob(os.path.join(root, "jobs", "*", "tailoring.json")))
+
+
+FROZEN_STATUSES = ("submitted", "archived")
+
+
+def lock_frozen(root=None):
+    """Make every sent (submitted or archived) tailoring file read-only, so a hand edit by an agent that never loaded the skill fails.
+    Returns the data-folder-relative paths locked now (already-locked files are not listed). Drafts are never touched.
+    save.py still writes a correction: it replaces the file through a temp file, which a read-only file mode does not stop."""
+    root = root or data_root()
+    locked = []
+    for f in sorted(glob.glob(os.path.join(root, "jobs", "*", "tailoring.json"))):
+        try:
+            with open(f, encoding="utf-8") as fh:
+                status = json.load(fh).get("status")
+        except (OSError, ValueError):
+            continue
+        mode = os.stat(f).st_mode
+        if status in FROZEN_STATUSES and mode & (stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH):
+            os.chmod(f, mode & ~(stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH))
+            locked.append(os.path.relpath(f, root).replace(os.sep, "/"))
+    return locked
 
 
 def bank_index(root=None):

@@ -130,7 +130,7 @@ RUN these; do not reimplement them and do not read them unless one fails. Script
 - `python3 scripts/check.py "bullet text"`: check one bullet (`--leads "Cut Ended"` for the other leads in the version, `--summary` for a summary, `--stack VERSION` for stack coverage, `--json`).
 - `python3 scripts/fit_score.py ROWS.json --slug SLUG --write`: the score, counts, lean and the fit card.
 - `python3 scripts/export.py TARGET OUTDIR`: build the `.docx`. TARGET is a draft `file:PATH`, a saved `tailoring:SLUG` or a version name. OUTDIR must be outside this skill folder. Exit 2 means pages are not checked.
-- `python3 scripts/save.py PLAN.json --dry-run`, then `--yes`: save an approved change with a backup; `--undo` reverts.
+- `python3 scripts/save.py PLAN.json --dry-run`, then `--yes`: save an approved change with a backup; `--undo` reverts; `--lock` makes sent copies read-only.
 - `python3 scripts/render_check.py TARGET`: page count when LibreOffice is installed.
 
 If a script fails, report its exact error, fix the cause and re-run it. Do not hand-edit its output.
@@ -171,6 +171,6 @@ If a script fails, report its exact error, fix the cause and re-run it. Do not h
 - Do not invent a number or fact; ask or keep a capability bullet.
 - Do not claim anything the profile lists under do-not-claim, or a design the user did not make.
 - Do not put private names in resume text; the checker reads them from the data folder.
-- Do not change a submitted tailoring.
+- Do not change a submitted tailoring, and never change a file's permissions to get past its read-only lock.
 - Do not write anything before the user's OK.
 - Do not present several approaches without recommending one.

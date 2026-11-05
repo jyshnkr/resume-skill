@@ -87,6 +87,7 @@ def make_data(case, scratch):
         t.update({"status": "submitted", "sent_on": "2000-01-01"})
         with open(p, "w", encoding="utf-8") as f:
             json.dump(t, f, indent=2)
+        os.chmod(p, 0o444)  # a sent tailoring is read-only on disk, as save.py leaves it
     return data
 
 

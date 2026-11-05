@@ -301,6 +301,9 @@ def main(argv):
         applied, skipped = applied + ok, skipped + (not ok)
     write_plan(plan, new)
     print(f"copied {n_files} files; fixes: {applied} applied, {skipped} not applied.")
+    locked = rd.lock_frozen(new)  # sent tailorings become read-only on disk
+    if locked:
+        print(f"locked {len(locked)} sent tailoring file(s) read-only.")
     print("settings.json is the shipped defaults. Values the old check.py held (limits, banned words, internal names, "
           "and anything else user-specific) are not carried: set them in settings.json by hand.")
     r = child("validate.py", new)

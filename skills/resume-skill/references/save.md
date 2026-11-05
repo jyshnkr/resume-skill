@@ -15,6 +15,9 @@ Paths are relative to the data folder. Include the posting, `fit.json`, `fit.htm
 ## Sent copies
 A plan that touches a submitted or archived tailoring is refused. The one exception is a correction of a claim found untrue: the user says yes explicitly, the plan has `"correction": true`, and its note starts with "Correction".
 
+## Sent copies are read-only on disk
+A submitted or archived tailoring file is made read-only, so a hand edit by an agent that never loaded the skill fails. A save, an undo and the importer do this by themselves; `python3 scripts/save.py --lock` does it for every sent copy at once, and `validate.py` warns about one that is still writable. A correction still goes through `save.py`. Never change the permissions to get past the lock.
+
 ## What save.py will not do
 - It judges every path on the real file: a different letter case, a hard link or a folder symlink cannot reach `backups/`, `changes/` or a sent tailoring, and a path through a symlink is refused.
 - A backup with a damaged `manifest.json` is unusable: `--undo ID` names it and stops; a bare `--undo` skips it and says so.

@@ -187,6 +187,9 @@ def main(as_json=False):
             err(f"{w}: built_on {t['built_on']!r} is not a tailoring")
         if t.get("status") not in STATUS:
             err(f"{w}: status {t.get('status')!r} not in {sorted(STATUS)}")
+        tpath = os.path.join(root, "jobs", slug, "tailoring.json")
+        if t.get("status") in ("submitted", "archived") and os.stat(tpath).st_mode & 0o222:
+            warn(f"{w}: sent tailoring is writable; run save.py --lock so a hand edit cannot change it")
         if t.get("status") == "submitted" and not (t.get("sent_on") or t.get("bank_commit")):
             err(f"{w}: submitted tailorings are frozen: set sent_on (the date it was sent) or bank_commit (the commit it was sent from)")
         scan(rx, t.get("summary"), f"{w}.summary")
