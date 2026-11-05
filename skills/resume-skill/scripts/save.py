@@ -170,6 +170,8 @@ def check_plan(plan, root):
             if exists and not os.path.isfile(target):
                 fail(f"{rel!r} is not a file")
             if kinds[0] == "content":
+                if isinstance(w["content"], str) or not rel.endswith(".json"):
+                    fail(f"write {p!r}: content is JSON data for a .json file; use text for any other file")
                 data = (json.dumps(w["content"], indent=2, ensure_ascii=False) + "\n").encode("utf-8")
             elif isinstance(w["text"], str):
                 data = w["text"].encode("utf-8")

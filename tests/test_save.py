@@ -166,6 +166,11 @@ class Refusals(SaveCase):
         self.refused([{"path": "a.txt"}])
         self.refused([{"path": "a.txt", "text": "1", "content": {}}])
 
+    def test_content_must_be_json_data_not_a_string(self):
+        # A string under "content" would be saved as a JSON-quoted line; text files use "text".
+        self.refused([{"path": "profile.md", "content": "# Profile\n\nA line.\n"}], "use text")
+        self.refused([{"path": "notes.txt", "content": {"a": 1}}], "use text")
+
     def test_delete_of_a_missing_file(self):
         self.refused([{"path": "jobs/acme-backend/none.txt", "delete": True}], "does not exist")
 

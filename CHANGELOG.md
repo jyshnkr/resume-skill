@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `save.py` refuses a write whose `content` is a string or whose path is not a `.json` file (use `text` for those). A string under `content` was saved as one JSON-quoted line, which turned a Markdown profile into unreadable text.
+
 ## 0.1.8 (2026-11-05)
 
 Fixes from an outside review of the public repo.

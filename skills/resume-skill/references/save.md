@@ -4,7 +4,7 @@ Save only after the user says OK, and only through `scripts/save.py`.
 
 ## Plan file
 `PLAN.json`: `{"id": "acme-backend-save-1", "reason": "one line", "note": "text for the dated note", "writes": [{"path": "jobs/acme-backend/tailoring.json", "content": {...}}, {"path": "jobs/acme-backend/posting.md", "text": "..."}, {"path": "jobs/old/x.json", "delete": true}], "correction": false}`.
-Paths are relative to the data folder. Include the posting, `fit.json`, `fit.html` and the tailoring (copy them from `out/SLUG/`). To mark a copy as sent, rewrite its tailoring with `"status": "submitted"` and `"sent_on": "YYYY-MM-DD"`.
+Paths are relative to the data folder. `content` is JSON data for a `.json` file; every other file (`profile.md`, `posting.md`) uses `text`, and the plan is refused otherwise. Include the posting, `fit.json`, `fit.html` and the tailoring (copy them from `out/SLUG/`). To mark a copy as sent, rewrite its tailoring with `"status": "submitted"` and `"sent_on": "YYYY-MM-DD"`.
 
 ## Steps
 1. `python3 scripts/save.py PLAN.json --dry-run`: it stages the result, runs `validate.py` on it and prints what would change. Any validation error stops the save and nothing changes.
