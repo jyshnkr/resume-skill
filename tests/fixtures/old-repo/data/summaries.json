@@ -1,0 +1,18 @@
+{
+  "summaries": [
+    {
+      "id": "s01",
+      "version": "master",
+      "text": "Backend Engineer with 6+ years of experience in freight and retail platforms. Cut invoice reconciliation from 9 hours to 50 minutes at Northwind Freight and launched a coupon service at Larkspur Software.",
+      "status": "live",
+      "traces_to": "b001 b004"
+    },
+    {
+      "id": "s02",
+      "version": "contract",
+      "text": "Backend Engineer with 6+ years of experience in freight and retail platforms. Reduced missed pickups from 40 a month to 3 at Northwind Freight and led a zero-downtime Python upgrade at Larkspur Software.",
+      "status": "live",
+      "traces_to": "b002 b005"
+    }
+  ]
+}

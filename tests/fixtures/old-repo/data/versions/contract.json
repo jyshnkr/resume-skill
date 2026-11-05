@@ -1,0 +1,56 @@
+{
+  "summary": "Backend Engineer with 6+ years of experience in freight and retail platforms.",
+  "page_cap": 3,
+  "roles": [
+    {
+      "title": "Backend Engineer",
+      "location": "Reno, NV",
+      "dates": "2021 – Present",
+      "sub": "",
+      "company": "Northwind Freight",
+      "bullet_ids": [
+        "b001",
+        "b002",
+        "b003"
+      ]
+    },
+    {
+      "title": "Software Engineer",
+      "location": "Remote",
+      "dates": "2017 – 2021",
+      "sub": "",
+      "company": "Larkspur Software",
+      "bullet_ids": [
+        "b004",
+        "b005"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.S. in Computer Science",
+      "school": "Pinewood State University",
+      "dates": "2013 – 2017"
+    }
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "value": "Python, Java, SQL"
+    },
+    {
+      "label": "Cloud",
+      "value": "AWS Glue, Amazon SQS, Amazon ECS"
+    }
+  ],
+  "projects": [
+    {
+      "title": "tidyfile CLI",
+      "link_text": "github.com/casey-marlow-example/tidyfile",
+      "url": "https://github.com/casey-marlow-example/tidyfile",
+      "bullet_ids": [
+        "b006"
+      ]
+    }
+  ]
+}

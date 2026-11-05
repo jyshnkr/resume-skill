@@ -1,0 +1,803 @@
+{
+ "about": "Robot-sounding words and phrases. check.py warns (rule 18) when one appears. start_only rows count only at the start of a bullet or summary sentence. Edit checks.robot_phrases_extra / robot_phrases_ignore in settings.json instead of this file.",
+ "phrases": [
+  {
+   "phrase": "actually",
+   "forms": [
+    "actually"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "additionally",
+   "forms": [
+    "additionally"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "crucial",
+   "forms": [
+    "crucial",
+    "crucially"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "cutting-edge",
+   "forms": [
+    "cutting-edge"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "delve",
+   "forms": [
+    "delve"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "elevate",
+   "forms": [
+    "elevate",
+    "elevated"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "embark",
+   "forms": [
+    "embark"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "empower",
+   "forms": [
+    "empower"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "enhanced",
+   "forms": [
+    "enhanced",
+    "enhance"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "ensured",
+   "forms": [
+    "ensured"
+   ],
+   "kind": "word",
+   "start_only": true
+  },
+  {
+   "phrase": "facilitate",
+   "forms": [
+    "facilitate",
+    "facilitated"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "foster",
+   "forms": [
+    "foster",
+    "fostered"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "fundamentally",
+   "forms": [
+    "fundamentally"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "groundbreaking",
+   "forms": [
+    "groundbreaking"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "handled",
+   "forms": [
+    "handled"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "harness",
+   "forms": [
+    "harness"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "highlighting",
+   "forms": [
+    "highlighting",
+    "highlight"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "holistic",
+   "forms": [
+    "holistic"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "honestly",
+   "forms": [
+    "honestly"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "importantly",
+   "forms": [
+    "importantly"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "inevitably",
+   "forms": [
+    "inevitably"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "inherently",
+   "forms": [
+    "inherently"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "innovative",
+   "forms": [
+    "innovative"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "intricate",
+   "forms": [
+    "intricate",
+    "intricacies"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "just",
+   "forms": [
+    "just"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "Landscape",
+   "forms": [
+    "Landscape"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "leveraging",
+   "forms": [
+    "leveraging",
+    "leveraged",
+    "leverage"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "literally",
+   "forms": [
+    "literally"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "meticulous",
+   "forms": [
+    "meticulous",
+    "meticulously"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "multifaceted",
+   "forms": [
+    "multifaceted"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "orchestrated",
+   "forms": [
+    "orchestrated"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "paradigm",
+   "forms": [
+    "paradigm"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "pioneered",
+   "forms": [
+    "pioneered",
+    "pioneering"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "pivotal",
+   "forms": [
+    "pivotal"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "realm",
+   "forms": [
+    "realm"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "revolutionized",
+   "forms": [
+    "revolutionized",
+    "revolutionize"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "robust",
+   "forms": [
+    "robust"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "seamlessly",
+   "forms": [
+    "seamlessly",
+    "seamless"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "Self-starter",
+   "forms": [
+    "Self-starter"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "showcasing",
+   "forms": [
+    "showcasing",
+    "showcase"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "simply",
+   "forms": [
+    "simply"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "spearheaded",
+   "forms": [
+    "spearheaded",
+    "spearhead"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "streamline",
+   "forms": [
+    "streamline"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "supercharge",
+   "forms": [
+    "supercharge"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "Synergy",
+   "forms": [
+    "Synergy",
+    "synergize",
+    "synergies"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "tapestry",
+   "forms": [
+    "tapestry"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "transformative",
+   "forms": [
+    "transformative"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "truly",
+   "forms": [
+    "truly"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "underscoring",
+   "forms": [
+    "underscoring",
+    "underscore"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "utilizing",
+   "forms": [
+    "utilizing",
+    "utilize",
+    "Utilized"
+   ],
+   "kind": "word",
+   "start_only": false
+  },
+  {
+   "phrase": "assisted with",
+   "forms": [
+    "assisted with",
+    "Assisted in",
+    "Assisted with projects",
+    "assisted"
+   ],
+   "kind": "phrase",
+   "start_only": true
+  },
+  {
+   "phrase": "At its core",
+   "forms": [
+    "At its core"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "At the end of the day",
+   "forms": [
+    "At the end of the day"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "demonstrated ability to",
+   "forms": [
+    "demonstrated ability to"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "experts agree",
+   "forms": [
+    "experts agree"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "I am a fast learner",
+   "forms": [
+    "I am a fast learner",
+    "fast learner",
+    "I am a fast learner who thrives in collaborative environments"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Full stop",
+   "forms": [
+    "Full stop"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Game-changer",
+   "forms": [
+    "Game-changer",
+    "game changer"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Helped with",
+   "forms": [
+    "Helped with",
+    "Helped with customer service",
+    "Helped"
+   ],
+   "kind": "phrase",
+   "start_only": true
+  },
+  {
+   "phrase": "Here's the thing",
+   "forms": [
+    "Here's the thing"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Here's what I mean",
+   "forms": [
+    "Here's what I mean"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "I am excited to potentially join",
+   "forms": [
+    "I am excited to potentially join",
+    "I am excited to apply",
+    "I am excited to"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "in order to",
+   "forms": [
+    "in order to"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "In other words",
+   "forms": [
+    "In other words"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "in today's world",
+   "forms": [
+    "in today's world",
+    "In today's rapidly evolving",
+    "in today's fast-paced world"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "it's important to note",
+   "forms": [
+    "it's important to note",
+    "It's important to note that"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "It's worth noting",
+   "forms": [
+    "It's worth noting",
+    "It is worth noting that"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Let me be clear",
+   "forms": [
+    "Let me be clear"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Let me walk you through",
+   "forms": [
+    "Let me walk you through"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Let that sink in",
+   "forms": [
+    "Let that sink in"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "let's dive in",
+   "forms": [
+    "let's dive in"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "marks a pivotal moment",
+   "forms": [
+    "marks a pivotal moment"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Moving forward",
+   "forms": [
+    "Moving forward"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "paradigm shift",
+   "forms": [
+    "paradigm shift"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Participated in",
+   "forms": [
+    "Participated in",
+    "participated"
+   ],
+   "kind": "phrase",
+   "start_only": true
+  },
+  {
+   "phrase": "I'm passionate about",
+   "forms": [
+    "I'm passionate about",
+    "passionate",
+    "passionate about",
+    "I am passionate about"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Plot twist",
+   "forms": [
+    "Plot twist"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "proven track record",
+   "forms": [
+    "proven track record"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "responsible for",
+   "forms": [
+    "responsible for",
+    "Was responsible for",
+    "Responsible for managing team",
+    "Was responsible for building"
+   ],
+   "kind": "phrase",
+   "start_only": true
+  },
+  {
+   "phrase": "Results-driven professional",
+   "forms": [
+    "Results-driven professional"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "results-oriented",
+   "forms": [
+    "results-oriented",
+    "Results-oriented professional"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "serves as",
+   "forms": [
+    "serves as",
+    "serves as a centralized hub"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "studies show",
+   "forms": [
+    "studies show"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "team player",
+   "forms": [
+    "team player"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "That's it. That's the whole thing",
+   "forms": [
+    "That's it. That's the whole thing"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "The part everyone misses",
+   "forms": [
+    "The part everyone misses"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "The reality is",
+   "forms": [
+    "The reality is"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "The truth is",
+   "forms": [
+    "The truth is"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "The uncomfortable truth is",
+   "forms": [
+    "The uncomfortable truth is"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "this changes everything",
+   "forms": [
+    "this changes everything"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "underscores its significance",
+   "forms": [
+    "underscores its significance",
+    "underscoring its significance"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "What nobody tells you",
+   "forms": [
+    "What nobody tells you",
+    "Here's what nobody tells you"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "When it comes to",
+   "forms": [
+    "When it comes to"
+   ],
+   "kind": "phrase",
+   "start_only": false
+  },
+  {
+   "phrase": "Worked on improving processes",
+   "forms": [
+    "Worked on improving processes",
+    "Worked on"
+   ],
+   "kind": "phrase",
+   "start_only": true
+  }
+ ]
+}

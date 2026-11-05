@@ -1,0 +1,10 @@
+{
+  "name": "Casey Marlow",
+  "phone": "(555) 010-0199",
+  "links": [
+    {
+      "text": "casey.marlow@example.com",
+      "href": "mailto:casey.marlow@example.com"
+    }
+  ]
+}

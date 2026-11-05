@@ -1,0 +1,12 @@
+{
+  "retired": [
+    {
+      "id": "x01",
+      "role": "northwind",
+      "starts_with": "Helped",
+      "use_instead": "b001",
+      "why": "weak lead verb",
+      "private": false
+    }
+  ]
+}

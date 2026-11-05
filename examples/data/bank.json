@@ -1,0 +1,327 @@
+{
+  "roles": [
+    "harbor",
+    "brightwave",
+    "project"
+  ],
+  "bullets": [
+    {
+      "id": "b001",
+      "role": "harbor",
+      "project": null,
+      "lead": "Cut",
+      "text": "Cut nightly shipment-report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+      "marks": {
+        "full-time": {
+          "raw": "Cut nightly shipment-report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Cut nightly shipment-report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Python",
+        "AWS Glue",
+        "Parquet"
+      ]
+    },
+    {
+      "id": "b002",
+      "role": "harbor",
+      "project": null,
+      "lead": "Reduced",
+      "text": "Reduced failed deliveries from 120 a week to 4 by moving retries to Amazon SQS dead-letter queues and paging the owning team when any queue aged past 5 minutes.",
+      "marks": {
+        "full-time": {
+          "raw": "Reduced failed deliveries from 120 a week to 4 by moving retries to Amazon SQS dead-letter queues and paging the owning team when any queue aged past 5 minutes.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Reduced failed deliveries from 120 a week to 4 by moving retries to Amazon SQS dead-letter queues and paging the owning team when any queue aged past 5 minutes.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [
+        "queue"
+      ],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Python",
+        "Amazon SQS",
+        "AWS Lambda"
+      ]
+    },
+    {
+      "id": "b003",
+      "role": "harbor",
+      "project": null,
+      "lead": "Ended",
+      "text": "Ended 14 manual deploys a month by moving the routing service to Amazon ECS on AWS Fargate with Terraform modules and a blue-green pipeline that rolls back on failure.",
+      "marks": {
+        "full-time": {
+          "raw": "Ended 14 manual deploys a month by moving the routing service to Amazon ECS on AWS Fargate with Terraform modules and a blue-green pipeline that rolls back on failure.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Ended 14 manual deploys a month by moving the routing service to Amazon ECS on AWS Fargate with Terraform modules and a blue-green pipeline that rolls back on failure.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Terraform",
+        "Amazon ECS",
+        "AWS Fargate"
+      ]
+    },
+    {
+      "id": "b004",
+      "role": "harbor",
+      "project": null,
+      "lead": "Shipped",
+      "text": "Shipped idempotent retries for the payment-status API, cutting duplicate charges from 35 a month to zero by adding request keys in Amazon DynamoDB with conditional writes.",
+      "marks": {
+        "full-time": {
+          "raw": "Shipped idempotent retries for the payment-status API, cutting duplicate charges from 35 a month to zero by adding request keys in Amazon DynamoDB with conditional writes.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Shipped idempotent retries for the payment-status API, cutting duplicate charges from 35 a month to zero by adding request keys in Amazon DynamoDB with conditional writes.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Java",
+        "Amazon DynamoDB"
+      ]
+    },
+    {
+      "id": "b005",
+      "role": "harbor",
+      "project": null,
+      "lead": "Led",
+      "text": "Led 3 engineers through a JDK 17 upgrade of 9 services with zero downtime by sequencing canary releases and adding contract tests for every public endpoint.",
+      "marks": {
+        "full-time": {
+          "raw": "Led 3 engineers through a JDK 17 upgrade of 9 services with zero downtime by sequencing canary releases and adding contract tests for every public endpoint.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Led 3 engineers through a JDK 17 upgrade of 9 services with zero downtime by sequencing canary releases and adding contract tests for every public endpoint.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Java",
+        "JDK 17"
+      ]
+    },
+    {
+      "id": "b006",
+      "role": "brightwave",
+      "project": null,
+      "lead": "Launched",
+      "text": "Launched a refunds service that lowered support tickets 30% by checking each request against the ledger before payout and returning clear error codes to the mobile app.",
+      "marks": {
+        "full-time": {
+          "raw": "Launched a refunds service that lowered support tickets 30% by checking each request against the ledger before payout and returning clear error codes to the mobile app.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Launched a refunds service that lowered support tickets 30% by checking each request against the ledger before payout and returning clear error codes to the mobile app.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Java",
+        "Spring Boot",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "id": "b007",
+      "role": "brightwave",
+      "project": null,
+      "lead": "Raised",
+      "text": "Raised unit coverage on the checkout API from 41% to 83% by adding contract tests and a nightly integration suite that ran against a copy of production data.",
+      "marks": {
+        "full-time": {
+          "raw": "Raised unit coverage on the checkout API from 41% to 83% by adding contract tests and a nightly integration suite that ran against a copy of production data.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Raised unit coverage on the checkout API from 41% to 83% by adding contract tests and a nightly integration suite that ran against a copy of production data.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Java",
+        "JUnit"
+      ]
+    },
+    {
+      "id": "b008",
+      "role": "brightwave",
+      "project": null,
+      "lead": "Migrated",
+      "text": "Migrated 1.2M stored card tokens to a new vault in 3 weeks with no failed charges by running dual writes and comparing a checksum of each record nightly.",
+      "marks": {
+        "full-time": {
+          "raw": "Migrated 1.2M stored card tokens to a new vault in 3 weeks with no failed charges by running dual writes and comparing a checksum of each record nightly.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Migrated 1.2M stored card tokens to a new vault in 3 weeks with no failed charges by running dual writes and comparing a checksum of each record nightly.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Java",
+        "PostgreSQL"
+      ]
+    },
+    {
+      "id": "b009",
+      "role": "brightwave",
+      "project": null,
+      "lead": "Automated",
+      "text": "Automated payroll file imports for 6 partner banks, saving 15 hours a week, by writing a Python parser and Amazon S3 event triggers that validated each upload on arrival.",
+      "marks": {
+        "full-time": {
+          "raw": "Automated payroll file imports for 6 partner banks, saving 15 hours a week, by writing a Python parser and Amazon S3 event triggers that validated each upload on arrival.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Automated payroll file imports for 6 partner banks, saving 15 hours a week, by writing a Python parser and Amazon S3 event triggers that validated each upload on arrival.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Python",
+        "Amazon S3"
+      ]
+    },
+    {
+      "id": "b010",
+      "role": "project",
+      "project": "specgen",
+      "lead": "Published",
+      "text": "Published an open-source CLI that converts OpenAPI specs to Postman collections, reaching 220 GitHub stars by documenting 12 examples and answering issues within 2 days.",
+      "marks": {
+        "full-time": {
+          "raw": "Published an open-source CLI that converts OpenAPI specs to Postman collections, reaching 220 GitHub stars by documenting 12 examples and answering issues within 2 days.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Published an open-source CLI that converts OpenAPI specs to Postman collections, reaching 220 GitHub stars by documenting 12 examples and answering issues within 2 days.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "Go",
+        "OpenAPI"
+      ]
+    },
+    {
+      "id": "b011",
+      "role": "brightwave",
+      "project": null,
+      "lead": "Tuned",
+      "text": "Tuned 4 slow PostgreSQL queries on the orders table from 8 seconds to 300 ms by adding composite indexes and rewriting a correlated subquery as a join.",
+      "marks": {
+        "full-time": {
+          "raw": null,
+          "in": false
+        },
+        "contract": {
+          "raw": "Tuned 4 slow PostgreSQL queries on the orders table from 8 seconds to 300 ms by adding composite indexes and rewriting a correlated subquery as a join.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "PostgreSQL",
+        "SQL"
+      ]
+    },
+    {
+      "id": "b012",
+      "role": "harbor",
+      "project": null,
+      "lead": "Supported",
+      "text": "Supported the move of nightly reporting jobs to AWS Glue by pairing with the data team on schema reviews and documenting the new run steps for the on-call engineer.",
+      "marks": {
+        "full-time": {
+          "raw": null,
+          "in": false
+        },
+        "contract": {
+          "raw": "Supported the move of nightly reporting jobs to AWS Glue by pairing with the data team on schema reviews and documenting the new run steps for the on-call engineer.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": true,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "",
+      "tech": [
+        "AWS Glue",
+        "Python"
+      ]
+    }
+  ]
+}

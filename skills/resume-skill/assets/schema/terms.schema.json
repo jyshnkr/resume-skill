@@ -1,0 +1,7 @@
+{
+  "file": "private/terms.json",
+  "people": "full names; full names, first names and surnames are all matched",
+  "internal_codenames": "words",
+  "patterns": "regular expressions",
+  "stage_words": "words matched only next to stage / canary / environment / account / fleet"
+}

@@ -1,0 +1,19 @@
+{
+  "file": "bank.json",
+  "note": "Documentation only; validate.py is the checker.",
+  "roles": "list of role keys; every bullet's role must be one of them",
+  "bullets": {
+    "id": "b + 3 digits, unique",
+    "role": "a key from roles; 'project' needs a project name",
+    "project": "text or null",
+    "lead": "first word of text",
+    "text": "the bullet",
+    "marks": "{<version name>: {raw: text or null, in: true|false}} for every file in versions/",
+    "held_back": "true|false",
+    "needs_metric": "true|false",
+    "allowed_repeats": "list of words allowed twice",
+    "note": "text",
+    "private_note": "text, never scanned for private terms",
+    "tech": "list of strings (missing = warning)"
+  }
+}

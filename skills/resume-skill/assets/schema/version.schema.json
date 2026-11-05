@@ -1,0 +1,37 @@
+{
+  "file": "versions/<name>.json",
+  "summary": "text",
+  "page_cap": "number or null",
+  "roles": [
+    {
+      "title": "",
+      "location": "",
+      "dates": "",
+      "sub": "",
+      "company": "",
+      "bullet_ids": "bank ids; each must be marked in for this version"
+    }
+  ],
+  "education": [
+    {
+      "degree": "",
+      "school": "",
+      "dates": ""
+    }
+  ],
+  "skills": [
+    {
+      "label": "",
+      "value": ""
+    }
+  ],
+  "projects": [
+    {
+      "title": "",
+      "link_text": "",
+      "url": "",
+      "bullet_ids": "bank ids"
+    }
+  ],
+  "certifications": "optional list"
+}

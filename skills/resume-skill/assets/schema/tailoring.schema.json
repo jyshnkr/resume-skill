@@ -1,0 +1,32 @@
+{
+  "file": "jobs/<slug>/tailoring.json",
+  "slug": "equals the folder name",
+  "base": "an existing version name",
+  "status": "draft | submitted | archived",
+  "posting": "file name inside the same job folder, or null",
+  "sent_on": "date text or null; a submitted tailoring needs sent_on or bank_commit",
+  "bank_commit": "text or null",
+  "client": "text or null",
+  "location": "text or null",
+  "rate": "text or null",
+  "recruiter": "text or null",
+  "summary": "text",
+  "roles": [
+    {
+      "title": "",
+      "location": "",
+      "dates": "",
+      "sub": "",
+      "bullets": [
+        {
+          "id": "bank id",
+          "text": "full text as sent",
+          "override": "true when the text differs from the bank"
+        }
+      ]
+    }
+  ],
+  "education": "as in a version",
+  "skills": "as in a version",
+  "projects": "as in a version, with bullets like roles"
+}

@@ -1,0 +1,360 @@
+[
+ {
+  "id": "g01",
+  "note": "clean bullet",
+  "leads": "",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+  "exit": 0,
+  "stdout": "OK 24w 146c :: Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue \n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g02",
+  "note": "too short",
+  "leads": "",
+  "text": "Cut report runtime 80% by tuning queries.",
+  "exit": 1,
+  "stdout": "FAIL 7w 40c :: Cut report runtime 80% by tuning queries\n    FAIL 7 words (need 20-30)\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    4
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g03",
+  "note": "banned lead",
+  "leads": "",
+  "text": "Worked on report runtime for 40 nightly jobs by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints for the team.",
+  "exit": 1,
+  "stdout": "FAIL 25w 150c :: Worked on report runtime for 40 nightly jobs by rewriting the AWS Glue job as pa\n    FAIL lead 'Worked' is banned or not past tense\n    WARN repeated word: jobs / job\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    3
+   ],
+   [
+    "WARN",
+    6
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g04",
+  "note": "no by",
+  "leads": "",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes after rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+  "exit": 1,
+  "stdout": "FAIL 24w 149c :: Cut nightly report runtime from 6 hours to 40 minutes after rewriting the AWS Gl\n    FAIL 'by' appears 0 times (need 1)\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    2
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g05",
+  "note": "two by",
+  "leads": "",
+  "text": "Cut nightly report runtime by 85% by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints for every region.",
+  "exit": 1,
+  "stdout": "FAIL 23w 143c :: Cut nightly report runtime by 85% by rewriting the AWS Glue job as partitioned P\n    FAIL 'by' appears 2 times (need 1)\n    NOTE no metric in the result\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    2
+   ],
+   [
+    "NOTE",
+    10
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g06",
+  "note": "AWS needs prefix",
+  "leads": "",
+  "text": "Cut ingestion failures from 120 a week to 4 by replacing Lambda polling with SQS dead-letter queues and adding alarms that page the owning team on call.",
+  "exit": 1,
+  "stdout": "FAIL 27w 151c :: Cut ingestion failures from 120 a week to 4 by replacing Lambda polling with SQS\n    FAIL first AWS service 'Lambda' needs AWS or Amazon\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    8
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g07",
+  "note": "lead reused",
+  "leads": "Cut Shipped",
+  "text": "Cut ingestion failures from 120 a week to 4 by replacing AWS Lambda polling with Amazon SQS dead-letter queues and adding alarms for the owning team.",
+  "exit": 1,
+  "stdout": "FAIL 26w 148c :: Cut ingestion failures from 120 a week to 4 by replacing AWS Lambda polling with\n    FAIL lead 'Cut' already used in this version\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    3
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g08",
+  "note": "repeated word and stem",
+  "leads": "",
+  "text": "Shipped retry handling for payments from 3 failures a day to none by retrying failed payments with backoff and logging each payment retry for support.",
+  "exit": 1,
+  "stdout": "FAIL 25w 149c :: Shipped retry handling for payments from 3 failures a day to none by retrying fa\n    FAIL repeated word: retry / retry\n    FAIL repeated word: payments / payments\n    WARN repeated word: payments / payments / payment\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    6
+   ],
+   [
+    "FAIL",
+    6
+   ],
+   [
+    "WARN",
+    6
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g09",
+  "note": "jargon and cleared",
+  "leads": "",
+  "text": "Cleared AppSec review for 2 services by replacing ParDo transforms with plain Python steps and documenting each data flow for the security reviewers.",
+  "exit": 1,
+  "stdout": "FAIL 23w 148c :: Cleared AppSec review for 2 services by replacing ParDo transforms with plain Py\n    FAIL class/API name 'ParDo': name the product\n    FAIL 'cleared' (say 'passed AppSec review')\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    9
+   ],
+   [
+    "FAIL",
+    15
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g10",
+  "note": "no metric",
+  "leads": "",
+  "text": "Moved the reporting service to Amazon ECS on Fargate by writing Terraform modules, a blue-green deploy pipeline and a rollback runbook for the on-call engineers.",
+  "exit": 1,
+  "stdout": "FAIL 25w 160c :: Moved the reporting service to Amazon ECS on Fargate by writing Terraform module\n    FAIL first AWS service 'Fargate' needs AWS or Amazon\n    NOTE no metric in the result\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    8
+   ],
+   [
+    "NOTE",
+    10
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g11",
+  "note": "design claim and bold",
+  "leads": "",
+  "text": "Designed a **caching layer** for 12 services, cutting p95 latency from 900 ms to 180 ms by adding Amazon ElastiCache with write-through invalidation rules.",
+  "exit": 1,
+  "stdout": "FAIL 24w 154c :: Designed a **caching layer** for 12 services, cutting p95 latency from 900 ms to\n    FAIL lead 'Designed' is banned or not past tense\n    NOTE design claim: only for designs he wrote\n    FAIL repeated word: ms / ms\n    FAIL ** bold (paste plain text)\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    3
+   ],
+   [
+    "NOTE",
+    15
+   ],
+   [
+    "FAIL",
+    6
+   ],
+   [
+    "FAIL",
+    29
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g12",
+  "note": "stage word",
+  "leads": "",
+  "text": "Verified 14 releases in the beta stage environment before launch by writing smoke tests, a canary alarm and a rollback script that the whole team used.",
+  "exit": 1,
+  "stdout": "FAIL 26w 150c :: Verified 14 releases in the beta stage environment before launch by writing smok\n    FAIL internal name 'beta'\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    16
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g13",
+  "note": "ADR",
+  "leads": "",
+  "text": "Documented 6 decisions in ADR 12 and ADR-13 by writing short design notes, reviewing them with 4 teams and linking each decision to the code it changed.",
+  "exit": 1,
+  "stdout": "FAIL 27w 151c :: Documented 6 decisions in ADR 12 and ADR-13 by writing short design notes, revie\n    FAIL repeated word: adr / adr\n    WARN repeated word: decisions / decision\n    FAIL ADR number\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    6
+   ],
+   [
+    "WARN",
+    6
+   ],
+   [
+    "FAIL",
+    16
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g14",
+  "note": "non past lead",
+  "leads": "",
+  "text": "Leading 3 engineers to cut build time from 25 minutes to 9 by caching dependencies in the CI pipeline and splitting the slowest test suite into shards.",
+  "exit": 1,
+  "stdout": "FAIL 27w 150c :: Leading 3 engineers to cut build time from 25 minutes to 9 by caching dependenci\n    FAIL lead 'Leading' is banned or not past tense\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    3
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g15",
+  "note": "empty-ish",
+  "leads": "",
+  "text": "  ",
+  "exit": 1,
+  "stdout": "FAIL 0w 0c :: \n    FAIL empty bullet\n",
+  "expect": [
+   [
+    "FAIL",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "g16",
+  "note": "long",
+  "leads": "",
+  "text": "Reduced the monthly cloud bill for the analytics platform from 48000 dollars to 31000 dollars by rightsizing instances, deleting idle volumes, moving cold data to cheaper storage classes and scheduling nightly shutdowns of every test environment.",
+  "exit": 1,
+  "stdout": "FAIL 36w 245c :: Reduced the monthly cloud bill for the analytics platform from 48000 dollars to \n    FAIL 36 words (need 20-30)\n    FAIL 245 characters (max 215)\n    FAIL repeated word: dollars / dollars\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    4
+   ],
+   [
+    "FAIL",
+    4
+   ],
+   [
+    "FAIL",
+    6
+   ],
+   [
+    "NOTE",
+    4
+   ]
+  ]
+ },
+ {
+  "id": "s01",
+  "note": "summary",
+  "flag": "--summary",
+  "text": "Senior Software Engineer with 8+ years of experience in cloud backend systems. Cut report runtime from 6 hours to 40 minutes at Acme and led zero-downtime releases at Beta. Built retry handling for 3 services at Gamma.",
+  "exit": 1,
+  "stdout": "FAIL 37w 218c :: Senior Software Engineer with 8+ years of experience in cloud backend systems. C\n    FAIL sentence 3 must open in past tense\n    NOTE 'Beta': if it names an Amazon stage, say 'pre-production'\n    NOTE 'Gamma': if it names an Amazon stage, say 'pre-production'\n    NOTE wrap: not checked (needs Pillow and Liberation Serif)\n",
+  "expect": [
+   [
+    "FAIL",
+    24
+   ],
+   [
+    "NOTE",
+    16
+   ],
+   [
+    "NOTE",
+    16
+   ],
+   [
+    "NOTE",
+    23
+   ]
+  ]
+ }
+]

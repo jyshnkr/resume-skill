@@ -1,0 +1,115 @@
+{
+  "slug": "acme-backend",
+  "base": "full-time",
+  "status": "draft",
+  "posting": "posting.md",
+  "client": "Acme Freight",
+  "location": "Remote",
+  "rate": null,
+  "recruiter": null,
+  "sent_on": null,
+  "summary": "Senior Backend Engineer with 8+ years of experience in logistics and payments platforms. Cut nightly report runtime from 6 hours to 40 minutes at Harbor Logistics and launched a refunds service at Brightwave Payments. Led 3 engineers through a zero-downtime JDK 17 upgrade and raised unit coverage on a checkout API.",
+  "roles": [
+    {
+      "title": "Senior Backend Engineer",
+      "location": "Austin, TX",
+      "dates": "Jan 2022 – Present",
+      "sub": "",
+      "bullets": [
+        {
+          "id": "b002",
+          "text": "Reduced failed deliveries from 120 a week to 4 by moving retries to Amazon SQS dead-letter queues and paging the owning team when any queue aged past 5 minutes.",
+          "override": false
+        },
+        {
+          "id": "b001",
+          "text": "Cut nightly shipment-report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+          "override": false
+        },
+        {
+          "id": "b003",
+          "text": "Ended 14 manual deploys a month by moving the routing service to Amazon ECS on AWS Fargate with Terraform modules and a blue-green pipeline that rolls back on failure.",
+          "override": false
+        },
+        {
+          "id": "b004",
+          "text": "Shipped idempotent retries for the payment-status API, cutting duplicate charges from 35 a month to zero by adding request keys in Amazon DynamoDB with conditional writes.",
+          "override": false
+        },
+        {
+          "id": "b005",
+          "text": "Led 3 engineers through a JDK 17 upgrade of 9 services with zero downtime by sequencing canary releases and adding contract tests for every public endpoint.",
+          "override": false
+        }
+      ]
+    },
+    {
+      "title": "Software Engineer",
+      "location": "Remote",
+      "dates": "Jun 2018 – Dec 2021",
+      "sub": "Payments platform for small businesses",
+      "bullets": [
+        {
+          "id": "b006",
+          "text": "Launched a refunds service that lowered support tickets 30% by checking each request against the ledger before payout and returning clear error codes to the mobile app.",
+          "override": false
+        },
+        {
+          "id": "b007",
+          "text": "Raised unit coverage on the checkout API from 41% to 83% by adding contract tests and a nightly integration suite that ran against a copy of production data.",
+          "override": false
+        },
+        {
+          "id": "b008",
+          "text": "Migrated 1.2M stored card tokens to a new vault in 3 weeks with no failed charges by running dual writes and comparing a checksum of each record nightly.",
+          "override": false
+        },
+        {
+          "id": "b009",
+          "text": "Automated payroll file imports for 6 partner banks, saving 15 hours a week, by writing a Python parser and Amazon S3 event triggers that validated each upload on arrival.",
+          "override": false
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.S. in Computer Science",
+      "school": "Lakeside State University",
+      "dates": "2014 – 2018"
+    }
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "value": "Java, Python, Go, SQL, Bash"
+    },
+    {
+      "label": "Cloud",
+      "value": "AWS Lambda, Amazon SQS, Amazon DynamoDB, AWS Glue, Amazon ECS"
+    },
+    {
+      "label": "Practices",
+      "value": "Terraform, CI/CD, contract testing, on-call"
+    }
+  ],
+  "projects": [
+    {
+      "title": "specgen (open-source CLI)",
+      "link_text": "github.com/jordan-ellis-example/specgen",
+      "url": "https://github.com/jordan-ellis-example/specgen",
+      "bullets": [
+        {
+          "id": "b010",
+          "text": "Published an open-source CLI that converts OpenAPI specs to Postman collections, reaching 220 GitHub stars by documenting 12 examples and answering issues within 2 days.",
+          "override": false
+        }
+      ]
+    }
+  ],
+  "doubts": [
+    "Seniority: 8 years against a 5+ requirement, so no doubt.",
+    "Kafka is not claimed; the posting lists it as preferred."
+  ],
+  "certifications": []
+}

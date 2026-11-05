@@ -1,0 +1,88 @@
+{
+  "slug": "acme-api",
+  "base": "contract",
+  "jds": [
+    "acme-api posting"
+  ],
+  "jd_files": [
+    "data/jds/acme-api.md"
+  ],
+  "status": "submitted",
+  "log_rows": "",
+  "bank_commit": "a1b2c3d",
+  "client": "Acme Freight",
+  "location": "Remote",
+  "rate": null,
+  "recruiter": null,
+  "job_ids": [],
+  "summary": "Backend Engineer with 6+ years of experience in freight and retail platforms.",
+  "roles": [
+    {
+      "title": "Backend Engineer",
+      "location": "Reno, NV",
+      "dates": "2021 – Present",
+      "sub": "",
+      "bullets": [
+        {
+          "id": "b001",
+          "text": "Cut weekly invoice reconciliation from 9 hours to 50 minutes by moving the matching job to partitioned Parquet reads in AWS Glue.",
+          "override": false
+        },
+        {
+          "id": "b002",
+          "text": "Reduced missed pickups from 40 a month to 3 by adding Amazon SQS dead-letter queues and paging the dispatch team when any queue aged past 10 minutes.",
+          "override": false
+        },
+        {
+          "id": "b003",
+          "text": "Moved the dispatch API to Amazon ECS on AWS Fargate with Terraform modules, ending 11 manual releases a quarter.",
+          "override": false
+        }
+      ]
+    },
+    {
+      "title": "Software Engineer",
+      "location": "Remote",
+      "dates": "2017 – 2021",
+      "sub": "",
+      "bullets": [
+        {
+          "id": "b004",
+          "text": "Launched a coupon service that raised repeat orders 12% by validating each code against the pricing table before checkout.",
+          "override": false
+        }
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.S. in Computer Science",
+      "school": "Pinewood State University",
+      "dates": "2013 – 2017"
+    }
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "value": "Python, Java, SQL"
+    },
+    {
+      "label": "Cloud",
+      "value": "AWS Glue, Amazon SQS, Amazon ECS"
+    }
+  ],
+  "projects": [
+    {
+      "title": "tidyfile CLI",
+      "link_text": "github.com/casey-marlow-example/tidyfile",
+      "url": "https://github.com/casey-marlow-example/tidyfile",
+      "bullets": [
+        {
+          "id": "b006",
+          "text": "Published an open-source CLI that sorts download folders by file type, reaching 90 GitHub stars with 8 documented examples.",
+          "override": false
+        }
+      ]
+    }
+  ]
+}

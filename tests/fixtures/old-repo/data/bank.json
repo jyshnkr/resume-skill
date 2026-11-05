@@ -1,0 +1,136 @@
+{
+  "bullets": [
+    {
+      "id": "b001",
+      "role": "northwind",
+      "project": null,
+      "lead": "Cut",
+      "text": "Cut weekly invoice reconciliation from 9 hours to 50 minutes by moving the matching job to partitioned Parquet reads in AWS Glue.",
+      "marks": {
+        "master": {
+          "raw": "Cut weekly invoice reconciliation from 9 hours to 50 minutes by moving the matching job to partitioned Parquet reads in AWS Glue.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Cut weekly invoice reconciliation from 9 hours to 50 minutes by moving the matching job to partitioned Parquet reads in AWS Glue.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": ""
+    },
+    {
+      "id": "b002",
+      "role": "northwind",
+      "project": null,
+      "lead": "Reduced",
+      "text": "Reduced missed pickups from 40 a month to 3 by adding Amazon SQS dead-letter queues and paging the dispatch team when any queue aged past 10 minutes.",
+      "marks": {
+        "master": {
+          "raw": "Reduced missed pickups from 40 a month to 3 by adding Amazon SQS dead-letter queues and paging the dispatch team when any queue aged past 10 minutes.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Reduced missed pickups from 40 a month to 3 by adding Amazon SQS dead-letter queues and paging the dispatch team when any queue aged past 10 minutes.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": ""
+    },
+    {
+      "id": "b003",
+      "role": "northwind",
+      "project": null,
+      "lead": "Moved",
+      "text": "Moved the dispatch API to Amazon ECS on AWS Fargate with Terraform modules, ending 11 manual releases a quarter.",
+      "marks": {
+        "master": {
+          "raw": "Moved the dispatch API to Amazon ECS on AWS Fargate with Terraform modules, ending 11 manual releases a quarter.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Moved the dispatch API to Amazon ECS on AWS Fargate with Terraform modules, ending 11 manual releases a quarter.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": "Dana Whitfield checked the number."
+    },
+    {
+      "id": "b004",
+      "role": "larkspur",
+      "project": null,
+      "lead": "Launched",
+      "text": "Launched a coupon service that raised repeat orders 12% by validating each code against the pricing table before checkout.",
+      "marks": {
+        "master": {
+          "raw": "Launched a coupon service that raised repeat orders 12% by validating each code against the pricing table before checkout.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Launched a coupon service that raised repeat orders 12% by validating each code against the pricing table before checkout.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": ""
+    },
+    {
+      "id": "b005",
+      "role": "larkspur",
+      "project": null,
+      "lead": "Led",
+      "text": "Led 2 engineers through a Python 3.11 upgrade of 6 services with zero downtime by sequencing canary releases.",
+      "marks": {
+        "master": {
+          "raw": "Led 2 engineers through a Python 3.11 upgrade of 6 services with zero downtime by sequencing canary releases.",
+          "in": false
+        },
+        "contract": {
+          "raw": "Led 2 engineers through a Python 3.11 upgrade of 6 services with zero downtime by sequencing canary releases.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": ""
+    },
+    {
+      "id": "b006",
+      "role": "project",
+      "project": "tidyfile CLI",
+      "lead": "Published",
+      "text": "Published an open-source CLI that sorts download folders by file type, reaching 90 GitHub stars with 8 documented examples.",
+      "marks": {
+        "master": {
+          "raw": "Published an open-source CLI that sorts download folders by file type, reaching 90 GitHub stars with 8 documented examples.",
+          "in": true
+        },
+        "contract": {
+          "raw": "Published an open-source CLI that sorts download folders by file type, reaching 90 GitHub stars with 8 documented examples.",
+          "in": true
+        }
+      },
+      "held_back": false,
+      "needs_metric": false,
+      "allowed_repeats": [],
+      "note": "",
+      "private_note": ""
+    }
+  ]
+}

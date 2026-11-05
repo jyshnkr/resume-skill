@@ -138,6 +138,15 @@ class Flags(FitCase):
         r = run("fit_score.py", self.rows_file(doc), env=self.env)
         self.assertIn("(+2 more)", r.stdout)
 
+    def test_max_flags_comes_from_settings(self):
+        st = self.jload(self.data, "settings.json")
+        st["fit"]["max_flags"] = 1
+        write(os.path.join(self.data, "settings.json"), json.dumps(st))
+        doc = self.pairs(("required", "met"), ("required", "met"), ("required", "met"))
+        doc["flags"] = ["one", "two", "three"]
+        _, res = self.score(doc)
+        self.assertEqual((res["flags"], res["more_flags"]), (["one"], 2))
+
     def test_few_flags_are_all_shown(self):
         doc = self.pairs(("required", "met"), ("required", "met"), ("required", "met"))
         doc["flags"] = ["one"]
@@ -204,7 +213,7 @@ class Unchanged(FitCase):
             run("fit_score.py", p, "--slug", "orbit-platform", "--write", env=self.env)
             got = []
             for n in ("fit.json", "fit.html"):
-                with open(os.path.join(self.data, "jobs", "orbit-platform", n), "rb") as f:
+                with open(os.path.join(self.data, "out", "orbit-platform", n), "rb") as f:
                     got.append(f.read())
             outs.append(got)
         self.assertEqual(outs[0], outs[1])
@@ -223,7 +232,7 @@ class WriteFiles(FitCase):
         p = self.rows_file(self.doc())
         r = run("fit_score.py", p, "--slug", "orbit-platform", "--write", env=self.env)
         self.assertEqual(r.returncode, 0, r.stderr)
-        job = os.path.join(self.data, "jobs", "orbit-platform")
+        job = os.path.join(self.data, "out", "orbit-platform")
         with open(os.path.join(job, "fit.html"), encoding="utf-8") as f:
             return job, f.read()
 
@@ -281,16 +290,18 @@ class WriteFiles(FitCase):
         p = self.rows_file({"kind": "recruiter-intro", "rows": []})
         r = run("fit_score.py", p, "--slug", "orbit-platform", "--write", env=self.env)
         self.assertEqual(r.returncode, 2)
-        with open(os.path.join(self.data, "jobs", "orbit-platform", "fit.html"), encoding="utf-8") as f:
+        with open(os.path.join(self.data, "out", "orbit-platform", "fit.html"), encoding="utf-8") as f:
             html = f.read()
         self.assertIn("No score", html)
         self.assertNotIn("/ 5", html)
 
-    def test_missing_job_folder_is_an_error(self):
-        r = run("fit_score.py", self.rows_file(self.doc()), "--slug", "nope", "--write", env=self.env)
-        self.assertEqual(r.returncode, 1)
-        self.assertEqual(len(r.stderr.strip().splitlines()), 1)
-        self.assertFalse(os.path.exists(os.path.join(self.data, "jobs", "nope")))
+    def test_job_folder_is_not_needed_and_not_written(self):
+        r = run("fit_score.py", self.rows_file(self.doc()), "--slug", "brand-new", "--write", env=self.env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        for n in ("fit.json", "fit.html"):
+            self.assertTrue(os.path.isfile(os.path.join(self.data, "out", "brand-new", n)))
+        self.assertFalse(os.path.exists(os.path.join(self.data, "jobs", "brand-new")))
+        self.assertFalse(os.path.exists(os.path.join(self.data, "jobs", "orbit-platform", "fit.json")))
 
     def test_write_needs_a_slug(self):
         r = run("fit_score.py", self.rows_file(self.doc()), "--write", env=self.env)
@@ -304,7 +315,7 @@ class WriteFiles(FitCase):
     def test_no_write_without_flag(self):
         r = run("fit_score.py", self.rows_file(self.doc()), "--slug", "orbit-platform", env=self.env)
         self.assertEqual(r.returncode, 0)
-        self.assertFalse(os.path.exists(os.path.join(self.data, "jobs", "orbit-platform", "fit.json")))
+        self.assertFalse(os.path.exists(os.path.join(self.data, "out", "orbit-platform", "fit.json")))
 
 
 if __name__ == "__main__":

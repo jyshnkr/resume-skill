@@ -1,0 +1,73 @@
+"""evals/grade.py and tools/run_evals.py: the parts that run without spending agent usage."""
+import json, os, subprocess, sys, unittest
+from helpers import ROOT, TmpCase, write
+
+GRADE = os.path.join(ROOT, "evals", "grade.py")
+RUNNER = os.path.join(ROOT, "tools", "run_evals.py")
+
+
+def sh(*cmd):
+    return subprocess.run([sys.executable, "-B", *cmd], capture_output=True, text=True, stdin=subprocess.DEVNULL)
+
+
+class GradeTests(TmpCase):
+    def case_run(self, case_id, output, make_data=True):
+        out = os.path.join(self.tmp, "out.txt")
+        write(out, output)
+        data = self.example_copy() if make_data else os.path.join(self.tmp, "none")
+        return out, data
+
+    def test_passing_output_for_the_incomplete_input_case(self):
+        out, data = self.case_run("e10", "I need the job posting first. Paste the job description and I will check the fit.")
+        r = sh(GRADE, "--case", "e10", "--output", out, "--data", data)
+        self.assertEqual(r.returncode, 0, r.stdout)
+
+    def test_failing_output_is_reported_check_by_check(self):
+        out, data = self.case_run("e10", "Sure, you fit great!")
+        r = sh(GRADE, "--case", "e10", "--output", out, "--data", data)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("FAIL matches", r.stdout)
+
+    def test_data_unchanged_detects_a_changed_data_folder(self):
+        sys.path.insert(0, os.path.join(ROOT, "evals"))
+        import grade
+        out, data = self.case_run("e12", "That is a private internal name, so it cannot go on the resume. New bullet writing is out of scope.")
+        before = grade.tree_hash(data)
+        ok = sh(GRADE, "--case", "e12", "--output", out, "--data", data, "--before", before)
+        self.assertEqual(ok.returncode, 0, ok.stdout)
+        write(os.path.join(data, "bank-extra.txt"), "changed")
+        bad = sh(GRADE, "--case", "e12", "--output", out, "--data", data, "--before", before)
+        self.assertEqual(bad.returncode, 1)
+        self.assertIn("FAIL data folder unchanged", bad.stdout)
+
+    def test_folder_not_created_case(self):
+        out, data = self.case_run("e13", "There is no data folder yet. Where should the data live? Run setup after you choose.", make_data=False)
+        self.assertEqual(sh(GRADE, "--case", "e13", "--output", out, "--data", data).returncode, 0)
+        os.makedirs(data)
+        self.assertEqual(sh(GRADE, "--case", "e13", "--output", out, "--data", data).returncode, 1)
+
+    def test_unknown_case_is_a_clear_error(self):
+        out, data = self.case_run("x", "x")
+        r = sh(GRADE, "--case", "nope", "--output", out, "--data", data)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("no case", r.stderr)
+
+
+class RunnerPlanTests(unittest.TestCase):
+    def test_without_yes_it_prints_the_plan_and_runs_nothing(self):
+        r = sh(RUNNER, "--cases", "e01,e02")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("plan: 2 agent call(s)", r.stdout)
+        self.assertIn("add --yes", r.stderr)
+
+    def test_trigger_plan_counts_sixty_calls(self):
+        r = sh(RUNNER, "--triggers")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("plan: 60 agent call(s)", r.stdout)
+
+    def test_baseline_is_named_in_the_plan(self):
+        self.assertIn("baseline (no skill)", sh(RUNNER, "--baseline", "--cases", "e01").stdout)
+
+
+if __name__ == "__main__":
+    unittest.main()

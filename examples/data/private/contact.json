@@ -1,0 +1,18 @@
+{
+  "name": "Jordan Ellis",
+  "phone": "(555) 010-0142",
+  "links": [
+    {
+      "text": "jordan.ellis@example.com",
+      "href": "mailto:jordan.ellis@example.com"
+    },
+    {
+      "text": "linkedin.com/in/jordan-ellis-example",
+      "href": "https://www.linkedin.com/in/jordan-ellis-example"
+    },
+    {
+      "text": "github.com/jordan-ellis-example",
+      "href": "https://github.com/jordan-ellis-example"
+    }
+  ]
+}

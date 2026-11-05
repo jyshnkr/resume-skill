@@ -1,0 +1,108 @@
+{
+ "schema": 1,
+ "runs_each": 3,
+ "should_fire": [
+  {
+   "id": "t01",
+   "kind": "direct",
+   "query": "Here's a job description, do I fit this role? Senior Backend Engineer, 5+ years Java, AWS Lambda, SQS."
+  },
+  {
+   "id": "t02",
+   "kind": "direct",
+   "query": "Tailor my resume to this posting: https://jobs.example.com/acme/senior-backend"
+  },
+  {
+   "id": "t03",
+   "kind": "direct",
+   "query": "Which resume should I send for this job, my full-time one or the contract one?"
+  },
+  {
+   "id": "t04",
+   "kind": "indirect",
+   "query": "Is this worth applying to? [pastes a long posting for a platform engineer]"
+  },
+  {
+   "id": "t05",
+   "kind": "indirect",
+   "query": "What are my gaps for this Staff Engineer listing?"
+  },
+  {
+   "id": "t06",
+   "kind": "indirect",
+   "query": "Can you rank these three postings and tell me which one to chase first?"
+  },
+  {
+   "id": "t07",
+   "kind": "indirect",
+   "query": "Does my background match: 5+ years Java, production AWS Lambda, Terraform preferred?"
+  },
+  {
+   "id": "t08",
+   "kind": "contextual",
+   "query": "ok now do the second posting the same way"
+  },
+  {
+   "id": "t09",
+   "kind": "contextual",
+   "query": "use the contract version for this one too"
+  },
+  {
+   "id": "t10",
+   "kind": "contextual",
+   "query": "The recruiter sent this JD; adjust my summary line for it and give me the file"
+  }
+ ],
+ "should_not_fire": [
+  {
+   "id": "n01",
+   "kind": "near-miss",
+   "query": "Reply to this recruiter and say I'm free Tuesday afternoon."
+  },
+  {
+   "id": "n02",
+   "kind": "near-miss",
+   "query": "Triage my careers inbox and label the recruiter emails."
+  },
+  {
+   "id": "n03",
+   "kind": "near-miss",
+   "query": "Write me a new bullet about migrating a database to Aurora."
+  },
+  {
+   "id": "n04",
+   "kind": "near-miss",
+   "query": "Help me prepare for my system design interview at Acme."
+  },
+  {
+   "id": "n05",
+   "kind": "near-miss",
+   "query": "Rewrite my cover letter so it sounds less stiff."
+  },
+  {
+   "id": "n06",
+   "kind": "negative-control",
+   "query": "Summarize this PDF report in five bullet points."
+  },
+  {
+   "id": "n07",
+   "kind": "negative-control",
+   "query": "Fix this Python traceback: KeyError: 'id'."
+  },
+  {
+   "id": "n08",
+   "kind": "negative-control",
+   "query": "Write a SQL query for monthly revenue by region."
+  },
+  {
+   "id": "n09",
+   "kind": "negative-control",
+   "query": "Convert this docx to markdown."
+  },
+  {
+   "id": "n10",
+   "kind": "negative-control",
+   "query": "What makes a good LinkedIn headline?"
+  }
+ ]
+}

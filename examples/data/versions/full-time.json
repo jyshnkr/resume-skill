@@ -1,0 +1,65 @@
+{
+  "summary": "Senior Backend Engineer with 8+ years of experience in logistics and payments platforms. Cut nightly report runtime from 6 hours to 40 minutes at Harbor Logistics and launched a refunds service at Brightwave Payments. Led 3 engineers through a zero-downtime JDK 17 upgrade and raised unit coverage on a checkout API.",
+  "page_cap": 2,
+  "roles": [
+    {
+      "title": "Senior Backend Engineer",
+      "location": "Austin, TX",
+      "dates": "Jan 2022 – Present",
+      "sub": "",
+      "company": "Harbor Logistics",
+      "bullet_ids": [
+        "b001",
+        "b002",
+        "b003",
+        "b004",
+        "b005"
+      ]
+    },
+    {
+      "title": "Software Engineer",
+      "location": "Remote",
+      "dates": "Jun 2018 – Dec 2021",
+      "sub": "Payments platform for small businesses",
+      "company": "Brightwave Payments",
+      "bullet_ids": [
+        "b006",
+        "b007",
+        "b008",
+        "b009"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "degree": "B.S. in Computer Science",
+      "school": "Lakeside State University",
+      "dates": "2014 – 2018"
+    }
+  ],
+  "skills": [
+    {
+      "label": "Languages",
+      "value": "Java, Python, Go, SQL, Bash"
+    },
+    {
+      "label": "Cloud",
+      "value": "AWS Lambda, Amazon SQS, Amazon DynamoDB, AWS Glue, Amazon ECS"
+    },
+    {
+      "label": "Practices",
+      "value": "Terraform, CI/CD, contract testing, on-call"
+    }
+  ],
+  "projects": [
+    {
+      "title": "specgen (open-source CLI)",
+      "link_text": "github.com/jordan-ellis-example/specgen",
+      "url": "https://github.com/jordan-ellis-example/specgen",
+      "bullet_ids": [
+        "b010"
+      ]
+    }
+  ],
+  "certifications": []
+}

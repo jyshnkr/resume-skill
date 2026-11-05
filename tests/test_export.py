@@ -32,6 +32,8 @@ class ExportBase(TmpCase):
         """PATH holding only a stand-in soffice (or nothing: LibreOffice missing)."""
         d = os.path.join(self.tmp, "fakebin")
         os.makedirs(d, exist_ok=True)
+        if os.path.exists(os.path.join(d, "soffice")):
+            os.remove(os.path.join(d, "soffice"))
         if pages is not None or fail:
             f = os.path.join(d, "soffice")
             write(f, FAKE_SOFFICE.format(python=sys.executable))
@@ -218,6 +220,115 @@ class CopyFolderTests(ExportBase):
         dest = os.path.join(self.tmp, "mirror")
         r = self.export("contract", self.out, "--json", data=self.data_with_copy_to(dest), pages=2)
         self.assertEqual(json.loads(r.stdout)["copy"], os.path.join(dest, "Jordan_Ellis_contract.docx"))
+
+
+class RenderCheckBase(ExportBase):
+    def check(self, *args, pages=None, fail=False, no_lo=True, cwd=None):
+        env = self.env_for(EXAMPLE)
+        if no_lo:
+            env.update(self.fake_path(pages, fail))
+        return run("render_check.py", *args, env=env, cwd=cwd)
+
+    def text_file(self, target="full-time", edit=None):
+        r = run("resume_data.py", target, "--with-contact", env=self.env_for(EXAMPLE))
+        text = r.stdout if edit is None else edit(r.stdout)
+        path = os.path.join(self.tmp, "want.txt")
+        write(path, text)
+        return path
+
+
+class RenderCheckTests(RenderCheckBase):
+    def test_libreoffice_missing_is_not_checked_and_exits_2(self):
+        r = self.check("full-time")
+        self.assertEqual(r.returncode, 2, r.stderr)
+        self.assertEqual(r.stdout.strip(), "PAGES not checked full-time: LibreOffice not installed")
+        self.assertEqual(os.listdir(self.tmpdir), [])
+
+    def test_page_count_against_the_cap(self):
+        r = self.check("full-time", pages=2)
+        self.assertEqual((r.returncode, r.stdout.strip()), (0, "PAGES OK full-time: 2 pages (cap 2)"), r.stderr)
+        r = self.check("full-time", pages=3)
+        self.assertEqual((r.returncode, r.stdout.strip()), (1, "PAGES FAIL full-time: 3 pages (cap 2)"))
+        self.assertEqual(os.listdir(self.tmpdir), [])  # temp build and PDF folders removed
+
+    def test_expect_pages_replaces_the_cap(self):
+        r = self.check("contract", "--expect-pages", "2", pages=2)
+        self.assertEqual((r.returncode, r.stdout.strip()), (0, "PAGES OK contract: 2 pages (expected 2)"), r.stderr)
+        r = self.check("contract", "--expect-pages", "2", pages=3)
+        self.assertEqual((r.returncode, r.stdout.strip()), (1, "PAGES FAIL contract: 3 pages (expected 2)"))
+
+    def test_against_reports_identical_text_and_differences(self):
+        r = self.check("full-time", "--against", self.text_file(), pages=2)
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertRegex(r.stdout, r"(?m)^TEXT OK full-time: \d+ lines identical$")
+        want = self.text_file(edit=lambda t: t.replace("Cut nightly shipment-report", "Trimmed nightly shipment-report"))
+        r = self.check("full-time", "--against", want, pages=2)
+        self.assertEqual(r.returncode, 1)
+        self.assertRegex(r.stdout, r"(?m)^TEXT FAIL full-time: \d+ lines vs \d+ expected, 1 differ$")
+        self.assertIn("want: * Trimmed nightly", r.stdout)
+        r = self.check("full-time", "--against", want)  # TEXT is compared even when pages cannot be
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("TEXT FAIL", r.stdout)
+
+    def test_out_keeps_the_built_file_and_default_leaves_nothing(self):
+        cwd = os.path.join(self.tmp, "cwd")
+        os.mkdir(cwd)
+        self.check("full-time", pages=1, cwd=cwd)
+        self.assertEqual(os.listdir(cwd), [])
+        keep = os.path.join(self.tmp, "kept.docx")
+        r = self.check("full-time", "--out", keep, pages=1)
+        self.assertTrue(zipfile.is_zipfile(keep))
+        self.assertTrue(r.stdout.strip().endswith("-> " + keep))
+
+    def test_spare_reports_bullet_lines_that_fit(self):
+        r = self.check("full-time", "--spare", pages=1)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertRegex(r.stdout, r"(?m)^SPARE full-time: about 64 one-line bullets fit before page 3 \(64 or more\)")
+
+    def test_a_draft_file_is_resolved_without_writing_the_data_folder(self):
+        data = self.example_copy()
+        draft = os.path.join(self.tmp, "d.json")
+        shutil.copy(os.path.join(data, "jobs", "acme-backend", "tailoring.json"), draft)
+        before = sorted(os.listdir(data))
+        env = {**self.env_for(data), **self.fake_path(2)}
+        r = run("render_check.py", "file:" + draft, env=env)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        self.assertIn("nothing in the data folder was written", r.stdout)
+        self.assertEqual(sorted(os.listdir(data)), before)
+
+    def test_user_mistakes_are_one_line_errors(self):
+        for args, word in ((("no-such-version",), "no-such-version"),
+                           (("full-time", "--against", os.path.join(self.tmp, "nope.txt")), "nope.txt"),
+                           (("full-time", "--expect-pages", "two"), "--expect-pages"),
+                           (("full-time", "--against"), "--against")):
+            with self.subTest(args=args):
+                r = self.check(*args, pages=1)
+                self.assertEqual(r.returncode, 1)
+                self.assertNotIn("Traceback", r.stderr)
+                self.assertIn(word, r.stderr)
+                self.assertEqual(len(r.stderr.strip().splitlines()), 1)
+
+    def test_help_prints_the_docstring(self):
+        r = run("render_check.py", "-h")
+        self.assertEqual(r.returncode, 0)
+        self.assertIn("PAGES not checked", r.stdout)
+
+
+@unittest.skipUnless(HAVE_LO, "needs LibreOffice (soffice) on PATH")
+class RealRenderCheckTests(RenderCheckBase):
+    """The same command with the real LibreOffice: page count, --expect-pages and --spare."""
+
+    def test_real_page_count_and_expect_pages(self):
+        r = self.check("contract", no_lo=False)
+        m = re.search(r"^PAGES OK contract: (\d+) pages \(cap 3\)$", r.stdout, re.M)
+        self.assertTrue(m, r.stdout + r.stderr)
+        n = int(m.group(1))
+        self.assertEqual(self.check("contract", "--expect-pages", str(n), no_lo=False).returncode, 0)
+        self.assertEqual(self.check("contract", "--expect-pages", str(n + 1), no_lo=False).returncode, 1)
+
+    def test_real_spare(self):
+        r = self.check("contract", "--spare", no_lo=False)
+        self.assertRegex(r.stdout, r"(?m)^SPARE contract: about \d+ one-line bullets? fit before page 4")
 
 
 @unittest.skipUnless(HAVE_LO, "needs LibreOffice (soffice) on PATH")

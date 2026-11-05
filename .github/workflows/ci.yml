@@ -1,0 +1,22 @@
+name: ci
+on:
+  push:
+  pull_request:
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install LibreOffice, Liberation and Microsoft core fonts, and Pillow (page counts and line wraps)
+        run: |
+          sudo add-apt-repository -y multiverse
+          echo "ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true" | sudo debconf-set-selections
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends libreoffice-writer fonts-liberation ttf-mscorefonts-installer > /dev/null
+          fc-match "Times New Roman"
+          pip install -q pillow==12.3.0
+      - name: Run every gate
+        run: python3 tools/ci.py

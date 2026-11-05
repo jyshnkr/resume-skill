@@ -1,0 +1,11 @@
+{
+  "file": "private/contact.json",
+  "name": "text",
+  "phone": "text",
+  "links": [
+    {
+      "text": "shown text",
+      "href": "link"
+    }
+  ]
+}

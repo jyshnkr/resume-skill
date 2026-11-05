@@ -1,0 +1,4 @@
+{
+  "file": "settings.json",
+  "note": "Every option and its default is in assets/defaults/settings.json. Options missing from your file use the default; setup.py --add-missing-settings copies them in."
+}

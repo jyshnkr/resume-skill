@@ -17,10 +17,11 @@ Arithmetic (weights, partial credit, legend edges, min_rows, apply_lean_from, ma
 A recruiter introduction, or fewer than min_rows rows, gets no score (score null and a reason), never a number.
 
 Output: a short plain text block, or JSON with --json (score, pct, counts, legend, lean, reason, flags, more_flags, axes, text).
-With --slug and --write: jobs/<slug>/fit.json (rows and result) and jobs/<slug>/fit.html (the fit card) in the data folder.
-The job folder must already exist. Nothing else is written; the input file is never changed.
+With --slug and --write: out/<slug>/fit.json (rows and result) and out/<slug>/fit.html (the fit card) in the data folder.
+out/<slug>/ is created if missing; jobs/<slug>/ does not need to exist and is never written (save.py moves the files into
+jobs/<slug>/ after the user's OK). Nothing else is written; the input file is never changed.
 
-Exit 0: a score was given. Exit 2: no score could be given (the reason is printed). Exit 1: a mistake (bad file, bad row, missing folder).
+Exit 0: a score was given. Exit 2: no score could be given (the reason is printed). Exit 1: a mistake (bad file, bad row, bad slug).
 """
 import html, json, os, re, sys
 from decimal import Decimal, ROUND_HALF_UP
@@ -227,9 +228,8 @@ def main(argv):
     if write:
         if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._-]*", slug):
             fail(f"slug {slug!r} must be letters, digits, dot, dash or underscore")
-        job = os.path.join(root, "jobs", slug)
-        if not os.path.isdir(job):
-            fail(f"no job folder jobs/{slug} in the data folder; create it first")
+        job = os.path.join(root, "out", slug)
+        os.makedirs(job, exist_ok=True)
         out = {"kind": kind, "rows": rows, "axes": axes, "flags": flags, "result": res}
         write_atomic(os.path.join(job, "fit.json"), json.dumps(out, indent=2, ensure_ascii=False) + "\n")
         write_atomic(os.path.join(job, "fit.html"), card(res, slug))

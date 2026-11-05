@@ -1,0 +1,10 @@
+{
+  "file": "summaries.json",
+  "summaries": {
+    "id": "s + 2 digits, unique",
+    "version": "version name",
+    "text": "text",
+    "status": "text, e.g. live",
+    "traces_to": "bullet ids the summary claims, space separated"
+  }
+}
