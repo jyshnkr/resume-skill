@@ -28,6 +28,9 @@ RESUME_SKILL_DATA="$PWD/examples/data" python3 skills/resume-skill/scripts/check
 ## Tests
 `python3 -m unittest discover -s tests` (run from the repo root). Evals and the trigger set live in `evals/` and run only on request (`tools/run_evals.py`).
 
+## License
+MIT. See `LICENSE`.
+
 ## Layout
 - `skills/resume-skill/`: the installable skill (`SKILL.md`, `references/`, `scripts/`, `assets/`).
 - `tools/`: rule generator, one-time importer, leak scan, eval runner, CI gates.

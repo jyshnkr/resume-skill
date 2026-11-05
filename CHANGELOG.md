@@ -9,4 +9,5 @@ First local build.
 - Pre-flight check of the whole bank, with failing bullets held back from swap offers.
 - `.docx` build (Times New Roman 11 pt, US Letter, 0.5 in margins). No PDF: page counts read "not checked" without LibreOffice.
 - User data lives outside the skill folder (`RESUME_SKILL_DATA`, a saved location, or `~/.config/resume-skill/data/`).
+- MIT license.
 - Saving with a backup, a dated note and `--undo`; sent copies are frozen.

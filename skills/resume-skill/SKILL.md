@@ -1,6 +1,7 @@
 ---
 name: resume-skill
 description: Fit-checks a job description against the user's saved resume data and tailors the resume to it, with checked copy-paste edits and a .docx resume file. Use when the user pastes or links a job description, asks if they fit or which resume to send, or wants a gap report or tailoring. Not for recruiter replies, mailbox triage, writing new bullets or interview prep.
+license: MIT
 compatibility: Requires Python 3.9+ (standard library only). Pillow is optional (line-fit checks). LibreOffice is optional (page counts).
 metadata:
   author: resume-skill contributors

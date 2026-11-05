@@ -74,12 +74,12 @@ class StructureTests(unittest.TestCase):
         self.assertTrue(first_h2.startswith("Invariants"), first_h2)
 
     def test_frontmatter_fields_only(self):
-        self.assertTrue(set(FM) <= {"name", "description", "compatibility", "metadata"}, set(FM))
+        self.assertTrue(set(FM) <= {"name", "description", "license", "compatibility", "metadata"}, set(FM))
         self.assertTrue(set(FM["metadata"]) <= {"author", "version", "tags"}, set(FM["metadata"]))
         for k, v in FM["metadata"].items():
             self.assertIsInstance(v, str, f"metadata.{k}: the spec says metadata maps string keys to string values")
             self.assertFalse(v.startswith("["), f"metadata.{k} is a YAML list; write it as one quoted string")
-        self.assertNotIn("license", FM, "no license line until the user picks one")
+        self.assertEqual(FM["license"], "MIT", "the license field is an SPDX identifier")
         self.assertNotIn("allowed-tools", FM)
         self.assertLessEqual(len(FM["compatibility"]), 500)
         self.assertNotIn("[", FM["author"] if "author" in FM else FM["metadata"]["author"])
@@ -215,8 +215,11 @@ class ShippingTests(unittest.TestCase):
         for rel in ("evals", "tools", "tests", "examples"):
             self.assertFalse(os.path.exists(os.path.join(SKILL, rel)), f"{rel} must sit at the repo root, not in the skill folder")
 
-    def test_no_license_file_until_the_user_chooses(self):
-        self.assertFalse(os.path.exists(os.path.join(ROOT, "LICENSE")))
+    def test_license_file_matches_the_license_field(self):
+        text = read(os.path.join(ROOT, "LICENSE"))
+        self.assertTrue(text.startswith("MIT License"))
+        self.assertIn("Permission is hereby granted, free of charge", text)
+        self.assertNotRegex(text, r"Copyright \(c\) \d{4} [A-Z][a-z]+ [A-Z][a-z]+", "the holder is the generic 'resume-skill contributors'")
 
 
 class UserDataTests(TmpCase):
