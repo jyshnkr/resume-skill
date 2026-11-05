@@ -100,7 +100,8 @@ class GuardNoteTests(TmpCase):
         r = run("setup.py", "--data", d, "--yes", env=self.base_env)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         for name in ("CLAUDE.md", "AGENTS.md"):
-            text = open(os.path.join(d, name), encoding="utf-8").read()
+            with open(os.path.join(d, name), encoding="utf-8") as fh:
+                text = fh.read()
             self.assertIn("resume-skill", text)
             self.assertIn("Never edit", text)
             self.assertIn("sent", text)
@@ -125,7 +126,8 @@ class GuardNoteTests(TmpCase):
         for slug in os.listdir(os.path.join(new, "jobs")):
             p = os.path.join(new, "jobs", slug, "tailoring.json")
             if os.path.exists(p):
-                t = json.load(open(p, encoding="utf-8"))
+                with open(p, encoding="utf-8") as fh:
+                    t = json.load(fh)
                 if t["status"] in ("submitted", "archived"):
                     sent.append(p)
                     self.assertFalse(writable(p), p)

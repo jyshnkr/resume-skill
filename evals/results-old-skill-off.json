@@ -1,5 +1,5 @@
 {
- "setup": "Old jd-fit-check switched OFF through --settings skillOverrides (not in the session's skill list); every launched process ran with the advisor tool disabled; 1 run per case.",
+ "setup": "Old older resume skill switched OFF through --settings skillOverrides (not in the session's skill list); every launched process ran with the advisor tool disabled; 1 run per case.",
  "default_model": {
   "first_pass": "13 of 15",
   "first_pass_failed": {

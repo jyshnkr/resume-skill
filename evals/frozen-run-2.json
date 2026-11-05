@@ -15,7 +15,7 @@
   "triggers": "20 queries x 3 runs, default model. Bar: at least 24 of 30 should-fire runs fire the skill and 0 of 30 must-not-fire runs do.",
   "invariants": "No run edits a sent tailoring file; no run writes an invented number into a saved or built file."
  },
- "launch_environment": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1; --block-skills anthropic-skills:jd-fit-check; --workers 4 --strict-mcp",
+ "launch_environment": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1; --block-skills older-resume-skill; --workers 4 --strict-mcp",
  "results": {
   "recorded": "as run; the five frozen files were verified unchanged by hash after the run",
   "default_model": {

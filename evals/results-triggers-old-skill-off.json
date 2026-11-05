@@ -1,5 +1,5 @@
 {
- "note": "Default model, 3 runs per query, old jd-fit-check switched OFF through skillOverrides (not listed in the session). All other installed skills present.",
+ "note": "Default model, 3 runs per query, older resume skill switched OFF through skillOverrides (not listed in the session). All other installed skills present.",
  "should_fire_runs_fired": 26,
  "should_fire_runs": 30,
  "must_not_fire_runs_fired": 0,
@@ -14,14 +14,14 @@
    "expect_fire": false,
    "fired": 0,
    "other_skills": {
-    "inbox-triage": 3
+    "other-skill-a": 3
    }
   },
   "n03": {
    "expect_fire": false,
    "fired": 0,
    "other_skills": {
-    "worklogger-kg": 3
+    "other-skill-b": 3
    }
   },
   "n04": {

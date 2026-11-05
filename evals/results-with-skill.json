@@ -33,13 +33,13 @@
   "e01": {
    "pass": false,
    "skills_called": [
-    "anthropic-skills:jd-fit-check"
+    "older-resume-skill"
    ]
   },
   "e03": {
    "pass": true,
    "skills_called": [
-    "anthropic-skills:jd-fit-check",
+    "older-resume-skill",
     "resume-skill"
    ]
   },
@@ -56,5 +56,5 @@
    ]
   }
  },
- "finding": "The old jd-fit-check skill (installed on this machine) competed for routing: it fired alone in e01 (rerun) and, in the first pass, read real data from the old repo in e13. Retire it when resume-skill goes live."
+ "finding": "The older resume skill skill (installed on this machine) competed for routing: it fired alone in e01 (rerun) and, in the first pass, read files from the old repo in e13. Retire it when resume-skill goes live."
 }

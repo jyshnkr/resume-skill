@@ -1,5 +1,5 @@
 {
- "what": "Re-verification on the 0.1.2 head (settings.yaml, the injection-wording fix, parallel runner). Same cases, queries and checks as frozen run 1; old jd-fit-check off; advisor off in launched processes; recorded as run.",
+ "what": "Re-verification on the 0.1.2 head (settings.yaml, the injection-wording fix, parallel runner). Same cases, queries and checks as frozen run 1; older resume skill off; advisor off in launched processes; recorded as run.",
  "triggers": {
   "should_fire_fired": "29 of 30",
   "must_not_fire_fired": "0 of 30",

@@ -1,7 +1,7 @@
 # Tailoring
 
 ## Choose
-Start from the version and change only what the posting needs (rule 33). Swap in a better-matching bank bullet; never one held back in `out/preflight.json`. Swaps and edits come only from approved rows: a `"status": "candidate"` row is a draft waiting for the user's pick and never goes into a resume without his OK; approving one is a `save.py` plan that sets it approved (remove `status` or set "approved") and places it. Put the best match first in each role (rule 35). Reorder skills lines; add an item only from another version or `profile.md` (rules 26, 27). Keep job titles and dates as in the version (rule 47).
+Start from the version and change only what the posting needs (rule 33). Swap in a better-matching bank bullet; never one held back in `out/preflight.json`. Swaps and edits come only from approved rows: a `"status": "candidate"` row is a draft waiting for the user's pick and never goes into a resume without the user's OK; approving one is a `save.py` plan that sets it approved (remove `status` or set "approved") and places it. Put the best match first in each role (rule 35). Reorder skills lines; add an item only from another version or `profile.md` (rules 26, 27). Keep job titles and dates as in the version (rule 47).
 
 ## Summary
 Three sentences; every claim traces to a bullet in the same resume (rules 23 to 25). Check it with `python3 scripts/check.py --summary "text"`.

@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Python 3.9+ (standard library only). Pillow is optional (line-fit checks). LibreOffice is optional (page counts).
 metadata:
   author: resume-skill contributors
-  version: "0.1.7"
+  version: "0.1.8"
   tags: "resume, job-description, tailoring"
 ---
 
@@ -89,7 +89,7 @@ File: DATA/out/acme-backend/Jordan_Ellis_acme-backend.docx   (pages: not checked
 - [ ] 3. Read `profile.md` (claim boundaries, do-not-claim), `settings.yaml`, the version files and the bank, then `references/rules-1.md`, `rules-2.md`, `rules-3.md`.
 - [ ] 4. Read the posting and pick the version (`references/workflow.md`). Several postings: one short table (posting, lean, version) and the user picks.
 - [ ] 5. Fit: fill requirement rows and run `scripts/fit_score.py` (`references/fit.md`).
-- [ ] 6. Edits and checks: draft from the bank only, run `scripts/check.py` on every bullet and summary (`references/tailoring.md`). Show each edit as `was:` and `now:` lines and why it stays accurate.
+- [ ] 6. Edits and checks: draft from the bank only, run `scripts/check.py` on every bullet and summary (`references/tailoring.md`). Show each edit as `was:` and `now:` lines and why it stays accurate. Write the draft to `DATA/out/SLUG/tailoring.json` (shape in `references/tailoring.md`).
 - [ ] 7. Build: `python3 scripts/export.py file:DATA/out/SLUG/tailoring.json DATA/out/SLUG --label SLUG`, where DATA is the path `where.py` printed. Do not go to step 8 until the build ran.
 - [ ] 8. Reply in the output order, then the final read list (`references/final-read.md`).
 - [ ] 9. After the user's OK, save with `scripts/save.py` (`references/save.md`).
@@ -111,7 +111,7 @@ Do not infer: the version, years of experience, work authorization, seniority, o
 
 ## References
 
-Each is one level deep. Open it only when its line applies.
+Each is one level deep. Open the others only when their line applies (the rules files are read in step 3).
 
 - `references/workflow.md`: verify the posting, pick the version, handle several postings, ask and stop rules.
 - `references/fit.md`: fill the requirement rows, the 1-5 score and its legend, flags, the fit card.
@@ -124,13 +124,13 @@ Each is one level deep. Open it only when its line applies.
 
 ## Scripts
 
-RUN these; do not reimplement them and do not read them unless one fails. Scripts never prompt: pass flags and read the output. Add `--help` to any of them.
+RUN these; do not reimplement them and do not read them unless one fails. Scripts never prompt: pass flags and read the output. Add `--help` to any of them. Paths are relative to this skill's folder: run them from there.
 
 - `python3 scripts/where.py`: data folder path and source (always first).
 - `python3 scripts/setup.py --data PATH --yes`: create a data folder (only when none exists and the user chose where). `--dry-run` shows the plan. A folder that still has the old `settings.json`: add `--convert-settings` (it writes `settings.yaml` with hints and keeps every value).
 - `python3 scripts/validate.py`: check the data folder; run before saving.
 - `python3 scripts/preflight.py --if-stale`: check every bank bullet once; silent when unchanged.
-- `python3 scripts/check.py "bullet text"`: check one bullet (`--leads "Cut Ended"` for the other leads in the version, `--summary` for a summary, `--stack VERSION` for stack coverage, `--json`).
+- `python3 scripts/check.py "bullet text"`: check one bullet (`--leads "Cut Ended"` for the other leads in the version, `--summary` for a summary, `--stack VERSION` for stack coverage, `--all` for every bank bullet, `--json`).
 - `python3 scripts/fit_score.py ROWS.json --slug SLUG --write`: the score, counts, lean and the fit card.
 - `python3 scripts/export.py TARGET OUTDIR`: build the `.docx`. TARGET is a draft `file:PATH`, a saved `tailoring:SLUG` or a version name. OUTDIR must be outside this skill folder. Exit 2 means pages are not checked.
 - `python3 scripts/save.py PLAN.json --dry-run`, then `--yes`: save an approved change with a backup; `--undo` reverts; `--lock` makes sent copies read-only.
@@ -175,5 +175,5 @@ If a script fails, report its exact error, fix the cause and re-run it. Do not h
 - Do not claim anything the profile lists under do-not-claim, or a design the user did not make.
 - Do not put private names in resume text; the checker reads them from the data folder.
 - Do not change a submitted tailoring, and never change a file's permissions to get past its read-only lock.
-- Do not write anything before the user's OK.
+- Do not change saved data before the user's OK. Drafts and fit files go to `out/` only.
 - Do not present several approaches without recommending one.

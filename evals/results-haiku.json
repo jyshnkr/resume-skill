@@ -18,7 +18,7 @@
   "e03": {
    "pass": true,
    "skills_called": [
-    "anthropic-skills:jd-fit-check"
+    "older-resume-skill"
    ],
    "failed_checks": []
   },
@@ -30,7 +30,7 @@
   "e05": {
    "pass": false,
    "skills_called": [
-    "anthropic-skills:jd-fit-check"
+    "older-resume-skill"
    ],
    "failed_checks": [
     "wrote out/*/*.docx"
@@ -72,7 +72,7 @@
   "e11": {
    "pass": true,
    "skills_called": [
-    "anthropic-skills:jd-fit-check"
+    "older-resume-skill"
    ],
    "failed_checks": []
   },
@@ -84,7 +84,7 @@
   "e13": {
    "pass": false,
    "skills_called": [
-    "anthropic-skills:jd-fit-check"
+    "older-resume-skill"
    ],
    "failed_checks": [
     "matches (?i)data folder|set up|setup"

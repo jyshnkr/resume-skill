@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.8 (2026-11-05)
+
+Fixes from an outside review of the public repo.
+- README and SKILL.md say what is true: saved data changes only after the user's OK (drafts and fit files go to `out/`), the rule count is 65 live rules, the eval run is for v0.1.4, and the no-skill baseline was graded with earlier, stricter checks so it is not a like-for-like comparison.
+- SKILL.md step 6 now names the draft file, the script paths say to run from the skill folder, the Scripts list mentions `check.py --all`, and the references line no longer contradicts step 3.
+- The install step names the right skills folder per agent.
+- The eval records no longer name the author's other tools: those entries read "older-resume-skill", "other-skill-a" and "other-skill-b".
+- The lock tests close the files they open.
+
 ## 0.1.7 (2026-11-05)
 
 - Ready for a public repository: a fuller README (how a run goes, install, evidence and limits, contributing), and the MIT licence now names the author. The leak scan skips only that one copyright line; every other file is still scanned. All 38 earlier commits were scanned against the author's private data with 0 hits.

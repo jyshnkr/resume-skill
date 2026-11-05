@@ -1,8 +1,8 @@
 # resume-skill
 
-A local agent skill that answers one job posting. It fit-checks the posting against your saved resume data and builds a tailored `.docx` from bullets you have already approved. It never invents a fact, and it saves nothing until you say OK.
+A local agent skill that answers one job posting. It fit-checks the posting against your saved resume data and builds a tailored `.docx` from bullets you have already approved. It is built not to invent facts, and your saved data changes only after you say OK (drafts go to a separate `out/` folder).
 
-It runs through agents that read a skills folder and can run Python on your computer (Claude Code, Codex, other `AGENTS.md` readers). Chat apps are not supported yet. The scripts use only the Python standard library and make no network calls (a test checks this).
+It runs through agents that read a skills folder and can run Python on your computer (Claude Code, Codex, other `AGENTS.md` readers). Chat apps are not supported yet. The scripts use only the Python standard library and make no network calls (a test bans network imports).
 
 ## What you get per posting
 - A fit score from 1 to 5, the requirement counts behind it (for example "3 of 4 required met"), a soft apply or skip lean, and at most three flags. A script does the arithmetic, not the model.
@@ -15,13 +15,13 @@ It runs through agents that read a skills folder and can run Python on your comp
 2. Pre-flight: every approved bullet is checked once; a bullet that fails is held back from swaps.
 3. Read the posting and pick the version (for example full-time or contract).
 4. Score the fit, then choose edits only from approved bullets.
-5. Check each bullet against a registry of 67 resume-writing rules (digits, one "by", 20 to 30 words, no repeated words, and more) and write a three-sentence summary whose claims all trace to bullets on the page.
+5. Check each bullet against a registry of 65 live resume-writing rules (digits, one "by", 20 to 30 words, no repeated words, and more) and write a three-sentence summary whose claims all trace to bullets on the page.
 6. Build the `.docx` and count pages.
 7. Save only after you say OK.
 
 ## Install
 1. Clone this repo.
-2. Link the skill folder into your agent's skills folder: `ln -s "$PWD/skills/resume-skill" ~/.agents/skills/resume-skill` (Claude Code also reads `~/.claude/skills/`).
+2. Link the skill folder into your agent's skills folder. For Claude Code: `ln -s "$PWD/skills/resume-skill" ~/.claude/skills/resume-skill`. For Codex and other `AGENTS.md` readers: `~/.agents/skills/resume-skill` (check your agent's docs).
 3. Ask your agent about a job posting. On the first run it asks where your data should live and runs `scripts/setup.py` for you. Your data stays outside this repo, by default in `~/.config/resume-skill/data/` (override with `RESUME_SKILL_DATA`).
 
 Needs Python 3.9 or newer. Pillow (line-fit checks) and LibreOffice (page counts) are optional. Without them those checks say "not checked" and never pass silently.
@@ -36,7 +36,7 @@ RESUME_SKILL_DATA="$PWD/examples/data" python3 skills/resume-skill/scripts/check
 
 ## How well does it work?
 - `python3 -m unittest discover -s tests` (from the repo root) runs the test suite; CI runs it on Python 3.9 and 3.13, and a few tests skip without Pillow or LibreOffice.
-- `evals/` holds 15 agent cases and a trigger set of 20 queries (10 that should fire the skill, 10 that should not), each run 3 times. They run through Claude Code only when you ask (`tools/run_evals.py`). In the pre-registered run recorded in `evals/frozen-run-2.json`, the default model passed 14 of 15 cases and a smaller model 14 of 15; the skill fired in 26 of 30 runs that should fire it and in 0 of 30 that should not. A no-skill baseline (`evals/baseline.json`, 1 run per case) passed 6 of 15. One case's check was faulty; the same file records it (`check_defect_found_after_the_run`).
+- `evals/` holds 15 agent cases and a trigger set of 20 queries (10 that should fire the skill, 10 that should not), each run 3 times. They run through Claude Code only when you ask (`tools/run_evals.py`). In the pre-registered run recorded in `evals/frozen-run-2.json` (run on v0.1.4), the default model passed 14 of 15 cases and a smaller model 14 of 15; the skill fired in 26 of 30 runs that should fire it and in 0 of 30 that should not. A no-skill baseline (`evals/baseline.json`, 1 run per case) passed 6 of 15, but it was graded with the earlier, stricter checks, so it is not a like-for-like comparison. One case's check was faulty; the same file records it (`check_defect_found_after_the_run`).
 - These evals are small and use phrase matching, so read them as a smoke test, not a benchmark.
 
 ## Limits

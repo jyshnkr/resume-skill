@@ -9,11 +9,11 @@
   "skills/resume-skill/SKILL.md": "8915b8bf4856cd4aeba4888c8dfef8602aa8e5ed597f4a609327cc2ff18ba87b"
  },
  "plan": [
-  "triggers: 60 calls, default model, old jd-fit-check off",
+  "triggers: 60 calls, default model, older resume skill off",
   "cases: 15 calls, default model, old skill off",
   "cases: 15 calls, Haiku, old skill off"
  ],
- "launch_environment": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1; --block-skills anthropic-skills:jd-fit-check",
+ "launch_environment": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1; --block-skills older-resume-skill",
  "results": {
   "recorded": "as run, no check or query changed after the run (the five frozen files were verified unchanged by hash)",
   "triggers": {
