@@ -1,0 +1,113 @@
+{
+ "note": "Smaller model (Haiku), 15 cases, 1 run each, with the skill installed. Not re-graded after case fixes except that the cases changed before this run were already the corrected ones (e01 regex, e03, e07, e15).",
+ "passes": 9,
+ "runs": 15,
+ "cases": {
+  "e01": {
+   "pass": false,
+   "skills_called": [],
+   "failed_checks": [
+    "matches (?i)score\\b[^\\n]{0,24}\\b[345]\\s+of\\s+5"
+   ]
+  },
+  "e02": {
+   "pass": true,
+   "skills_called": [],
+   "failed_checks": []
+  },
+  "e03": {
+   "pass": true,
+   "skills_called": [
+    "anthropic-skills:jd-fit-check"
+   ],
+   "failed_checks": []
+  },
+  "e04": {
+   "pass": true,
+   "skills_called": [],
+   "failed_checks": []
+  },
+  "e05": {
+   "pass": false,
+   "skills_called": [
+    "anthropic-skills:jd-fit-check"
+   ],
+   "failed_checks": [
+    "wrote out/*/*.docx"
+   ]
+  },
+  "e06": {
+   "pass": false,
+   "skills_called": [],
+   "failed_checks": [
+    "does not match \\b\\d+ (jobs|pipelines)\\b"
+   ]
+  },
+  "e07": {
+   "pass": true,
+   "skills_called": [
+    "resume-skill"
+   ],
+   "failed_checks": []
+  },
+  "e08": {
+   "pass": false,
+   "skills_called": [],
+   "failed_checks": [
+    "matches (?i)submitted|sent|frozen",
+    "matches (?i)new (tailoring|copy)",
+    "data folder unchanged"
+   ]
+  },
+  "e09": {
+   "pass": true,
+   "skills_called": [],
+   "failed_checks": []
+  },
+  "e10": {
+   "pass": true,
+   "skills_called": [],
+   "failed_checks": []
+  },
+  "e11": {
+   "pass": true,
+   "skills_called": [
+    "anthropic-skills:jd-fit-check"
+   ],
+   "failed_checks": []
+  },
+  "e12": {
+   "pass": true,
+   "skills_called": [],
+   "failed_checks": []
+  },
+  "e13": {
+   "pass": false,
+   "skills_called": [
+    "anthropic-skills:jd-fit-check"
+   ],
+   "failed_checks": [
+    "matches (?i)data folder|set up|setup"
+   ]
+  },
+  "e14": {
+   "pass": false,
+   "skills_called": [],
+   "failed_checks": [
+    "wrote out/*/*.docx"
+   ]
+  },
+  "e15": {
+   "pass": true,
+   "skills_called": [
+    "resume-skill"
+   ],
+   "failed_checks": []
+  }
+ },
+ "findings": [
+  "On the smaller model the skill fired in only 2 of 15 runs (e07, e15); most runs answered or edited files without loading it.",
+  "e08 (edit a sent tailoring): the smaller model edited jobs/acme-backend/tailoring.json by hand without loading the skill, so the frozen-copy rule (enforced inside save.py) did not apply. A file-permission guard on sent tailorings is a candidate for the next version.",
+  "e06: the answer left the number open and asked for it (correct); the failed check is a weak regex, not an invented number."
+ ]
+}
