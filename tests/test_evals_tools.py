@@ -122,6 +122,11 @@ class RunnerPlanTests(unittest.TestCase):
         self.assertEqual(r.returncode, 2)
         self.assertIn("plan: 60 agent call(s)", r.stdout)
 
+    def test_trigger_subset_by_id(self):
+        r = sh(RUNNER, "--triggers", "--cases", "t03,t05", "--runs", "3")
+        self.assertEqual(r.returncode, 2)
+        self.assertIn("plan: 6 agent call(s)", r.stdout)
+
     def test_baseline_is_named_in_the_plan(self):
         self.assertIn("baseline (no skill)", sh(RUNNER, "--baseline", "--cases", "e01").stdout)
 

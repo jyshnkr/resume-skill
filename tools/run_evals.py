@@ -101,6 +101,8 @@ def main(a):
     ids = opt(a, "--cases")
     if ids:
         cases = [c for c in cases if c["id"] in ids.split(",")]
+        for g in ("should_fire", "should_not_fire"):  # with --triggers the same option picks trigger ids (t03, n02, ...)
+            trig[g] = [q for q in trig[g] if q["id"] in ids.split(",")]
     runs = int(opt(a, "--runs", trig["runs_each"] if "--triggers" in a else 1))
     n = (len(trig["should_fire"]) + len(trig["should_not_fire"])) * runs if "--triggers" in a else len(cases) * runs
     model, baseline = opt(a, "--model"), "--baseline" in a

@@ -15,7 +15,7 @@
   {
    "id": "t03",
    "kind": "direct",
-   "query": "Which resume should I send for this job, my full-time one or the contract one?"
+   "query": "Which resume should I send for this job, my full-time one or the contract one? Backend Engineer at Acme Freight, Java 11+, AWS Lambda and Amazon SQS, 5+ years, remote, full-time."
   },
   {
    "id": "t04",
@@ -25,12 +25,12 @@
   {
    "id": "t05",
    "kind": "indirect",
-   "query": "What are my gaps for this Staff Engineer listing?"
+   "query": "What are my gaps for this listing? Staff Engineer, Orbit Cloud: 8+ years, Go, Kubernetes in production, Prometheus, on-site in Denver."
   },
   {
    "id": "t06",
    "kind": "indirect",
-   "query": "Can you rank these three postings and tell me which one to chase first?"
+   "query": "Can you rank these three postings and tell me which to chase first? (1) Backend Engineer, Acme Freight, Java and AWS Lambda, remote. (2) Platform Engineer, Orbit Cloud, Kubernetes and Go, on-site. (3) Data Engineer, Northwind, Spark and Scala, hybrid."
   },
   {
    "id": "t07",
@@ -45,12 +45,12 @@
   {
    "id": "t09",
    "kind": "contextual",
-   "query": "For the Orbit Cloud posting we just discussed, use my contract version this time and build the file."
+   "query": "Use the contract version for this one too: Backend Engineer, 6-month contract at Acme Freight, Java 11+, AWS Lambda and Amazon SQS, $70 an hour, remote."
   },
   {
    "id": "t10",
    "kind": "contextual",
-   "query": "The recruiter sent this JD; adjust my summary line for it and give me the file"
+   "query": "The recruiter sent this JD: Senior Backend Engineer, Java 11+, AWS Lambda, Amazon SQS, 5+ years, remote, full-time. Adjust my summary line for it and give me the file."
   }
  ],
  "should_not_fire": [

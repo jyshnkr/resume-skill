@@ -1,0 +1,121 @@
+{
+ "note": "Default model, 3 runs per query, other skills installed on the machine (incl. the old jd-fit-check). Queries t03 t05 t06 t09 t10 had no posting text in the first run, were rewritten with concrete text and re-run (second table).",
+ "must_not_fire": {
+  "queries": 10,
+  "runs_where_resume_skill_fired": 0,
+  "runs": 30
+ },
+ "should_fire_first_run": {
+  "t01": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 3
+   }
+  },
+  "t02": {
+   "expect_fire": true,
+   "resume_skill_fired": 1,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 2
+   }
+  },
+  "t03": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {}
+  },
+  "t04": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 3
+   }
+  },
+  "t05": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {}
+  },
+  "t06": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {}
+  },
+  "t07": {
+   "expect_fire": true,
+   "resume_skill_fired": 3,
+   "runs": 3,
+   "other_skills": {}
+  },
+  "t08": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 2
+   }
+  },
+  "t09": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {}
+  },
+  "t10": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {}
+  }
+ },
+ "should_fire_concrete_rerun": {
+  "t03": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 3
+   }
+  },
+  "t05": {
+   "expect_fire": true,
+   "resume_skill_fired": 1,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 2
+   }
+  },
+  "t06": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 3
+   }
+  },
+  "t09": {
+   "expect_fire": true,
+   "resume_skill_fired": 0,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 3
+   }
+  },
+  "t10": {
+   "expect_fire": true,
+   "resume_skill_fired": 2,
+   "runs": 3,
+   "other_skills": {
+    "anthropic-skills:jd-fit-check": 1
+   }
+  }
+ },
+ "finding": "No false positives. Recall is low mainly because the old jd-fit-check skill answers the same questions and often wins the routing; measure again after it is retired."
+}
