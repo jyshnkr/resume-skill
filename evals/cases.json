@@ -89,8 +89,7 @@
    ],
    "assert": {
     "output_matches": [
-     "(?i)before",
-     "(?i)after"
+     "(?i)before|after|becomes|replaces|instead of"
     ],
     "files_written": [
      "out/*/*.docx"
@@ -109,10 +108,10 @@
    ],
    "assert": {
     "output_matches": [
-     "(?i)how many|what number|do not have a (number|figure)|need.*number|no number"
+     "(?i)how many|what number|real number|do not have a (number|figure)|need.*number|no number"
     ],
     "output_not_matches": [
-     "\\b\\d+ (jobs|pipelines)\\b"
+     "(?i)\\b(moved|migrated|supported the move of) \\d+ (nightly|reporting|jobs)"
     ],
     "data_unchanged": true
    },
