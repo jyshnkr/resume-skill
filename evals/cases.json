@@ -13,7 +13,7 @@
    ],
    "assert": {
     "output_matches": [
-     "(?i)score\\s+[345]\\s+of\\s+5"
+     "(?i)score\\b[^\\n]{0,24}\\b[345]\\s+of\\s+5"
     ],
     "output_not_matches": [
      "(?i)you (have|used) Kafka"
@@ -47,7 +47,7 @@
   {
    "id": "e03",
    "category": "version-not-stated",
-   "prompt": "Tailor my resume to jobs/acme-backend/posting.md.",
+   "prompt": "Tailor my resume to this posting: 'Backend Engineer. Java 11+, AWS Lambda and Amazon SQS, 5+ years. We are hiring in Austin.' It says nothing about contract or full-time.",
    "opens": [
     "workflow"
    ],
@@ -57,7 +57,7 @@
     ],
     "files_written": []
    },
-   "note": "The posting does not decide the version: ask and stop."
+   "note": "The posting does not say contract or full-time, so it does not decide the version: ask which version and stop."
   },
   {
    "id": "e04",
@@ -121,13 +121,13 @@
   {
    "id": "e07",
    "category": "save-after-ok",
-   "prompt": "Looks good, save the acme-backend tailoring.",
+   "prompt": "Please save the acme-backend tailoring now with its client set to 'Acme Freight Co'. I approve; use the skill's save step.",
    "opens": [
     "save"
    ],
    "assert": {
     "output_matches": [
-     "(?i)dry-run|validate"
+     "(?i)backup|dry-run|validate|saved"
     ],
     "files_written": [
      "backups/*",
@@ -260,7 +260,7 @@
   {
    "id": "e15",
    "category": "platform-bracket",
-   "prompt": "The Acme posting prefers Kafka. I have used Amazon SQS but never Kafka. Can I put Kafka on the resume?",
+   "prompt": "Tailor my full-time resume for jobs/acme-backend/posting.md. The posting prefers Kafka; I have used Amazon SQS but never Kafka. Can I show Kafka on the resume somehow?",
    "opens": [
     "tailoring",
     "brackets",

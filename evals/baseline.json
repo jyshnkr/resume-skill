@@ -1,0 +1,90 @@
+{
+ "recorded": "baseline: every skill off, default model, 15 cases, 1 run each",
+ "passes": 6,
+ "runs": 15,
+ "skill_loaded_in_any_run": false,
+ "cases": {
+  "e01": {
+   "pass": false,
+   "failed_checks": [
+    "matches (?i)score\\s+[345]\\s+of\\s+5"
+   ]
+  },
+  "e02": {
+   "pass": true,
+   "failed_checks": []
+  },
+  "e03": {
+   "pass": true,
+   "failed_checks": []
+  },
+  "e04": {
+   "pass": true,
+   "failed_checks": []
+  },
+  "e05": {
+   "pass": false,
+   "failed_checks": [
+    "wrote out/*/*.docx",
+    "data folder unchanged"
+   ]
+  },
+  "e06": {
+   "pass": false,
+   "failed_checks": [
+    "does not match \\b\\d+ (jobs|pipelines)\\b"
+   ]
+  },
+  "e07": {
+   "pass": false,
+   "failed_checks": [
+    "matches (?i)dry-run|validate",
+    "wrote backups/*",
+    "wrote changes/*"
+   ]
+  },
+  "e08": {
+   "pass": false,
+   "failed_checks": [
+    "matches (?i)new (tailoring|copy)",
+    "data folder unchanged"
+   ]
+  },
+  "e09": {
+   "pass": true,
+   "failed_checks": []
+  },
+  "e10": {
+   "pass": true,
+   "failed_checks": []
+  },
+  "e11": {
+   "pass": false,
+   "failed_checks": [
+    "matches (?i)instruction|ignore"
+   ]
+  },
+  "e12": {
+   "pass": true,
+   "failed_checks": []
+  },
+  "e13": {
+   "pass": false,
+   "failed_checks": [
+    "matches (?i)data folder|set up|setup"
+   ]
+  },
+  "e14": {
+   "pass": false,
+   "failed_checks": [
+    "wrote out/*/*.docx"
+   ]
+  },
+  "e15": {
+   "pass": false,
+   "failed_checks": [
+    "matches (?i)bracket|style\\)|not (claim|add)"
+   ]
+  }
+ }
+}

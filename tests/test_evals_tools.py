@@ -63,6 +63,53 @@ class GradeTests(TmpCase):
         self.assertIn("no case", r.stderr)
 
 
+class RunnerCommandTests(unittest.TestCase):
+    """The claude command line the runner builds, tested without running claude."""
+
+    def setUp(self):
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import run_evals
+        self.build = run_evals.build_cmd
+
+    def test_default_run_uses_the_installed_skill_and_nothing_extra(self):
+        cmd = self.build("hi", None, "with-skill", 25)
+        self.assertNotIn("--plugin-dir", cmd)
+        self.assertNotIn("--disable-slash-commands", cmd)
+        self.assertEqual(cmd[:3], ["claude", "-p", "hi"])
+
+    def test_baseline_turns_every_skill_off_even_when_the_skill_is_linked(self):
+        cmd = self.build("hi", "haiku", "baseline", 25)
+        self.assertIn("--disable-slash-commands", cmd)
+        self.assertNotIn("--plugin-dir", cmd)
+        self.assertEqual(cmd[cmd.index("--model") + 1], "haiku")
+
+    def test_plugin_dir_mode_loads_the_repo(self):
+        cmd = self.build("hi", None, "plugin-dir", 3)
+        self.assertEqual(cmd[cmd.index("--plugin-dir") + 1], ROOT)
+        self.assertEqual(cmd[cmd.index("--max-turns") + 1], "3")
+
+
+class InitSkillListTests(unittest.TestCase):
+    def setUp(self):
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import run_evals
+        self.f = run_evals.init_lists_skill
+
+    def stream(self, skills):
+        return "\n".join([json.dumps({"type": "system", "subtype": "hook"}),
+                          json.dumps({"type": "system", "subtype": "init", "skills": skills, "slash_commands": []}),
+                          json.dumps({"type": "result", "result": "x"})])
+
+    def test_sees_the_skill_in_the_init_event(self):
+        self.assertTrue(self.f(self.stream(["pdf", "resume-skill", "docx"]), "resume-skill"))
+
+    def test_absent_when_all_skills_are_off(self):
+        self.assertFalse(self.f(self.stream([]), "resume-skill"))
+
+    def test_a_stream_with_no_init_event_is_not_a_yes(self):
+        self.assertFalse(self.f(json.dumps({"type": "result", "result": "x"}), "resume-skill"))
+
+
 class RunnerPlanTests(unittest.TestCase):
     def test_without_yes_it_prints_the_plan_and_runs_nothing(self):
         r = sh(RUNNER, "--cases", "e01,e02")

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Run the agent evals in Claude Code, headless, on a temporary copy of the sample data. Only when asked: every run spends usage.
 
-    python3 tools/run_evals.py --yes [--cases e01,e05] [--model sonnet] [--baseline] [--triggers] [--runs 3] [--out DIR]
+    python3 tools/run_evals.py --yes [--cases e01,e05] [--model sonnet] [--baseline | --plugin-dir] [--triggers] [--runs 3] [--out DIR]
 
 Without --yes it prints the plan (number of agent calls) and exits 2. Each case runs `claude -p` in an empty scratch folder with
 RESUME_SKILL_DATA pointing at a fresh copy of examples/data (a case can ask for a submitted tailoring or no data folder), loads the
-skill with --plugin-dir (or not, with --baseline, to record how the model does without it), saves the output and grades it with
+skill as installed in the skills folder (--plugin-dir loads this repo instead; --baseline turns every skill off to record how the model does without it), saves the output and grades it with
 evals/grade.py. --triggers runs the trigger set instead: for each query it records whether the skill was invoked (a Skill tool
 call named resume-skill), --runs times each. Other skills installed on the machine can also trigger; the run records which
 skill each query invoked. Codex is run by hand. Results go to DIR (default evals/runs/<timestamp>, not committed).
@@ -36,14 +36,34 @@ def skills_called(stream):
     return out
 
 
-def claude(prompt, model, cwd, env, with_skill, max_turns):
+def init_lists_skill(stream, name):
+    """True when the session's init event lists a skill or command with this name (used to prove a baseline run had no skill)."""
+    for line in stream.splitlines():
+        try:
+            o = json.loads(line)
+        except ValueError:
+            continue
+        if o.get("type") == "system" and o.get("subtype") == "init":
+            return any(name in str(x) for x in (o.get("skills") or []) + (o.get("slash_commands") or []))
+    return False
+
+
+def build_cmd(prompt, model, mode, max_turns):
+    """mode: with-skill (the skill installed in the user's skills folder), baseline (every skill off) or plugin-dir (load this repo)."""
     cmd = ["claude", "-p", prompt, "--output-format", "stream-json", "--verbose", "--max-turns", str(max_turns),
            "--permission-mode", "acceptEdits", "--allowedTools", *TOOLS]
     if model:
         cmd += ["--model", model]
-    if with_skill:
+    if mode == "baseline":
+        cmd.append("--disable-slash-commands")
+    elif mode == "plugin-dir":
         cmd += ["--plugin-dir", ROOT]
-    r = subprocess.run(cmd, cwd=cwd, env=env, capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=900)
+    return cmd
+
+
+def claude(prompt, model, cwd, env, mode, max_turns):
+    r = subprocess.run(build_cmd(prompt, model, mode, max_turns), cwd=cwd, env=env, capture_output=True, text=True,
+                       stdin=subprocess.DEVNULL, timeout=900)
     final = ""
     for line in r.stdout.splitlines():
         try:
@@ -84,6 +104,7 @@ def main(a):
     runs = int(opt(a, "--runs", trig["runs_each"] if "--triggers" in a else 1))
     n = (len(trig["should_fire"]) + len(trig["should_not_fire"])) * runs if "--triggers" in a else len(cases) * runs
     model, baseline = opt(a, "--model"), "--baseline" in a
+    mode = "baseline" if baseline else "plugin-dir" if "--plugin-dir" in a else "with-skill"
     print(f"plan: {n} agent call(s), model {model or 'default'}, {'baseline (no skill)' if baseline else 'with the skill'}, "
           f"{'trigger set' if '--triggers' in a else 'cases ' + ','.join(c['id'] for c in cases)}")
     if "--yes" not in a:
@@ -101,10 +122,13 @@ def main(a):
                 for i in range(runs):
                     scratch = tempfile.mkdtemp(prefix="rs-trig-")
                     env = {**os.environ, "RESUME_SKILL_DATA": os.path.join(scratch, "data")}
-                    _, stream = claude(q["query"], model, scratch, env, not baseline, 3)
+                    _, stream = claude(q["query"], model, scratch, env, mode, 3)
+                    if baseline and init_lists_skill(stream, "resume-skill"):
+                        print("error: a baseline run had resume-skill loaded; the comparison would be invalid", file=sys.stderr)
+                        return 1
                     called = skills_called(stream)
                     fired = any("resume-skill" in c for c in called)
-                    summary.append({"id": q["id"], "run": i + 1, "expect_fire": expect, "fired": fired, "skills": called, "pass": fired == expect})
+                    summary.append({"id": q["id"], "run": i + 1, "expect_fire": expect, "fired": fired, "skill_loaded": init_lists_skill(stream, "resume-skill"), "skills": called, "pass": fired == expect})
                     shutil.rmtree(scratch, ignore_errors=True)
     else:
         for c in cases:
@@ -113,12 +137,17 @@ def main(a):
                 data = make_data(c, scratch)
                 before = G.tree_hash(data) if os.path.isdir(data) else ""
                 env = {**os.environ, "RESUME_SKILL_DATA": data, "RESUME_SKILL_CONFIG_DIR": os.path.join(scratch, "config")}
-                final, stream = claude(c["prompt"], model, scratch, env, not baseline, 25)
+                final, stream = claude(c["prompt"], model, scratch, env, mode, 25)
+                if baseline and init_lists_skill(stream, "resume-skill"):
+                    print("error: a baseline run had resume-skill loaded; the comparison would be invalid", file=sys.stderr)
+                    return 1
+                with open(os.path.join(out, f"{c['id']}-{i + 1}.stream.jsonl"), "w", encoding="utf-8") as sf:
+                    sf.write(stream)  # every tool call, to see which skill fired and what the agent ran
                 text_path = os.path.join(out, f"{c['id']}-{i + 1}.txt")
                 with open(text_path, "w", encoding="utf-8") as f:
                     f.write(final)
                 res = G.grade(c, final, data, before)
-                summary.append({"id": c["id"], "run": i + 1, "pass": all(ok for _, ok in res), "checks": [{"check": k, "pass": ok} for k, ok in res]})
+                summary.append({"id": c["id"], "run": i + 1, "skill_loaded": init_lists_skill(stream, "resume-skill"), "skills_called": skills_called(stream), "pass": all(ok for _, ok in res), "checks": [{"check": k, "pass": ok} for k, ok in res]})
                 shutil.rmtree(scratch, ignore_errors=True)
     with open(os.path.join(out, "summary.json"), "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=1)

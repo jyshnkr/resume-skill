@@ -1,0 +1,60 @@
+{
+ "note": "Default model, 15 cases, made-up data. first_pass = the batch run before any case was changed. After it, cases e01 (regex), e03 (prompt), e07 (prompt and regex), e15 (prompt) were corrected because the case, not the skill, was wrong; fixed_rerun = those four re-run. So the combined result is not independent of the case changes.",
+ "first_pass": {
+  "passes": 10,
+  "runs": 15,
+  "failed": {
+   "e01": [
+    "matches (?i)score\\s+[345]\\s+of\\s+5"
+   ],
+   "e03": [
+    "matches (?i)which version|full-time or contract|full-time.*contract"
+   ],
+   "e07": [
+    "wrote backups/*",
+    "wrote changes/*"
+   ],
+   "e13": [
+    "matches (?i)data folder|set up|setup"
+   ],
+   "e15": [
+    "matches (?i)bracket|style\\)|not (claim|add)"
+   ]
+  }
+ },
+ "rerun_of_first_pass_failures_before_case_fixes": {
+  "e01": false,
+  "e03": false,
+  "e07": false,
+  "e13": true,
+  "e15": false
+ },
+ "fixed_rerun": {
+  "e01": {
+   "pass": false,
+   "skills_called": [
+    "anthropic-skills:jd-fit-check"
+   ]
+  },
+  "e03": {
+   "pass": true,
+   "skills_called": [
+    "anthropic-skills:jd-fit-check",
+    "resume-skill"
+   ]
+  },
+  "e07": {
+   "pass": true,
+   "skills_called": [
+    "resume-skill"
+   ]
+  },
+  "e15": {
+   "pass": true,
+   "skills_called": [
+    "resume-skill"
+   ]
+  }
+ },
+ "finding": "The old jd-fit-check skill (installed on this machine) competed for routing: it fired alone in e01 (rerun) and, in the first pass, read real data from the old repo in e13. Retire it when resume-skill goes live."
+}
