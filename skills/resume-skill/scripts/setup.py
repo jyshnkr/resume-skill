@@ -133,7 +133,11 @@ def plan_for(path, state, args):
         acts += [{"kind": "file", "name": n} for n in FILES]
         acts = [a for a in acts if a]
     converting = False
-    if "--convert-settings" in args and state == "ready":
+    # --add-missing-settings on a folder that has only the old settings.json is the same job as --convert-settings
+    # (every value kept, missing options and hints added); doing only half of it would leave two settings files side by side.
+    legacy_only = state == "ready" and os.path.isfile(os.path.join(path, "settings.json")) and not any(
+        os.path.isfile(os.path.join(path, n)) for n in ("settings.yaml", "settings.yml"))
+    if ("--convert-settings" in args or ("--add-missing-settings" in args and legacy_only)) and state == "ready":
         old = os.path.join(path, "settings.json")
         newer = [n for n in ("settings.yaml", "settings.yml") if os.path.isfile(os.path.join(path, n))]
         if os.path.isfile(old) and newer:

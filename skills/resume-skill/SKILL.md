@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Python 3.9+ (standard library only). Pillow is optional (line-fit checks). LibreOffice is optional (page counts).
 metadata:
   author: resume-skill contributors
-  version: "0.1.2"
+  version: "0.1.3"
   tags: "resume, job-description, tailoring"
 ---
 

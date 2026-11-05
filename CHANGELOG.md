@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 (2026-11-05)
+
+- The settings reader treats an apostrophe inside a word (Austin's) as text, not a quote, so a comment after it is no longer kept in the value.
+- `setup.py --add-missing-settings` on a folder that still has only the old `settings.json` now converts it fully (settings.yaml written, the old file moved to `archive/`), so two settings files never sit side by side.
+
 ## 0.1.2 (2026-11-05)
 
 - Settings are now `settings.yaml`, a commented file with hints and a `preferences` block at the top (work type, location, remote, minimum rate and its unit, domains). An old `settings.json` is still read; `setup.py --convert-settings --yes` converts it, `--add-missing-settings` adds new options. The YAML reader is built in (`scripts/miniyaml.py`), so nothing needs installing.

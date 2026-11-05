@@ -239,6 +239,18 @@ class AddMissingSettings(Case):
         self.assertEqual(got["preferences"]["location"], "Reno")
         self.assertEqual(got["output"]["font"], "Times New Roman")
 
+    def test_add_missing_on_a_json_only_folder_converts_it_fully(self):
+        d = self.folder()
+        write(os.path.join(d, "settings.json"), json.dumps({"limits": {"chars": 999}, "preferences": {"location": "Reno"}}))
+        r = self.setup(d, "--add-missing-settings", "--yes")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertFalse(os.path.exists(os.path.join(d, "settings.json")), "the old file is moved away, not left beside the new one")
+        self.assertTrue(os.path.exists(os.path.join(d, "archive", "settings.json")))
+        again = self.setup(d, "--convert-settings", "--yes")
+        self.assertEqual(again.returncode, 0, again.stdout + again.stderr)
+        self.assertIn("nothing to convert", again.stdout)
+        self.assertNotIn("old format", self.validate(d).stdout)
+
     def test_a_broken_yaml_is_refused_and_nothing_changes(self):
         d = self.example_copy()
         write(os.path.join(d, "settings.yaml"), "limits:\n  chars: 5\n  no colon here\n")

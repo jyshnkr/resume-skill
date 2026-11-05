@@ -23,6 +23,12 @@ def _err(no, msg):
     return ValueError(f"line {no}: {msg}")
 
 
+def _opens(s, i, in_s, in_d):
+    """True when the quote character s[i] starts a quoted text: it sits at the start of a token (after a space, [ { or ,), not inside
+    a word like Austin's. A quote that closes the current quoted text is handled by the caller."""
+    return not in_s and not in_d and (i == 0 or s[i - 1] in " \t[{,")
+
+
 def _strip_comment(s):
     """Drop a trailing ' # comment' that is not inside quotes."""
     in_s = in_d = False
@@ -32,9 +38,9 @@ def _strip_comment(s):
         if in_d and ch == "\\":
             i += 2
             continue
-        if ch == "'" and not in_d:
+        if ch == "'" and (in_s or _opens(s, i, in_s, in_d)):
             in_s = not in_s
-        elif ch == '"' and not in_s:
+        elif ch == '"' and (in_d or _opens(s, i, in_s, in_d)):
             in_d = not in_d
         elif ch == "#" and not in_s and not in_d and (i == 0 or s[i - 1] in " \t"):
             return s[:i].rstrip()
@@ -72,9 +78,9 @@ def _split_top(s, sep=","):
             cur += s[i:i + 2]
             i += 2
             continue
-        if ch == "'" and not in_d:
+        if ch == "'" and (in_s or _opens(s, i, in_s, in_d)):
             in_s = not in_s
-        elif ch == '"' and not in_s:
+        elif ch == '"' and (in_d or _opens(s, i, in_s, in_d)):
             in_d = not in_d
         elif not in_s and not in_d:
             if ch in "[{":
@@ -102,9 +108,9 @@ def _find_colon(s):
         if in_d and ch == "\\":
             i += 2
             continue
-        if ch == "'" and not in_d:
+        if ch == "'" and (in_s or _opens(s, i, in_s, in_d)):
             in_s = not in_s
-        elif ch == '"' and not in_s:
+        elif ch == '"' and (in_d or _opens(s, i, in_s, in_d)):
             in_d = not in_d
         elif ch == ":" and not in_s and not in_d and (i + 1 == len(s) or s[i + 1] == " "):
             return i

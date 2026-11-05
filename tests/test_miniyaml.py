@@ -26,6 +26,24 @@ class ScalarTests(unittest.TestCase):
         self.assertEqual(d, {"a": "C# and F#", "b": "keep # this", "c": "x"})
 
 
+class ApostropheTests(unittest.TestCase):
+    """An apostrophe inside a plain word is not a quote: a trailing comment after it must still be dropped."""
+
+    def test_apostrophe_in_a_plain_value_then_a_comment(self):
+        self.assertEqual(y.loads("location: Austin's Finest   # my city\n"), {"location": "Austin's Finest"})
+        self.assertEqual(y.loads("a: don't # note\n"), {"a": "don't"})
+
+    def test_apostrophes_inside_flow_lists(self):
+        self.assertEqual(y.loads("a: [it's, fine, b's]  # c\n"), {"a": ["it's", "fine", "b's"]})
+
+    def test_real_quotes_still_work_with_comments(self):
+        self.assertEqual(y.loads("a: 'keep # this'  # drop this\nb: \"x # y\"  # z\nc: ['p, q', r]\n"),
+                         {"a": "keep # this", "b": "x # y", "c": ["p, q", "r"]})
+
+    def test_a_key_with_an_apostrophe_and_a_colon_in_the_value(self):
+        self.assertEqual(y.loads("note: it's: fine # c\n"), {"note": "it's: fine"})
+
+
 class StructureTests(unittest.TestCase):
     def test_nested_mappings_with_string_keys(self):
         d = y.loads("fit:\n  weights:\n    required: 70\n    preferred: 30\n  legend:\n    5: 90\n    4: 75\n")

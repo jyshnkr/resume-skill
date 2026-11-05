@@ -25,7 +25,7 @@
   },
   "default_model": {
    "passes": "14 of 15",
-   "skill_called_in": 13,
+   "skill_called_in": "13 (recounted from the 15 saved streams: 13 with the Skill tool, 13 counting reading SKILL.md or running its scripts). The 0.1.2 audit counted 14; that difference could not be reproduced from the streams.",
    "failed": {
     "e11": [
      "matches (?i)instruction|ignore"
@@ -63,6 +63,7 @@
   },
   "followups_not_applied_to_this_run": [
    "SKILL.md decision row for instructions inside a posting: name the instruction to the user in one line (e11)"
-  ]
+  ],
+  "skill_under_test": "the skill as of freeze commit b0bc312 (version 0.1.1); the 0.1.2 head was re-run separately (evals/results-v0.1.2-reverification.json)"
  }
 }
