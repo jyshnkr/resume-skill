@@ -3,16 +3,16 @@
     {
       "id": "s01",
       "version": "full-time",
-      "text": "Senior Backend Engineer with 8+ years of experience in logistics and payments platforms. Cut nightly report runtime from 6 hours to 40 minutes at Harbor Logistics and launched a refunds service at Brightwave Payments. Led 3 engineers through a zero-downtime JDK 17 upgrade and raised unit coverage on a checkout API.",
+      "text": "Senior Backend Engineer with 8+ years of experience in logistics and payments platforms. Cut nightly report runtime from 6 hours to 40 minutes at Harbor Logistics and launched a refunds service at Brightwave Payments. Led 3 engineers through a zero-downtime JDK 17 upgrade, raised unit coverage on a checkout API and migrated stored card tokens to a new vault.",
       "status": "live",
-      "traces_to": "b001 b006 b005 b007"
+      "traces_to": "b001 b006 b005 b007 b008"
     },
     {
       "id": "s02",
       "version": "contract",
-      "text": "Senior Backend Engineer with 8+ years of experience in logistics and payments platforms. Cut nightly report runtime from 6 hours to 40 minutes at Harbor Logistics and migrated 1.2M stored card tokens at Brightwave Payments. Led 3 engineers through a zero-downtime JDK 17 upgrade and tuned slow database queries.",
+      "text": "Senior Backend Engineer with 8+ years of experience in logistics and payments platforms. Cut nightly report runtime from 6 hours to 40 minutes at Harbor Logistics and migrated 1.2M stored card tokens at Brightwave Payments. Led 3 engineers through a zero-downtime JDK 17 upgrade, tuned slow database queries and moved reporting jobs to AWS Glue.",
       "status": "live",
-      "traces_to": "b001 b008 b005 b011"
+      "traces_to": "b001 b008 b005 b011 b012"
     }
   ]
 }

@@ -1,0 +1,125 @@
+{
+ "fingerprint": "62dbdae1ea7a4240e2c812549ccdecb48c33d869eb7851fdfe13448db10ad9fb",
+ "ran_at": "2026-11-05T02:12:54Z",
+ "bullets": {
+  "b001": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 33% of the width; under 50% leaves a short last line."
+    }
+   ]
+  },
+  "b002": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 42% of the width; under 50% leaves a short last line."
+    }
+   ]
+  },
+  "b003": {
+   "status": "OK",
+   "findings": []
+  },
+  "b004": {
+   "status": "OK",
+   "findings": []
+  },
+  "b005": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 39% of the width; under 50% leaves a short last line."
+    }
+   ]
+  },
+  "b006": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 47% of the width; under 50% leaves a short last line."
+    }
+   ]
+  },
+  "b007": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 35% of the width; under 50% leaves a short last line."
+    }
+   ]
+  },
+  "b008": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 38% of the width; under 50% leaves a short last line."
+    }
+   ]
+  },
+  "b009": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 46% of the width; under 50% leaves a short last line."
+    }
+   ]
+  },
+  "b010": {
+   "status": "OK",
+   "findings": []
+  },
+  "b011": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 34% of the width; under 50% leaves a short last line."
+    }
+   ]
+  },
+  "b012": {
+   "status": "OK",
+   "findings": [
+    {
+     "level": "NOTE",
+     "rule": 10,
+     "check": "no_metric",
+     "message": "no number in the result before 'by'."
+    },
+    {
+     "level": "NOTE",
+     "rule": 60,
+     "check": "short_last_line",
+     "message": "the last line fills 46% of the width; under 50% leaves a short last line."
+    }
+   ]
+  }
+ },
+ "hold_back": [],
+ "summary": "0 of 12 bullets need attention"
+}

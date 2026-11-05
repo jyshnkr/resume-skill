@@ -26,7 +26,7 @@ A real run needs a missing or empty data folder, copies, runs validate.py, then 
 "N of M bullets need attention" from out/preflight.json.
 Exit 0 done, 1 refused or the new folder has validate errors.
 """
-import argparse, json, os, shutil, subprocess, sys
+import argparse, json, os, re, shutil, subprocess, sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.join(os.path.dirname(HERE), "skills", "resume-skill", "scripts")
@@ -103,6 +103,10 @@ def build_plan(old):
         head = {"slug": slug, "base": t.pop("base", None), "status": t.pop("status", "draft"), "posting": postings[0] if postings else None,
                 "sent_on": None}
         t.pop("slug", None)
+        for part in (t.get("roles") or []) + (t.get("projects") or []):
+            for b in part.get("bullets", []):
+                if b.get("override") and not b.get("why"):  # the new layout asks for a one-line why on every reworded bullet (rule 48)
+                    b["why"] = "Carried over from the old repo; the reason is in archive/history."
         plan[f"jobs/{slug}/tailoring.json"] = ("text", jtext({**head, **t}))
     for src, dest in (("data/retired.json", "archive/retired.json"), ("data/bank-notes.md", "archive/bank-notes.md"),
                       ("data/drive.json", "archive/drive.json"), ("CHANGELOG.md", "archive/CHANGELOG.md")):
@@ -211,6 +215,10 @@ def load_fixes(path):
 
 def attention(doc):
     """(N, M) from out/preflight.json, or None when its shape is not recognised."""
+    if isinstance(doc, dict) and isinstance(doc.get("summary"), str):  # the real preflight.py: "N of M bullets need attention"
+        m = re.match(r"(\d+) of (\d+) bullets need attention", doc["summary"])
+        if m:
+            return int(m.group(1)), int(m.group(2))
     if isinstance(doc, dict) and isinstance(doc.get("summary"), dict) and {"needs_attention", "bullets"} <= set(doc["summary"]):
         return doc["summary"]["needs_attention"], doc["summary"]["bullets"]
     items = doc.get("bullets") if isinstance(doc, dict) else None

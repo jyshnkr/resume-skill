@@ -223,6 +223,8 @@ class ImportOldTests(TmpCase):
         shutil.copytree(os.path.join(ROOT, "skills"), os.path.join(repo, "skills"), ignore=shutil.ignore_patterns("__pycache__", "preflight.py"))
         os.makedirs(os.path.join(repo, "tools"))
         shutil.copy(os.path.join(TOOLS, "import_old.py"), os.path.join(repo, "tools", "import_old.py"))
+        if preflight_json is None:
+            return os.path.join(repo, "tools")
         write(os.path.join(repo, "skills", "resume-skill", "scripts", "preflight.py"),
               "import json, os, sys\nassert '--quiet' in sys.argv\nroot = os.environ['RESUME_SKILL_DATA']\nos.makedirs(os.path.join(root, 'out'), exist_ok=True)\n"
               "open(os.path.join(root, 'out', 'preflight.json'), 'w').write(%r)\n" % preflight_json)
@@ -235,8 +237,14 @@ class ImportOldTests(TmpCase):
         self.assertIn("2 of 6 bullets need attention", r.stdout)
 
     def test_no_attention_line_without_preflight(self):
-        r = self.imp()
+        r = self.imp(root=self.staged_repo(None))
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertNotIn("need attention", r.stdout)
+
+    def test_the_real_preflight_line_is_printed(self):
+        r = self.imp()
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertRegex(r.stdout, r"\d+ of \d+ bullets need attention")
 
 
 if __name__ == "__main__":

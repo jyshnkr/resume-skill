@@ -1,0 +1,438 @@
+[
+ {
+  "rule": 20,
+  "check": "first_person",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job, so we could add retry-safe checkpoints for every region.",
+  "leads": "",
+  "expect": [
+   [
+    "FAIL",
+    20
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 20,
+  "check": "first_person",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting my AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+  "leads": "",
+  "expect": [
+   [
+    "FAIL",
+    20
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 20,
+  "check": "first_person",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job, which I've since moved to partitioned Parquet reads.",
+  "leads": "",
+  "expect": [
+   [
+    "FAIL",
+    20
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 20,
+  "check": "first_person",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job and sharing the notes with us and our support team.",
+  "leads": "",
+  "expect": [
+   [
+    "FAIL",
+    20
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 20,
+  "check": "first_person",
+  "kind": "bullet",
+  "text": "Cut nightly report I/O from 6 hours to 40 minutes for US customers by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "FAIL",
+    20
+   ]
+  ]
+ },
+ {
+  "rule": 20,
+  "check": "first_person",
+  "kind": "summary",
+  "text": "Senior engineer with 8+ years of experience in cloud systems. Cut report runtime in half. I led releases for 4 teams.",
+  "leads": "",
+  "expect": [
+   [
+    "FAIL",
+    20
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 12,
+  "check": "vague_size",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime for millions of records by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+  "leads": "",
+  "expect": [
+   [
+    "FAIL",
+    12
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 12,
+  "check": "vague_size",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime across dozens of regions by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints today.",
+  "leads": "",
+  "expect": [
+   [
+    "FAIL",
+    12
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 12,
+  "check": "vague_size",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime for 3 million records from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and checkpoints.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "FAIL",
+    12
+   ]
+  ]
+ },
+ {
+  "rule": 5,
+  "check": "number_word",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from six hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+  "leads": "",
+  "expect": [
+   [
+    "WARN",
+    5
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 5,
+  "check": "number_word",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes with zero downtime by rewriting the AWS Glue job as partitioned Parquet reads for a single queue.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    5
+   ]
+  ]
+ },
+ {
+  "rule": 5,
+  "check": "number_word",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding one set of checkpoints.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    5
+   ]
+  ]
+ },
+ {
+  "rule": 19,
+  "check": "vague_ing",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads, improving the reporting experience.",
+  "leads": "",
+  "expect": [
+   [
+    "WARN",
+    19
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 19,
+  "check": "vague_ing",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads, cutting weekly support tickets 30%.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    19
+   ]
+  ]
+ },
+ {
+  "rule": 19,
+  "check": "vague_ing",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by improving the AWS Glue job with partitioned Parquet reads and retry-safe checkpoints.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    19
+   ]
+  ]
+ },
+ {
+  "rule": 19,
+  "check": "em_dash",
+  "kind": "document",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes \u2014 by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+  "leads": "",
+  "expect": [
+   [
+    "WARN",
+    19
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 19,
+  "check": "em_dash",
+  "kind": "document",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.\nReduced failed deliveries from 120 a week to 4 by moving retries to Amazon SQS dead-letter queues and paging the owning team after 5 minutes.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    19
+   ]
+  ]
+ },
+ {
+  "rule": 19,
+  "check": "em_dash",
+  "kind": "document",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job \u2013 partitioned Parquet reads and retry-safe checkpoints.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    19
+   ]
+  ]
+ },
+ {
+  "rule": 37,
+  "check": "mixed_endings",
+  "kind": "document",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.\nReduced failed deliveries from 120 a week to 4 by moving retries to Amazon SQS dead-letter queues and paging the owning team after 5 minutes.\nLaunched a refunds service that lowered support tickets 30% by checking each request against the ledger before payout and returning clear error codes",
+  "leads": "",
+  "expect": [
+   [
+    "WARN",
+    37
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 37,
+  "check": "mixed_endings",
+  "kind": "document",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.\nReduced failed deliveries from 120 a week to 4 by moving retries to Amazon SQS dead-letter queues and paging the owning team after 5 minutes.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    37
+   ]
+  ]
+ },
+ {
+  "rule": 37,
+  "check": "mixed_endings",
+  "kind": "document",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints\nReduced failed deliveries from 120 a week to 4 by moving retries to Amazon SQS dead-letter queues and paging the owning team after 5 minutes",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    37
+   ]
+  ]
+ },
+ {
+  "rule": 19,
+  "check": "passive",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes after the Glue job was rewritten as partitioned Parquet reads and checkpoints were added for each task.",
+  "leads": "",
+  "expect": [
+   [
+    "NOTE",
+    19
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 19,
+  "check": "passive",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "NOTE",
+    19
+   ]
+  ]
+ },
+ {
+  "rule": 19,
+  "check": "passive",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job so the team can restart a failed task.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "NOTE",
+    19
+   ]
+  ]
+ },
+ {
+  "rule": 18,
+  "check": "robot_phrase",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by leveraging partitioned Parquet reads and adding retry-safe checkpoints to the AWS Glue job.",
+  "leads": "",
+  "expect": [
+   [
+    "WARN",
+    18
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 18,
+  "check": "robot_phrase",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as a robust set of partitioned Parquet reads and retry-safe checkpoints.",
+  "leads": "",
+  "expect": [
+   [
+    "WARN",
+    18
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 18,
+  "check": "robot_phrase",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads with AI-assisted tests and retry-safe checkpoints.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    18
+   ]
+  ]
+ },
+ {
+  "rule": 18,
+  "check": "robot_phrase",
+  "kind": "summary",
+  "text": "Senior engineer with 8+ years of experience in cloud systems. Cut report runtime in half. Helped 4 teams ship releases with zero downtime.",
+  "leads": "",
+  "expect": [
+   [
+    "WARN",
+    18
+   ]
+  ],
+  "must_not": []
+ },
+ {
+  "rule": 18,
+  "check": "robot_phrase",
+  "kind": "summary",
+  "text": "Senior engineer with 8+ years of experience in cloud systems. Cut report runtime in half. Led 4 teams that shipped releases with zero downtime and AI-assisted reviews.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "WARN",
+    18
+   ]
+  ]
+ },
+ {
+  "rule": 60,
+  "check": "short_last_line",
+  "kind": "bullet",
+  "text": "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints for all.",
+  "leads": "",
+  "expect": [
+   [
+    "NOTE",
+    60
+   ]
+  ],
+  "must_not": [],
+  "needs_pillow": true
+ },
+ {
+  "rule": 60,
+  "check": "short_last_line",
+  "kind": "bullet",
+  "text": "Published an open-source CLI that converts OpenAPI specs to Postman collections, reaching 220 GitHub stars by documenting 12 examples and answering issues within 2 days.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "NOTE",
+    60
+   ]
+  ],
+  "needs_pillow": true
+ }
+]

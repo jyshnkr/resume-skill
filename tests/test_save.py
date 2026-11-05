@@ -262,7 +262,8 @@ class Undo(SaveCase):
         self.assertEqual(self.save(plan, "--yes").returncode, 0)
         r = run("save.py", "--undo", "--yes", env=self.env)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
-        self.assertEqual(snapshot(self.data, skip=("changes", "backups")), {k: v for k, v in before.items() if k.split(os.sep)[0] not in ("changes", "backups")})
+        derived = ("changes", "backups", "out")  # out/ is rebuilt output (the pre-flight refresh), not saved data
+        self.assertEqual(snapshot(self.data, skip=derived), {k: v for k, v in before.items() if k.split(os.sep)[0] not in derived})
         self.assertFalse(os.path.exists(os.path.join(self.data, "jobs", "acme-backend", "extra")))
         undo_note = self.read("changes", "2026-11-04-test-undo.md").decode()
         self.assertIn(datetime.date.today().isoformat(), undo_note)

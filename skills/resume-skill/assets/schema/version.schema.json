@@ -4,11 +4,10 @@
   "page_cap": "number or null",
   "roles": [
     {
-      "title": "",
-      "location": "",
+      "title": "job title, then the company (shown in the bold run)",
+      "location": "city or Remote (shown in italic)",
       "dates": "",
       "sub": "",
-      "company": "",
       "bullet_ids": "bank ids; each must be marked in for this version"
     }
   ],

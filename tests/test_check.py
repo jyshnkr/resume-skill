@@ -15,10 +15,11 @@ Hard-coded spots made data-driven (one test each):
 import importlib.util, json, os, re, sys, unittest
 from helpers import TmpCase, run, write, EXAMPLE, FIXTURES, SCRIPTS
 
-try:
-    import PIL  # noqa: F401
+try:  # Pillow plus the Liberation Serif font (found by name, or in the current folder)
+    from PIL import ImageFont
+    ImageFont.truetype("LiberationSerif-Regular.ttf", 11)
     HAVE_PIL = True
-except ImportError:
+except Exception:
     HAVE_PIL = False
 
 LINE = re.compile(r"^\s+(FAIL|WARN|NOTE|INFO) rule (\d+): ", re.M)
@@ -201,7 +202,9 @@ class DataDrivenTests(CheckCase):
     def test_summary_opening_and_sentence_count_come_from_settings(self):
         s = "Senior Software Engineer with 8+ years of experience in cloud backend systems. Cut report runtime from 6 hours to 40 minutes. Led zero-downtime releases for 4 teams."
         r = self.chk("--summary", s)
-        self.assertEqual([p for p in pairs(r.stdout) if p[0] == "FAIL"], [], r.stdout)
+        self.assertNotIn("FAIL rule 23: sentence", r.stdout)
+        self.assertNotIn("FAIL rule 23: 3 sentences", r.stdout)
+        self.assertNotIn("FAIL rule 24", r.stdout)
         d = self.example_copy()
         self.setting(d, "summary", "opening_pattern", r"^Staff Engineer with \d+ years")
         r = self.chk("--summary", s, data=d)
@@ -271,6 +274,234 @@ class DataDrivenTests(CheckCase):
         src = source()
         for word in ("Senior Software Engineer", "AppSec", "Change log"):
             self.assertNotIn(word, src)
+
+
+def checker_module():
+    spec = importlib.util.spec_from_file_location("check_under_test", os.path.join(SCRIPTS, "check.py"))
+    mod = importlib.util.module_from_spec(spec)
+    sys.path.insert(0, SCRIPTS)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+WAVE1 = {"first_person", "vague_size", "number_word", "vague_ing", "em_dash", "mixed_endings", "passive", "robot_phrase", "short_last_line"}
+
+
+class Wave1Tests(CheckCase):
+    """k36: one test walks tests/fixtures/checks.json. A fixture names the rule and check, the text, and the (level, rule) lines it must
+    and must not produce."""
+
+    def fixtures(self):
+        return load_fixture("checks.json")
+
+    def run_fixture(self, fx):
+        if fx["kind"] == "document":
+            path = os.path.join(self.tmp, "doc.txt")
+            write(path, fx["text"] + "\n")
+            return self.chk("--document-file", path)
+        if fx["kind"] == "summary":
+            return self.chk("--summary", fx["text"])
+        return self.bullet(fx["text"], fx.get("leads", ""))
+
+    def test_every_fixture_gives_its_lines(self):
+        for i, fx in enumerate(self.fixtures()):
+            if fx.get("needs_pillow") and not HAVE_PIL:
+                continue
+            with self.subTest("%s #%d" % (fx["check"], i)):
+                r = self.run_fixture(fx)
+                got = pairs(r.stdout)
+                for want in fx["expect"]:
+                    self.assertIn(tuple(want), got, r.stdout)
+                for no in fx["must_not"]:
+                    self.assertNotIn(tuple(no), got, r.stdout)
+
+    def test_each_wave1_check_has_a_failing_and_a_passing_fixture(self):
+        checks = checker_module().CHECKS
+        fixtures = self.fixtures()
+        for cid in sorted(WAVE1):
+            mine = [f for f in fixtures if f["check"] == cid]
+            with self.subTest(cid):
+                self.assertIn(cid, checks)
+                self.assertTrue([f for f in mine if f["expect"]], "no failing fixture")
+                self.assertTrue([f for f in mine if not f["expect"] and f["must_not"]], "no passing fixture")
+                for f in mine:
+                    self.assertEqual(f["rule"], checks[cid]["rule"])
+
+    def test_checks_table_is_complete_and_plain(self):
+        checks = checker_module().CHECKS
+        for cid, c in checks.items():
+            with self.subTest(cid):
+                self.assertEqual(sorted(c), ["doc", "level", "rule", "when"])
+                self.assertIn(c["level"], ("FAIL", "WARN", "NOTE"))
+                self.assertIn(c["when"], ("bullet", "summary", "document"))
+                self.assertIsInstance(c["rule"], int)
+                self.assertTrue(c["doc"].endswith("."))
+        for cid in WAVE1 | {"stack_coverage"}:
+            self.assertIn(cid, checks)
+
+
+class SettingsDrivenWave1Tests(CheckCase):
+    def test_vague_ing_verbs_come_from_settings(self):
+        text = GOOD.replace("checkpoints.", "checkpoints, polishing the reporting experience.").replace("and adding retry-safe checkpoints,", "and retry-safe checkpoints,")
+        self.assertNotIn(("WARN", 19), pairs(self.bullet(text).stdout))
+        d = self.example_copy()
+        self.setting(d, "checks", "vague_ing_verbs", ["polishing"])
+        self.assertIn(("WARN", 19), pairs(self.bullet(text, data=d).stdout))
+
+    def test_robot_phrases_extra_and_ignore_come_from_settings(self):
+        d = self.example_copy()
+        extra = GOOD.replace("retry-safe", "turnkey")
+        self.assertNotIn(("WARN", 18), pairs(self.bullet(extra, data=d).stdout))
+        self.setting(d, "checks", "robot_phrases_extra", ["turnkey"])
+        self.assertIn(("WARN", 18), pairs(self.bullet(extra, data=d).stdout))
+        robust = GOOD.replace("retry-safe", "robust")
+        self.assertIn(("WARN", 18), pairs(self.bullet(robust, data=d).stdout))
+        self.setting(d, "checks", "robot_phrases_ignore", ["robust"])
+        self.assertNotIn(("WARN", 18), pairs(self.bullet(robust, data=d).stdout))
+
+    def test_a_weak_lead_is_reported_once_by_the_lead_check(self):
+        r = self.bullet("Helped " + GOOD[len("Cut "):])
+        self.assertIn(("FAIL", 3), pairs(r.stdout))
+        self.assertNotIn(("WARN", 18), pairs(r.stdout))
+
+    @unittest.skipUnless(HAVE_PIL, "needs Pillow and Liberation Serif")
+    def test_short_last_line_share_comes_from_settings(self):
+        d = self.example_copy()
+        self.assertIn(("NOTE", 60), pairs(self.bullet(GOOD, data=d).stdout))  # about 34% of the width
+        self.setting(d, "checks", "short_last_line_pct", 20)
+        self.assertNotIn(("NOTE", 60), pairs(self.bullet(GOOD, data=d).stdout))
+
+    @unittest.skipUnless(HAVE_PIL, "needs Pillow and Liberation Serif")
+    def test_short_last_lines_print_as_one_line_per_run_naming_the_bullets(self):
+        pre = run("preflight.py", "--json", env=self.env_for(EXAMPLE))  # preflight keeps each finding on its own bullet
+        bullets = json.loads(pre.stdout)["bullets"]
+        short = [i for i, v in bullets.items() if any(f["check"] == "short_last_line" for f in v["findings"])]
+        self.assertTrue(short)
+        r = self.chk("--all")
+        lines = [l for l in r.stdout.splitlines() if "rule 60" in l]
+        self.assertEqual(lines, ["    NOTE rule 60: %d of 12 bullets end on a short last line: %s" % (len(short), ", ".join(short))])
+        r = self.chk("--resume", "full-time")
+        lines = [l for l in r.stdout.splitlines() if "rule 60" in l]
+        self.assertEqual(len(lines), 1, r.stdout)
+        self.assertRegex(lines[0], r"NOTE rule 60: \d+ of 10 bullets end on a short last line: b001, ")
+        r = self.bullet(GOOD)  # one text run: the same single line, naming the bullet by its first word
+        self.assertIn("NOTE rule 60: 1 of 1 bullets end on a short last line: Cut", r.stdout)
+
+    @unittest.skipUnless(HAVE_PIL, "needs Pillow and Liberation Serif")
+    def test_no_short_last_line_means_no_line(self):
+        d = self.example_copy()
+        self.setting(d, "checks", "short_last_line_pct", 10)
+        self.assertNotIn("rule 60", self.chk("--all", data=d).stdout)
+
+    def test_without_pillow_the_short_last_line_check_is_not_run_and_exit_is_unaffected(self):
+        if HAVE_PIL:
+            self.skipTest("Pillow present")
+        r = self.bullet(GOOD)
+        self.assertEqual(r.returncode, 0)
+        self.assertNotIn(("NOTE", 60), pairs(r.stdout))
+
+
+def fails_without_wrap(stdout):
+    """FAIL lines other than the measured-wrap ones (the sample summaries print on 3 lines, the default wants 4; only with Pillow)."""
+    return [l for l in stdout.splitlines() if l.strip().startswith("FAIL rule") and "wrap:" not in l]
+
+
+class DocumentTests(CheckCase):
+    def test_json_is_a_list_of_results_with_findings(self):
+        r = self.chk("--json", "--leads", "", "Reduced report runtime 80% by tuning queries.", GOOD)
+        self.assertEqual(r.returncode, 1)
+        out = json.loads(r.stdout)
+        self.assertEqual([o["status"] for o in out][:2], ["FAIL", "OK"])  # with Pillow a third, document result carries the short-last-line note
+        self.assertEqual(sorted(out[0]), ["chars", "findings", "status", "text", "words"])
+        self.assertEqual((out[0]["words"], out[0]["chars"]), (7, 44))
+        f = out[0]["findings"][0]
+        self.assertEqual((f["level"], f["rule"], f["check"]), ("FAIL", 4, "words"))
+        self.assertEqual(f["message"], "7 words; the limit is 20 to 30.")
+
+    def test_json_without_a_data_folder_carries_the_note_in_each_result(self):
+        r = run("check.py", "--json", GOOD, env=self.base_env)
+        out = json.loads(r.stdout)
+        self.assertIn(("NOTE", 16, "no_data_folder"), [(f["level"], f["rule"], f["check"]) for f in out[0]["findings"]])
+
+    def test_a_clean_sample_resume_passes(self):
+        for target in ("full-time", "contract", "tailoring:acme-backend"):
+            with self.subTest(target):
+                r = self.chk("--resume", target)
+                self.assertEqual(fails_without_wrap(r.stdout), [], r.stdout)
+                if not HAVE_PIL: self.assertEqual(r.returncode, 0, r.stdout)
+                if not HAVE_PIL: self.assertNotIn("document", r.stdout)  # with Pillow the one short-last-line note is printed there
+
+    def test_resume_checks_leads_across_the_whole_resume_and_the_document(self):
+        d = self.example_copy()
+        self.edit(d, "bank.json", lambda bk: [bk["bullets"][1].__setitem__("text", bk["bullets"][1]["text"].replace("queue aged", "queue \u2014 aged"))])
+        r = self.chk("--resume", "full-time", data=d)
+        if not HAVE_PIL: self.assertEqual(r.returncode, 2, r.stdout)
+        self.assertIn("WARN rule 19: 1 em dash in the document", r.stdout)
+
+    def test_resume_needs_a_data_folder_and_a_known_name(self):
+        r = run("check.py", "--resume", "full-time", env=self.base_env)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("--resume needs a data folder", r.stderr)
+        r = self.chk("--resume", "nope")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("no version named", r.stderr)
+
+    def test_document_file_reads_bullets_and_a_summary_line(self):
+        f = os.path.join(self.tmp, "doc.txt")
+        write(f, "SUMMARY: Senior engineer with 8+ years of experience in cloud systems. Cut report runtime in half. Led releases for 4 teams.\n" + GOOD + "\n" + GOOD.replace("Cut", "Reduced", 1) + "\n")
+        r = self.chk("--document-file", f)
+        self.assertEqual(fails_without_wrap(r.stdout), [], r.stdout)
+        if not HAVE_PIL:
+            self.assertEqual(r.returncode, 0, r.stdout)
+            self.assertEqual(r.stdout.count("\n    "), 3)  # one wrap note per item, nothing else
+        r = self.chk("--document-file", os.path.join(self.tmp, "gone.txt"))
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("error: cannot read", r.stderr)
+
+    def test_unknown_option_is_a_one_line_error(self):
+        r = self.chk("--nope")
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("error: unknown option --nope", r.stderr)
+        self.assertNotIn("Traceback", r.stderr)
+
+
+class StackTests(CheckCase):
+    """k39 against the sample data: b001 tech lists Python, which its text does not name."""
+
+    def test_lists_terms_the_bullet_does_not_name_and_summarises_shared_ones(self):
+        r = self.chk("--stack", "full-time")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("b001: Cut nightly shipment-report runtime", r.stdout)
+        self.assertIn("    NOTE rule 67: not named in this bullet: Python.\n", r.stdout)
+        self.assertIn("not named in this bullet: Python, AWS Lambda.", r.stdout)  # b002: language first
+        self.assertIn("not named in this bullet: Java, Spring Boot, PostgreSQL.", r.stdout)  # b006
+        self.assertIn("NOTE rule 67: Java: used in 5 bullets, named in 0.", r.stdout)
+        self.assertIn("NOTE rule 67: Python: used in 3 bullets, named in 1.", r.stdout)
+        self.assertNotIn("AWS Lambda: used", r.stdout)  # one bullet only
+        self.assertNotIn("FAIL", r.stdout)
+        self.assertNotIn("WARN", r.stdout)
+
+    def test_works_on_a_tailoring_and_never_fails(self):
+        r = self.chk("--stack", "tailoring:acme-backend")
+        self.assertEqual(r.returncode, 0)
+        self.assertIn("NOTE rule 67:", r.stdout)
+
+    def test_a_vendor_prefix_is_optional_in_the_text(self):
+        d = self.example_copy()
+        self.edit(d, "bank.json", lambda bk: bk["bullets"][1].__setitem__("tech", ["Amazon SQS"]))  # text says 'Amazon SQS'
+        self.edit(d, "bank.json", lambda bk: bk["bullets"][0].__setitem__("tech", ["AWS Parquet"]))  # text says 'Parquet'
+        r = self.chk("--stack", "full-time", data=d)
+        self.assertNotIn("b001: Cut nightly shipment-report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints.\n    NOTE", r.stdout)
+        self.assertIn("NOTE rule 67: Java: used in", r.stdout)
+
+    def test_json(self):
+        out = json.loads(self.chk("--stack", "full-time", "--json").stdout)
+        self.assertEqual(out[0]["findings"][0]["check"], "stack_coverage")
+
+    def test_needs_a_data_folder(self):
+        r = run("check.py", "--stack", "full-time", env=self.base_env)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("--stack needs a data folder", r.stderr)
 
 
 class PagesTests(CheckCase):

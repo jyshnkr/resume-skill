@@ -8,10 +8,10 @@
   "rate": null,
   "recruiter": null,
   "sent_on": null,
-  "summary": "Senior Backend Engineer with 8+ years of experience in logistics and payments platforms. Cut nightly report runtime from 6 hours to 40 minutes at Harbor Logistics and launched a refunds service at Brightwave Payments. Led 3 engineers through a zero-downtime JDK 17 upgrade and raised unit coverage on a checkout API.",
+  "summary": "Senior Backend Engineer with 8+ years of experience in logistics and payments platforms. Cut nightly report runtime from 6 hours to 40 minutes at Harbor Logistics and launched a refunds service at Brightwave Payments. Led 3 engineers through a zero-downtime JDK 17 upgrade, raised unit coverage on a checkout API and migrated stored card tokens to a new vault.",
   "roles": [
     {
-      "title": "Senior Backend Engineer",
+      "title": "Senior Backend Engineer, Harbor Logistics",
       "location": "Austin, TX",
       "dates": "Jan 2022 – Present",
       "sub": "",
@@ -44,7 +44,7 @@
       ]
     },
     {
-      "title": "Software Engineer",
+      "title": "Software Engineer, Brightwave Payments",
       "location": "Remote",
       "dates": "Jun 2018 – Dec 2021",
       "sub": "Payments platform for small businesses",

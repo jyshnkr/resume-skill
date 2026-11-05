@@ -112,7 +112,7 @@ class ReadBackTests(TmpCase):
         paras = docx_paragraphs(doc)
         n_bullets = sum(1 for l in self.text_lines("full-time") if l.startswith("* "))
         self.assertEqual(sum('<w:pStyle w:val="B"/>' in x for _, x in paras), n_bullets)
-        titles = [x for t, x in paras if t.startswith(("Senior Backend Engineer \u2013", "Software Engineer \u2013"))]
+        titles = [x for t, x in paras if t.startswith(("Senior Backend Engineer, Harbor Logistics \u2013", "Software Engineer, Brightwave Payments \u2013"))]
         self.assertEqual(len(titles), 2)
         self.assertTrue(all("<w:keepNext/>" in x for x in titles))
 

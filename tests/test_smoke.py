@@ -32,7 +32,8 @@ class SmokeRunTests(TmpCase):
         r = run("fit_score.py", rows_path, "--slug", "acme-backend", "--write", "--json", env=env)
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         res = json.loads(r.stdout)
-        self.assertIn(res["score"], (4, 5))
+        # hand-worked: required (2 met + 0.5 x 1 partly) / 3 = 83.33; preferred 1 met of 2 = 50; 0.7 x 83.33 + 0.3 x 50 = 73.33 -> score 3
+        self.assertEqual((res["score"], res["pct"]), (3, 73.33))
         self.assertTrue(os.path.isfile(os.path.join(data, "out", "acme-backend", "fit.json")))
         self.assertTrue(os.path.isfile(os.path.join(data, "out", "acme-backend", "fit.html")))
         outdir = os.path.join(self.tmp, "resumes")
