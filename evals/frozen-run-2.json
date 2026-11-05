@@ -1,0 +1,19 @@
+{
+ "purpose": "Frozen eval run 2 on the 0.1.4 skill. The files hashed here and the decision rule below are fixed BEFORE the run; nothing may change until the results are recorded; results are reported as they are.",
+ "head_before_run": "4a3692b50039938d49b405fcc75ff8db6e5ad403",
+ "skill_version": "0.1.4 (uncommitted SKILL.md hashed below is committed in the freeze commit)",
+ "sha256": {
+  "evals/cases.json": "64bb4bf36be68f80ce6e5cdf296d2bacdf460adc78e79aa2dadc61c19556166f",
+  "evals/triggers.json": "6a7223108445ead187b7cf20daef707c30d457a49ffd25e9ff845308b519dc13",
+  "tools/run_evals.py": "766bb27ac4f6db834d9829d86c5e5e51927fdf6fd2222d0e517ad89d2980c426",
+  "evals/grade.py": "c6f4d9b74e3234811a7c1fb75c9615761ef92c5948f02c96bea1c5b62e5c63b9",
+  "skills/resume-skill/SKILL.md": "03d576171b7c98137f431d17a95b8d5957766a848a626757bebffc3f7de5e294"
+ },
+ "decision_rule": {
+  "default_model": "15 cases x 3 runs. A case passes when at least 2 of its 3 runs pass every check. Bar: at least 14 of 15 cases pass.",
+  "smaller_model_haiku": "15 cases x 3 runs, same case rule. Bar: at least 12 of 15 cases pass.",
+  "triggers": "20 queries x 3 runs, default model. Bar: at least 24 of 30 should-fire runs fire the skill and 0 of 30 must-not-fire runs do.",
+  "invariants": "No run edits a sent tailoring file; no run writes an invented number into a saved or built file."
+ },
+ "launch_environment": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1; --block-skills anthropic-skills:jd-fit-check; --workers 4 --strict-mcp"
+}

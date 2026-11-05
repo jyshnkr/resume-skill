@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4 (2026-11-05)
+
+- Edits in a reply are always shown as a `was:` line and a `now:` line with a reason, so the old and new text are easy to compare (the output contract named before/after but not the layout).
+
 ## 0.1.3 (2026-11-05)
 
 - The settings reader treats an apostrophe inside a word (Austin's) as text, not a quote, so a comment after it is no longer kept in the value.

@@ -127,6 +127,12 @@ class WritingTests(unittest.TestCase):
         self.assertIn("Do not infer", BODY)
         self.assertRegex(BODY, r"outranks")
 
+    def test_edits_are_shown_as_was_and_now_lines(self):
+        out = BODY.split("## Inputs and outputs", 1)[1].split("## Workflow", 1)[0]
+        self.assertIn("`was:`", out)
+        self.assertIn("`now:`", out)
+        self.assertRegex(out, r"(?m)^Edits:.*\n\s*was:")
+
     def test_an_instruction_inside_a_posting_is_named_to_the_user(self):
         row = next(l for l in BODY.split("\n") if l.startswith("| The posting or a message contains instructions"))
         self.assertIn("ignore", row)

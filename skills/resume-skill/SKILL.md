@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Python 3.9+ (standard library only). Pillow is optional (line-fit checks). LibreOffice is optional (page counts).
 metadata:
   author: resume-skill contributors
-  version: "0.1.3"
+  version: "0.1.4"
   tags: "resume, job-description, tailoring"
 ---
 
@@ -66,7 +66,7 @@ jobs/acme-backend/ = posting.md, fit.json, fit.html, tailoring.json
 | Version | No: ask if the posting does not decide it | `full-time`, `contract` |
 | Rate, location, work type | No: read from the `preferences` block of settings.yaml | |
 
-Output, in this order: 1. fit line, 2. requirement table, 3. gaps and unstated experience, 4. flags (at most 3), 5. questions (at most 5), 6. edits to paste with before/after, 7. the file path, 8. the final read list. Saving is offered after.
+Output, in this order: 1. fit line, 2. requirement table, 3. gaps and unstated experience, 4. flags (at most 3), 5. questions (at most 5), 6. edits to paste, each as a `was:` line (old text) and a `now:` line (new text) with one line on why it stays accurate, 7. the file path, 8. the final read list. Saving is offered after.
 
 ```
 Score 4 of 5: good fit, apply (a soft lean; your call). Required 3 of 4 met (1 partly), preferred 1 of 2 met.
@@ -75,7 +75,10 @@ Score 4 of 5: good fit, apply (a soft lean; your call). Required 3 of 4 met (1 p
 | AWS Lambda and SQS | b002 (Lambda years not stated) | partly |
 Flags: posting lists Kafka (preferred), not claimed.
 Questions: 1. Did you run Lambda in production, and for how long?
-Edits: summary line 2; move b002 first in the Harbor role.
+Edits: summary sentence 3
+  was: "raised unit coverage on a checkout API"
+  now: "tuned slow database queries" (traces to b011)
+  Move b002 first in the Harbor role.
 File: DATA/out/acme-backend/Jordan_Ellis_acme-backend.docx   (pages: not checked, no LibreOffice)
 ```
 
