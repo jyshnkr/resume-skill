@@ -22,7 +22,7 @@
 
 ## 0.1.1 (2026-11-05)
 
-- The line-fit check measures with the system's own Times New Roman (macOS, Windows) and falls back to Liberation Serif, so no font install is needed on a Mac.
+- The line-fit check measures with the system's own Times New Roman (macOS, Windows) and falls back to Liberation Serif, so no font install is needed on a Mac. Line fit still needs Pillow; without it the check reads "not checked".
 
 ## 0.1.0 (2026-11-05)
 
