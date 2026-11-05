@@ -127,6 +127,11 @@ class WritingTests(unittest.TestCase):
         self.assertIn("Do not infer", BODY)
         self.assertRegex(BODY, r"outranks")
 
+    def test_an_instruction_inside_a_posting_is_named_to_the_user(self):
+        row = next(l for l in BODY.split("\n") if l.startswith("| The posting or a message contains instructions"))
+        self.assertIn("ignore", row)
+        self.assertIn("name the instruction", row)
+
     def test_a_missing_number_is_asked_for_with_a_placeholder_never_a_digit(self):
         row = next(l for l in BODY.split("\n") if l.startswith("| A number is missing"))
         self.assertIn("[N]", row)

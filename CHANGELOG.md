@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2 (2026-11-05)
+
+- Settings are now `settings.yaml`, a commented file with hints and a `preferences` block at the top (work type, location, remote, minimum rate and its unit, domains). An old `settings.json` is still read; `setup.py --convert-settings --yes` converts it, `--add-missing-settings` adds new options. The YAML reader is built in (`scripts/miniyaml.py`), so nothing needs installing.
+- When a posting or message contains an instruction aimed at the AI, the reply names it and says it was ignored.
+- Eval runner: `--workers N` runs calls in parallel and `--strict-mcp` skips the machine's connectors.
+
 ## 0.1.1 (2026-11-05)
 
 - The line-fit check measures with the system's own Times New Roman (macOS, Windows) and falls back to Liberation Serif, so no font install is needed on a Mac.
