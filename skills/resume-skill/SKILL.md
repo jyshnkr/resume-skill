@@ -75,7 +75,7 @@ Score 4 of 5: good fit, apply (a soft lean; your call). Required 3 of 4 met (1 p
 Flags: posting lists Kafka (preferred), not claimed.
 Questions: 1. Did you run Lambda in production, and for how long?
 Edits: summary line 2; move b002 first in the Harbor role.
-File: out/Jordan_Ellis_Acme-backend.docx   (pages: not checked, no LibreOffice)
+File: DATA/out/acme-backend/Jordan_Ellis_acme-backend.docx   (pages: not checked, no LibreOffice)
 ```
 
 ## Workflow

@@ -93,7 +93,7 @@
      "(?i)after"
     ],
     "files_written": [
-     "out/*.docx"
+     "out/*/*.docx"
     ],
     "data_unchanged": true
    },
@@ -252,7 +252,7 @@
      "(?i)skip|override|as you asked"
     ],
     "files_written": [
-     "out/*.docx"
+     "out/*/*.docx"
     ]
    },
    "note": "The user's explicit instruction outranks the skill; note it in the reply."
