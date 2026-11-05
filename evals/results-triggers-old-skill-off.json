@@ -1,0 +1,115 @@
+{
+ "note": "Default model, 3 runs per query, old jd-fit-check switched OFF through skillOverrides (not listed in the session). All other installed skills present.",
+ "should_fire_runs_fired": 26,
+ "should_fire_runs": 30,
+ "must_not_fire_runs_fired": 0,
+ "must_not_fire_runs": 30,
+ "per_query": {
+  "n01": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "n02": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {
+    "inbox-triage": 3
+   }
+  },
+  "n03": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {
+    "worklogger-kg": 3
+   }
+  },
+  "n04": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "n05": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "n06": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "n07": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "n08": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "n09": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "n10": {
+   "expect_fire": false,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "t01": {
+   "expect_fire": true,
+   "fired": 3,
+   "other_skills": {}
+  },
+  "t02": {
+   "expect_fire": true,
+   "fired": 3,
+   "other_skills": {}
+  },
+  "t03": {
+   "expect_fire": true,
+   "fired": 3,
+   "other_skills": {}
+  },
+  "t04": {
+   "expect_fire": true,
+   "fired": 3,
+   "other_skills": {}
+  },
+  "t05": {
+   "expect_fire": true,
+   "fired": 3,
+   "other_skills": {}
+  },
+  "t06": {
+   "expect_fire": true,
+   "fired": 3,
+   "other_skills": {}
+  },
+  "t07": {
+   "expect_fire": true,
+   "fired": 3,
+   "other_skills": {}
+  },
+  "t08": {
+   "expect_fire": true,
+   "fired": 2,
+   "other_skills": {}
+  },
+  "t09": {
+   "expect_fire": true,
+   "fired": 0,
+   "other_skills": {}
+  },
+  "t10": {
+   "expect_fire": true,
+   "fired": 3,
+   "other_skills": {}
+  }
+ },
+ "misses": "t09 (0/3) starts with 'use the contract version for this one too', which assumes an earlier turn a cold run does not have; t08 fired 2 of 3.",
+ "finding": "With the old skill out of the list the skill fires on 87% of should-fire runs and never on a near-miss. With it present the same queries fired 4 of 30 (it won the routing)."
+}
