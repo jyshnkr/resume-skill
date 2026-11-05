@@ -39,6 +39,12 @@ class LeakScanTests(TmpCase):
         self.assertNotIn("Quentin", r.stdout)
         self.assertNotIn("ZephyrCorp", r.stdout)
 
+    def test_the_license_holder_line_is_not_a_leak(self):
+        d = self.repo("A generic skill for resumes.\n")
+        write(os.path.join(d, "LICENSE"), "MIT License\n\nCopyright (c) 2026 Quentin Marlowe\n")
+        r = scan("--from", self.source(), "--root", d)
+        self.assertEqual(r.returncode, 0, r.stdout)
+
     def test_product_words_in_roles_are_not_employer_hits(self):
         r = scan("--from", self.source(), "--root", self.repo("Examples use Amazon SQS.\n"))
         self.assertEqual(r.returncode, 0, r.stdout)

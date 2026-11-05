@@ -1,5 +1,5 @@
 {
   "name": "resume-skill",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Fit-check a job posting against saved resume data, then build a tailored .docx from approved bullets only."
 }

@@ -110,6 +110,8 @@ def scan(root, sources, min_run=6):
             continue
         rel = os.path.relpath(f, root)
         for i, line in enumerate(lines, 1):
+            if rel == "LICENSE" and line.startswith("Copyright (c)"):
+                continue  # the licence names the author: the one personal fact this repo is allowed to carry
             for kind, rx in compiled:
                 m = rx.search(line)
                 if m:

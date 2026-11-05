@@ -242,7 +242,7 @@ class ShippingTests(unittest.TestCase):
         text = read(os.path.join(ROOT, "LICENSE"))
         self.assertTrue(text.startswith("MIT License"))
         self.assertIn("Permission is hereby granted, free of charge", text)
-        self.assertNotRegex(text, r"Copyright \(c\) \d{4} [A-Z][a-z]+ [A-Z][a-z]+", "the holder is the generic 'resume-skill contributors'")
+        self.assertRegex(text, r"Copyright \(c\) 20\d\d \S.+", "the licence names a copyright holder (the author's name is the one allowed personal fact in this repo)")
 
 
 class UserDataTests(TmpCase):

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.7 (2026-11-05)
+
+- Ready for a public repository: a fuller README (how a run goes, install, evidence and limits, contributing), and the MIT licence now names the author. The leak scan skips only that one copyright line; every other file is still scanned. All 38 earlier commits were scanned against the author's private data with 0 hits.
+
 ## 0.1.6 (2026-11-05)
 
 - Draft bullet options can be kept in the bank with `"status": "candidate"`. A candidate is never offered in a swap, never placed in a version or tailoring (validate.py reports it as an error if it is), and not counted in "N of M need attention". Pre-flight checks candidates and reports them on a separate line (`out/preflight.json` keys `candidates` and `candidates_summary`); `check.py --all` skips them.
