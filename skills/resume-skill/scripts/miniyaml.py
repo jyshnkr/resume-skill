@@ -38,6 +38,9 @@ def _strip_comment(s):
         if in_d and ch == "\\":
             i += 2
             continue
+        if in_s and ch == "'" and s[i + 1:i + 2] == "'":  # '' inside single quotes is an escaped quote, not the end
+            i += 2
+            continue
         if ch == "'" and (in_s or _opens(s, i, in_s, in_d)):
             in_s = not in_s
         elif ch == '"' and (in_d or _opens(s, i, in_s, in_d)):
@@ -78,6 +81,10 @@ def _split_top(s, sep=","):
             cur += s[i:i + 2]
             i += 2
             continue
+        if in_s and ch == "'" and s[i + 1:i + 2] == "'":  # escaped quote inside single quotes
+            cur += "''"
+            i += 2
+            continue
         if ch == "'" and (in_s or _opens(s, i, in_s, in_d)):
             in_s = not in_s
         elif ch == '"' and (in_d or _opens(s, i, in_s, in_d)):
@@ -106,6 +113,9 @@ def _find_colon(s):
     while i < len(s):
         ch = s[i]
         if in_d and ch == "\\":
+            i += 2
+            continue
+        if in_s and ch == "'" and s[i + 1:i + 2] == "'":  # escaped quote inside single quotes
             i += 2
             continue
         if ch == "'" and (in_s or _opens(s, i, in_s, in_d)):

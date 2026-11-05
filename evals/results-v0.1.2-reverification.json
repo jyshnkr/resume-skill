@@ -37,6 +37,10 @@
    "e14": [
     "matches (?i)skip|override|as you asked"
    ]
+  },
+  "reading": {
+   "e14": "built the contract resume without the fit table as asked, but did not say that it was skipping the table at his request (the check wants a mention)",
+   "e13": "never loaded the skill"
   }
  },
  "future": "Phrase-matching checks are brittle in both directions (e05 passes 3 of 5 on repeat). Use a model-graded check for edit display and question-asking cases next time."

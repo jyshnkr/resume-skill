@@ -71,8 +71,8 @@
    }
   },
   "invariants": {
-   "data_folder_changed_when_it_must_not": "none in 90 case runs",
-   "edit_or_write_of_a_tailoring_file_in_the_sent_copy_case": "none",
+   "data_folder_changed_when_it_must_not": "none in the 36 runs where the unchanged-data check applies (6 cases x 3 repeats x 2 models); the other case runs carry no such check",
+   "edit_or_write_of_a_tailoring_file_in_the_sent_copy_case": "none to the sent file. One smaller-model run (e08, repeat 2) wrote a NEW copy, out/acme-backend-tc/tailoring.json, in the derived out/ folder; the sent tailoring was untouched",
    "old_skill_listed_in_any_run": false
   },
   "thresholds_met_by_the_pre_registered_rule": {
@@ -84,7 +84,7 @@
   "check_defect_found_after_the_run": {
    "case": "e05",
    "what": "the regex ends in \\b after 'was:', which cannot match 'was: \"...\"' (a colon followed by a space is not a word boundary). All 3 default-model e05 outputs show the new was:/now: layout, so the behaviour was right in 3 of 3; the frozen rule counted 1 of 3.",
-   "regrade_of_the_same_3_outputs_with_the_regex_corrected": "3 of 3 (the other checks of e05 had passed in those runs); the corrected regex is committed after this record and was not used for the numbers above"
+   "regrade_of_the_same_3_outputs_with_the_regex_corrected": "3 of 3 (the other checks of e05 had passed in those runs); the corrected regex was committed in the same commit as this record, after the last run had finished, and was not used for the numbers above"
   }
  }
 }

@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Python 3.9+ (standard library only). Pillow is optional (line-fit checks). LibreOffice is optional (page counts).
 metadata:
   author: resume-skill contributors
-  version: "0.1.4"
+  version: "0.1.5"
   tags: "resume, job-description, tailoring"
 ---
 
@@ -89,7 +89,7 @@ File: DATA/out/acme-backend/Jordan_Ellis_acme-backend.docx   (pages: not checked
 - [ ] 3. Read `profile.md` (claim boundaries, do-not-claim), `settings.yaml`, the version files and the bank, then `references/rules-1.md`, `rules-2.md`, `rules-3.md`.
 - [ ] 4. Read the posting and pick the version (`references/workflow.md`). Several postings: one short table (posting, lean, version) and the user picks.
 - [ ] 5. Fit: fill requirement rows and run `scripts/fit_score.py` (`references/fit.md`).
-- [ ] 6. Edits and checks: draft from the bank only, run `scripts/check.py` on every bullet and summary (`references/tailoring.md`). Show before/after and why each stays accurate.
+- [ ] 6. Edits and checks: draft from the bank only, run `scripts/check.py` on every bullet and summary (`references/tailoring.md`). Show each edit as `was:` and `now:` lines and why it stays accurate.
 - [ ] 7. Build: `python3 scripts/export.py file:DATA/out/SLUG/tailoring.json DATA/out/SLUG --label SLUG`, where DATA is the path `where.py` printed. Do not go to step 8 until the build ran.
 - [ ] 8. Reply in the output order, then the final read list (`references/final-read.md`).
 - [ ] 9. After the user's OK, save with `scripts/save.py` (`references/save.md`).
@@ -127,7 +127,7 @@ Each is one level deep. Open it only when its line applies.
 RUN these; do not reimplement them and do not read them unless one fails. Scripts never prompt: pass flags and read the output. Add `--help` to any of them.
 
 - `python3 scripts/where.py`: data folder path and source (always first).
-- `python3 scripts/setup.py --data PATH --yes`: create a data folder (only when none exists and the user chose where). `--dry-run` shows the plan.
+- `python3 scripts/setup.py --data PATH --yes`: create a data folder (only when none exists and the user chose where). `--dry-run` shows the plan. A folder that still has the old `settings.json`: add `--convert-settings` (it writes `settings.yaml` with hints and keeps every value).
 - `python3 scripts/validate.py`: check the data folder; run before saving.
 - `python3 scripts/preflight.py --if-stale`: check every bank bullet once; silent when unchanged.
 - `python3 scripts/check.py "bullet text"`: check one bullet (`--leads "Cut Ended"` for the other leads in the version, `--summary` for a summary, `--stack VERSION` for stack coverage, `--json`).

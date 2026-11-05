@@ -503,7 +503,8 @@ class DocsSayYaml(unittest.TestCase):
     def test_skill_md_and_workflow_point_to_the_preferences_block_of_settings_yaml(self):
         skill = read(SKILL, "SKILL.md")
         self.assertIn("settings.yaml", skill)
-        self.assertNotIn("settings.json", skill)
+        # the old file is named once, on purpose, where the skill explains --convert-settings; SKILL.md never tells anyone to read or edit it
+        self.assertNotIn("settings.json", skill.replace("the old `settings.json`", ""))
         self.assertIn("`preferences` block of settings.yaml", read(SKILL, "references", "workflow.md") + skill)
 
 

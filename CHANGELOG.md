@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.5 (2026-11-05)
+
+- Fixed a settings-reader regression from 0.1.3: single-quoted text containing a doubled quote ('it''s, ok'), which is how the writer saves a value with an apostrophe, no longer breaks when a comma, colon or # follows. 20,000 random write-and-read round trips pass, and a smaller seeded version is part of the tests.
+- SKILL.md step 6 and the output contract agree on `was:`/`now:` edit lines; the Scripts list names `--convert-settings`.
+
 ## 0.1.4 (2026-11-05)
 
 - Edits in a reply are always shown as a `was:` line and a `now:` line with a reason, so the old and new text are easy to compare (the output contract named before/after but not the layout).

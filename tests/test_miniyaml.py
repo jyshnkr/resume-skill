@@ -44,6 +44,24 @@ class ApostropheTests(unittest.TestCase):
         self.assertEqual(y.loads("note: it's: fine # c\n"), {"note": "it's: fine"})
 
 
+class DoubledQuoteTests(unittest.TestCase):
+    """'' inside single quotes is an escaped quote (what the writer produces for a value with an apostrophe): it must not end the text."""
+
+    def test_doubled_quote_then_hash_comment_colon_or_comma(self):
+        self.assertEqual(y.loads("x: 'it''s # here' # c\n"), {"x": "it's # here"})
+        self.assertEqual(y.loads("x: ['it''s, ok', d]\n"), {"x": ["it's, ok", "d"]})
+        self.assertEqual(y.loads("'a''b: c': 1\n"), {"a'b: c": 1})
+        self.assertEqual(y.loads("x: 'pat''s\\d+ # x' # c\n"), {"x": "pat's\\d+ # x"})
+        self.assertEqual(y.loads("x: ['don''t, won''t', z]\n"), {"x": ["don't, won't", "z"]})
+
+    def test_what_the_writer_produces_for_apostrophes_reads_back(self):
+        obj = {"k": "it's, a # b", "l": ["it's, x", "y", "O'Brien: here"], "m": {"d'e": "f'g: h"}, "n": "St. John's # not a comment"}
+        self.assertEqual(y.loads(y.dumps(obj)), obj)
+
+    def test_plain_apostrophes_still_work(self):
+        self.assertEqual(y.loads("a: Austin's Finest # c\nb: [it's, fine]\n"), {"a": "Austin's Finest", "b": ["it's", "fine"]})
+
+
 class StructureTests(unittest.TestCase):
     def test_nested_mappings_with_string_keys(self):
         d = y.loads("fit:\n  weights:\n    required: 70\n    preferred: 30\n  legend:\n    5: 90\n    4: 75\n")
@@ -92,6 +110,30 @@ class WriterTests(unittest.TestCase):
 
     def test_key_order_is_kept(self):
         self.assertEqual(list(y.loads(y.dumps({"z": 1, "a": 2, "m": 3}))), ["z", "a", "m"])
+
+
+class FuzzTests(unittest.TestCase):
+    """Random awkward text (quotes, hashes, colons, commas, brackets, backslashes) must survive write-then-read. Seeded, so it is repeatable."""
+
+    def test_random_strings_round_trip(self):
+        import random
+        rnd = random.Random(7)
+        alpha = list("ab Z0-_./()+'\"#:,[]{}\\ \t!?*&|>%@`~=<") + ["it's", " # ", ": ", "''", "\\d"]
+        rs = lambda: "".join(rnd.choice(alpha) for _ in range(rnd.choice([0, 1, 2, 3, 5, 8, 12])))
+        for _ in range(1500):
+            obj = {"s": rs(), "l": [rs() for _ in range(rnd.randint(0, 3))], "m": {"in": rs(), "n": rnd.choice([None, True, False, 3, 2.5, "5", "null"])},
+                   "x": [{"a": rs(), "b": rs()}], "key_" + str(rnd.randint(0, 9)): rs()}
+            self.assertEqual(y.loads(y.dumps(obj)), obj, obj)
+
+    def test_random_keys_round_trip(self):
+        import random
+        rnd = random.Random(11)
+        alpha = list("ab Z0-_./()'\"#:,[]") + ["it's"]
+        for _ in range(800):
+            key = "".join(rnd.choice(alpha) for _ in range(rnd.randint(1, 8)))
+            if key != key.strip():
+                continue
+            self.assertEqual(y.loads(y.dumps({key: 1})), {key: 1}, key)
 
 
 class ShippedDefaultsTests(unittest.TestCase):
