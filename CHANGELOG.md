@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.1 (2026-11-05)
+
+- The line-fit check measures with the system's own Times New Roman (macOS, Windows) and falls back to Liberation Serif, so no font install is needed on a Mac.
+- Missing numbers are asked for with a placeholder ([N]), never a digit, in any draft.
+- Eval runner can switch a competing skill off for a fair measure; eval results are recorded in `evals/results-*.json`.
+
 ## 0.1.0 (2026-11-05)
 
 First local build.
