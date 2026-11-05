@@ -40,12 +40,12 @@
   {
    "id": "t08",
    "kind": "contextual",
-   "query": "We just finished the Acme fit check with my full-time resume. Now do the second posting the same way: Platform Engineer, Orbit Cloud, Kubernetes and Go required."
+   "query": "Earlier in this chat you fit-checked the Acme Freight posting against my full-time resume. Do the second posting the same way: Platform Engineer, Orbit Cloud, Kubernetes and Go required."
   },
   {
    "id": "t09",
    "kind": "contextual",
-   "query": "Use the contract version for this one too: Backend Engineer, 6-month contract at Acme Freight, Java 11+, AWS Lambda and Amazon SQS, $70 an hour, remote."
+   "query": "Earlier in this chat we used my full-time version for the Acme posting. For this one use my contract version: Backend Engineer, 6-month contract at Acme Freight, Java 11+, AWS Lambda and Amazon SQS, $70 an hour, remote."
   },
   {
    "id": "t10",

@@ -119,6 +119,32 @@ class InitSkillListTests(unittest.TestCase):
         self.assertFalse(self.f(json.dumps({"type": "result", "result": "x"}), "resume-skill"))
 
 
+class EngagedTests(unittest.TestCase):
+    """A run engaged the skill when it called the Skill tool OR read its SKILL.md / ran its scripts directly."""
+
+    def setUp(self):
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import run_evals
+        self.f = run_evals.skill_engaged
+
+    def line(self, name, **inp):
+        return json.dumps({"type": "assistant", "message": {"content": [{"type": "tool_use", "name": name, "input": inp}]}})
+
+    def test_skill_tool_call_counts(self):
+        self.assertTrue(self.f(self.line("Skill", skill="resume-skill"), "resume-skill"))
+
+    def test_reading_skill_md_counts(self):
+        self.assertTrue(self.f(self.line("Bash", command="cd ~/.agents/skills/resume-skill && cat SKILL.md"), "resume-skill"))
+        self.assertTrue(self.f(self.line("Read", file_path="/x/.claude/skills/resume-skill/SKILL.md"), "resume-skill"))
+
+    def test_running_its_scripts_counts(self):
+        self.assertTrue(self.f(self.line("Bash", command="python3 /x/resume-skill/scripts/where.py"), "resume-skill"))
+
+    def test_other_tool_calls_do_not(self):
+        self.assertFalse(self.f(self.line("Bash", command="ls -la"), "resume-skill"))
+        self.assertFalse(self.f(self.line("Skill", skill="pdf"), "resume-skill"))
+
+
 class RunnerPlanTests(unittest.TestCase):
     def test_without_yes_it_prints_the_plan_and_runs_nothing(self):
         r = sh(RUNNER, "--cases", "e01,e02")

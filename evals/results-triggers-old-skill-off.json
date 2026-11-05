@@ -111,5 +111,11 @@
   }
  },
  "misses": "t09 (0/3) starts with 'use the contract version for this one too', which assumes an earlier turn a cold run does not have; t08 fired 2 of 3.",
- "finding": "With the old skill out of the list the skill fires on 87% of should-fire runs and never on a near-miss. With it present the same queries fired 4 of 30 (it won the routing)."
+ "finding": "With the old skill out of the list the skill fires on 87% of should-fire runs and never on a near-miss. With it present the same queries fired 4 of 30 (it won the routing).",
+ "revised_follow_up_queries": {
+  "note": "t08 and t09 were follow-ups that assume an earlier turn. After the first run they were rewritten to carry that context in the text (a change made after seeing their results) and re-run 3 times each with the old skill off.",
+  "t08": "3 of 3 fired",
+  "t09": "2 of 3 fired (the model sometimes finds the skill folder and reads SKILL.md instead of calling the Skill tool; the runner now also records engaged = read SKILL.md or ran its scripts)",
+  "should_fire_total_with_revised_queries": "29 of 30 (26 of 30 with the original wording)"
+ }
 }

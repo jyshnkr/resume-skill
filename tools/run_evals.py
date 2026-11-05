@@ -36,6 +36,26 @@ def skills_called(stream):
     return out
 
 
+def skill_engaged(stream, name):
+    """True when the run called the Skill tool for `name`, or read its SKILL.md or ran its scripts through other tools."""
+    for line in stream.splitlines():
+        try:
+            o = json.loads(line)
+        except ValueError:
+            continue
+        m = o.get("message")
+        for c in (m.get("content") if isinstance(m, dict) and isinstance(m.get("content"), list) else []):
+            if isinstance(c, dict) and c.get("type") == "tool_use":
+                inp = c.get("input") or {}
+                if c.get("name") == "Skill" and name in str(inp.get("skill", "")):
+                    return True
+                text = json.dumps(inp)
+                if c.get("name") != "Skill" and (f"{name}/SKILL.md" in text or f"{name}/scripts/" in text
+                                                 or (f"skills/{name}" in text and ("SKILL.md" in text or "scripts/" in text))):
+                    return True
+    return False
+
+
 def init_lists_skill(stream, name):
     """True when the session's init event lists a skill or command with this name (used to prove a baseline run had no skill)."""
     for line in stream.splitlines():
@@ -133,9 +153,11 @@ def main(a):
                     if baseline and init_lists_skill(stream, "resume-skill"):
                         print("error: a baseline run had resume-skill loaded; the comparison would be invalid", file=sys.stderr)
                         return 1
+                    with open(os.path.join(out, f"{q['id']}-{i + 1}.stream.jsonl"), "w", encoding="utf-8") as sf:
+                        sf.write(stream)  # kept so a miss can be read, not guessed
                     called = skills_called(stream)
                     fired = any("resume-skill" in c for c in called)
-                    summary.append({"id": q["id"], "run": i + 1, "expect_fire": expect, "fired": fired, "skill_loaded": init_lists_skill(stream, "resume-skill"), "skills": called, "pass": fired == expect})
+                    summary.append({"id": q["id"], "run": i + 1, "expect_fire": expect, "fired": fired, "engaged": skill_engaged(stream, "resume-skill"), "skill_loaded": init_lists_skill(stream, "resume-skill"), "skills": called, "pass": fired == expect})
                     shutil.rmtree(scratch, ignore_errors=True)
     else:
         for c in cases:
