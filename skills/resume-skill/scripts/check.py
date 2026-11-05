@@ -328,10 +328,11 @@ def lead_of(text):
     return re.sub(r"\W", "", text.split()[0]).lower() if text.split() else ""
 
 
-def all_bullets(ctx):
-    """Expand --all into one (bank row, version, leads) per bank bullet: leads are the other bullets of the first version that holds it."""
+def all_bullets(ctx, candidates=False):
+    """Expand --all into one (bank row, version, leads) per bank bullet: leads are the other bullets of the first version that holds it.
+    Draft candidate rows (status "candidate") are left out unless candidates=True; preflight.py asks for them and reports them apart."""
     need_root(ctx, "--all")
-    bank = rd.load("bank.json", ctx["root"])["bullets"]
+    bank = [b for b in rd.load("bank.json", ctx["root"])["bullets"] if candidates or b.get("status", "approved") != "candidate"]
     versions = rd.version_names(ctx["root"])
     for b in bank:
         v = next((n for n in versions if b["marks"].get(n, {}).get("in")), None)

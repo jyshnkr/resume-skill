@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires Python 3.9+ (standard library only). Pillow is optional (line-fit checks). LibreOffice is optional (page counts).
 metadata:
   author: resume-skill contributors
-  version: "0.1.5"
+  version: "0.1.6"
   tags: "resume, job-description, tailoring"
 ---
 
@@ -50,7 +50,7 @@ Turns one job posting into a fit decision plus the resume for it: a 1-5 fit scor
 
 ## Words used here
 
-- **bank**: the approved bullets (`bank.json`), each with an id like `b012`. **version**: a base resume such as `full-time` or `contract` (`versions/full-time.json`). **tailoring**: a version changed for one posting, kept with its full text in `jobs/<slug>/tailoring.json` (for example `acme-backend`).
+- **bank**: the approved bullets (`bank.json`), each with an id like `b012`. **version**: a base resume such as `full-time` or `contract` (`versions/full-time.json`). **tailoring**: a version changed for one posting, kept with its full text in `jobs/<slug>/tailoring.json` (for example `acme-backend`). A bank row with `"status": "candidate"` is a draft waiting for the user's pick: it is checked but never counts as approved.
 
 ```
 b012  harbor  Supported the move of nightly reporting jobs to AWS Glue by pairing with the data team ...   (needs_metric)

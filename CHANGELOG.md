@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.6 (2026-11-05)
+
+- Draft bullet options can be kept in the bank with `"status": "candidate"`. A candidate is never offered in a swap, never placed in a version or tailoring (validate.py reports it as an error if it is), and not counted in "N of M need attention". Pre-flight checks candidates and reports them on a separate line (`out/preflight.json` keys `candidates` and `candidates_summary`); `check.py --all` skips them.
+
 ## 0.1.5 (2026-11-05)
 
 - Fixed a settings-reader regression from 0.1.3: single-quoted text containing a doubled quote ('it''s, ok'), which is how the writer saves a value with an apostrophe, no longer breaks when a comma, colon or # follows. 20,000 random write-and-read round trips pass, and a smaller seeded version is part of the tests.

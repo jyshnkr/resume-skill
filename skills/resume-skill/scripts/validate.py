@@ -6,7 +6,8 @@ Stdlib only. Exit 0 clean (warnings print but do not fail), 1 on any error.
     python3 validate.py            # the data folder from where.py (RESUME_SKILL_DATA, saved location, default)
     python3 validate.py --json     # {"errors": [...], "warnings": [...], "counts": {...}} instead of text lines
 
-Checks: bank rows (ids, role is in bank.json "roles", marks for every version, lead word, tech list), summaries,
+Checks: bank rows (ids, role is in bank.json "roles", status approved or candidate, marks for every version, lead word, tech list;
+a candidate row is never marked in, placed in a version or used in a tailoring), summaries,
 every versions/*.json, every jobs/<slug>/tailoring.json (base is a version, posting file exists, status, submitted
 tailorings carry sent_on or bank_commit, override lint), private terms from private/terms.json, and the settings file
 (settings.yaml; the older settings.json is still read) against assets/defaults/settings.yaml: new options are warnings,
@@ -20,6 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import resume_data as rd  # noqa: E402
 
 STATUS = {"draft", "submitted", "archived"}
+BANK_STATUS = {"approved", "candidate"}  # a bank row without "status" is approved
 errors, warnings = [], []
 
 
@@ -169,12 +171,18 @@ def main(as_json=False):
             err(f"{w}: role {b.get('role')!r} not in {sorted(roles)}")
         if (b.get("role") == "project") != bool(b.get("project")):
             err(f"{w}: project bullets need a project name, others must not have one")
+        if not (isinstance(b.get("status", "approved"), str) and b.get("status", "approved") in BANK_STATUS):
+            err(f"{w}: status {b.get('status')!r} should be approved or candidate")
+        cand = b.get("status") == "candidate"
         for v in versions:
             m = b.get("marks", {}).get(v) if isinstance(b.get("marks"), dict) else None
             if not isinstance(m, dict) or not isinstance(m.get("in"), bool):
                 err(f"{w}: marks.{v} needs {{raw, in}}")
+            elif cand and m["in"]:
+                err(f"{w}: candidate bullet is marked in version {v!r}")
         if "tech" not in b:
-            warn(f"{w}: no 'tech' list (the tools this bullet used; add [] if none)")
+            if not cand:
+                warn(f"{w}: no 'tech' list (the tools this bullet used; add [] if none)")
         elif not isinstance(b["tech"], list) or not all(isinstance(x, str) for x in b["tech"]):
             err(f"{w}: 'tech' should be a list of strings")
         if str(b.get("text", "")).split(" ", 1)[0] != b.get("lead"):
@@ -205,6 +213,8 @@ def main(as_json=False):
                 if isinstance(i, str):
                     if i not in idx:
                         err(f"{w}: unknown bullet {i}")
+                    elif idx[i].get("status") == "candidate":
+                        err(f"bank {i}: candidate bullet is used in version {name!r}")
                     elif not (idx[i].get("marks", {}).get(name) or {}).get("in"):
                         err(f"{w}: {i} ({idx[i].get('lead')}) is used but not marked for {name} in the bank")
         for s in v["skills"] if isinstance(v.get("skills"), list) else []:
@@ -244,6 +254,8 @@ def main(as_json=False):
                 if b.get("id") not in idx:
                     err(f"{bw}: unknown bank bullet")
                     continue
+                if idx[b["id"]].get("status") == "candidate":
+                    err(f"bank {b['id']}: candidate bullet is used in tailoring {slug!r}")
                 if not isinstance(b.get("text"), str):
                     err(f"{bw}: missing 'text'")
                     continue

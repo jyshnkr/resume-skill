@@ -14,6 +14,7 @@
     "allowed_repeats": "list of words allowed twice",
     "note": "text",
     "private_note": "text, never scanned for private terms",
-    "tech": "list of strings (missing = warning)"
+    "tech": "list of strings (missing = warning, except on a candidate)",
+    "status": "optional: approved (default when absent) or candidate; a candidate is a draft that is checked but never marked in, placed in a version or used in a tailoring"
   }
 }

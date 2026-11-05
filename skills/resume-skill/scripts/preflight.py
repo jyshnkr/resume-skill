@@ -5,7 +5,11 @@
 
 Each bullet is checked as check.py --all checks it: the leads of the other bullets in the first version that holds it count as used.
 A bullet with a FAIL is listed in "hold_back": do not offer it as a swap. A WARN never holds a bullet back. The bank is never edited.
-The file holds {fingerprint, ran_at, bullets: {id: {status OK|WARN|FAIL, findings}}, hold_back, summary}. The fingerprint covers
+The file holds {fingerprint, ran_at, bullets: {id: {status OK|WARN|FAIL, findings}}, hold_back, summary}.
+A bank row with "status": "candidate" is a draft: it is checked the same way but listed apart, in candidates: {id: {status, findings}} and
+candidates_summary ("C candidates checked: a clean, b with warnings, c failing"; both keys exist only when the bank has candidates). A
+candidate is never in bullets or hold_back, never changes summary or the exit code, and counts no used leads. The text summary
+prints candidates_summary as its last line (not with --quiet). The fingerprint covers
 bank.json, the settings file (settings.yaml, or the older settings.json), private/terms.json, the shipped rules registry, robot-phrase list, default settings and check.py, so a
 stored result is stale as soon as any of them changes.
 
@@ -16,7 +20,7 @@ stored result is stale as soon as any of them changes.
 Exit 0 no FAIL and no WARN, 1 some FAIL, 2 WARN only. An unchanged --if-stale run is silent and its exit code is the stored verdict
 (0 clean, 1 a bullet is held back, 2 warnings only).
 """
-import datetime, hashlib, json, os, sys, tempfile
+import collections, datetime, hashlib, json, os, sys, tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import check  # noqa: E402
@@ -35,14 +39,20 @@ def fingerprint(root):
 
 
 def run_checks(ctx):
-    bullets = {}
-    for b, v, leads in check.all_bullets(ctx):
-        item = check.run_one("bullet", b["text"], list(leads), ctx)
-        bullets[b["id"]] = {"status": item["status"], "findings": [r for r in item["findings"] if r["level"] != "INFO"]}
+    bullets, cands = {}, {}
+    for b, v, leads in check.all_bullets(ctx, candidates=True):
+        cand = b.get("status") == "candidate"  # a draft: checked like the rest, kept out of the approved results, no used leads
+        item = check.run_one("bullet", b["text"], [] if cand else list(leads), ctx)
+        (cands if cand else bullets)[b["id"]] = {"status": item["status"], "findings": [r for r in item["findings"] if r["level"] != "INFO"]}
     hold = [i for i, v in bullets.items() if v["status"] == "FAIL"]
     need = sum(v["status"] != "OK" for v in bullets.values())
-    return {"fingerprint": fingerprint(ctx["root"]), "ran_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-            "bullets": bullets, "hold_back": hold, "summary": f"{need} of {len(bullets)} bullets need attention"}
+    res = {"fingerprint": fingerprint(ctx["root"]), "ran_at": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+           "bullets": bullets, "hold_back": hold, "summary": f"{need} of {len(bullets)} bullets need attention"}
+    if cands:  # the keys exist only when the bank holds candidates, so a bank without them gives the same file as before
+        n = collections.Counter(v["status"] for v in cands.values())
+        res["candidates"] = cands
+        res["candidates_summary"] = (f"{len(cands)} candidates checked: {n['OK']} clean, {n['WARN']} with warnings, {n['FAIL']} failing")
+    return res
 
 
 def exit_of(res):
@@ -78,6 +88,7 @@ def main(a):
             for i, v in res["bullets"].items():
                 for r in v["findings"]:
                     if r["level"] in ("FAIL", "WARN"): print(f"{i} {r['level']} rule {r['rule']}: {r['message']}")
+            if "candidates_summary" in res: print(res["candidates_summary"])
     sys.exit(exit_of(res))
 
 
