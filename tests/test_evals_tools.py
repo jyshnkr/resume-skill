@@ -83,6 +83,14 @@ class RunnerCommandTests(unittest.TestCase):
         self.assertNotIn("--plugin-dir", cmd)
         self.assertEqual(cmd[cmd.index("--model") + 1], "haiku")
 
+    def test_blocked_skills_become_deny_rules_for_the_skill_tool(self):
+        cmd = self.build("hi", None, "with-skill", 25, block=["anthropic-skills:jd-fit-check", "other"])
+        i = cmd.index("--disallowedTools")
+        self.assertEqual(cmd[i + 1:i + 3], ["Skill(anthropic-skills:jd-fit-check)", "Skill(other)"])
+
+    def test_no_block_list_means_no_deny_flag(self):
+        self.assertNotIn("--disallowedTools", self.build("hi", None, "with-skill", 25))
+
     def test_plugin_dir_mode_loads_the_repo(self):
         cmd = self.build("hi", None, "plugin-dir", 3)
         self.assertEqual(cmd[cmd.index("--plugin-dir") + 1], ROOT)
@@ -126,6 +134,10 @@ class RunnerPlanTests(unittest.TestCase):
         r = sh(RUNNER, "--triggers", "--cases", "t03,t05", "--runs", "3")
         self.assertEqual(r.returncode, 2)
         self.assertIn("plan: 6 agent call(s)", r.stdout)
+
+    def test_blocked_skills_are_named_in_the_plan(self):
+        r = sh(RUNNER, "--cases", "e01", "--block-skills", "anthropic-skills:jd-fit-check")
+        self.assertIn("blocking anthropic-skills:jd-fit-check", r.stdout)
 
     def test_baseline_is_named_in_the_plan(self):
         self.assertIn("baseline (no skill)", sh(RUNNER, "--baseline", "--cases", "e01").stdout)

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Run the agent evals in Claude Code, headless, on a temporary copy of the sample data. Only when asked: every run spends usage.
 
-    python3 tools/run_evals.py --yes [--cases e01,e05] [--model sonnet] [--baseline | --plugin-dir] [--triggers] [--runs 3] [--out DIR]
+    python3 tools/run_evals.py --yes [--cases e01,e05] [--model sonnet] [--baseline | --plugin-dir] [--block-skills NAME[,NAME]] [--triggers] [--runs 3] [--out DIR]
 
 Without --yes it prints the plan (number of agent calls) and exits 2. Each case runs `claude -p` in an empty scratch folder with
 RESUME_SKILL_DATA pointing at a fresh copy of examples/data (a case can ask for a submitted tailoring or no data folder), loads the
 skill as installed in the skills folder (--plugin-dir loads this repo instead; --baseline turns every skill off to record how the model does without it), saves the output and grades it with
 evals/grade.py. --triggers runs the trigger set instead: for each query it records whether the skill was invoked (a Skill tool
 call named resume-skill), --runs times each. Other skills installed on the machine can also trigger; the run records which
-skill each query invoked. Codex is run by hand. Results go to DIR (default evals/runs/<timestamp>, not committed).
+skill each query invoked. --block-skills adds deny rules so a named competing skill (for example the old jd-fit-check) cannot be called, for a fair measure of this skill alone. Codex is run by hand. Results go to DIR (default evals/runs/<timestamp>, not committed).
 """
 import json, os, shutil, subprocess, sys, tempfile, time
 
@@ -48,12 +48,14 @@ def init_lists_skill(stream, name):
     return False
 
 
-def build_cmd(prompt, model, mode, max_turns):
+def build_cmd(prompt, model, mode, max_turns, block=()):
     """mode: with-skill (the skill installed in the user's skills folder), baseline (every skill off) or plugin-dir (load this repo)."""
     cmd = ["claude", "-p", prompt, "--output-format", "stream-json", "--verbose", "--max-turns", str(max_turns),
            "--permission-mode", "acceptEdits", "--allowedTools", *TOOLS]
     if model:
         cmd += ["--model", model]
+    if block:  # deny rules for the Skill tool: other installed skills that answer the same questions cannot be called in this run
+        cmd += ["--disallowedTools", *[f"Skill({b})" for b in block]]
     if mode == "baseline":
         cmd.append("--disable-slash-commands")
     elif mode == "plugin-dir":
@@ -61,8 +63,8 @@ def build_cmd(prompt, model, mode, max_turns):
     return cmd
 
 
-def claude(prompt, model, cwd, env, mode, max_turns):
-    r = subprocess.run(build_cmd(prompt, model, mode, max_turns), cwd=cwd, env=env, capture_output=True, text=True,
+def claude(prompt, model, cwd, env, mode, max_turns, block=()):
+    r = subprocess.run(build_cmd(prompt, model, mode, max_turns, block), cwd=cwd, env=env, capture_output=True, text=True,
                        stdin=subprocess.DEVNULL, timeout=900)
     final = ""
     for line in r.stdout.splitlines():
@@ -107,8 +109,10 @@ def main(a):
     runs = int(opt(a, "--runs", trig["runs_each"] if "--triggers" in a else 1))
     n = (len(trig["should_fire"]) + len(trig["should_not_fire"])) * runs if "--triggers" in a else len(cases) * runs
     model, baseline = opt(a, "--model"), "--baseline" in a
+    block = [b for b in (opt(a, "--block-skills") or "").split(",") if b]
     mode = "baseline" if baseline else "plugin-dir" if "--plugin-dir" in a else "with-skill"
-    print(f"plan: {n} agent call(s), model {model or 'default'}, {'baseline (no skill)' if baseline else 'with the skill'}, "
+    print(f"plan: {n} agent call(s), model {model or 'default'}, {'baseline (no skill)' if baseline else 'with the skill'}"
+          f"{', blocking ' + ','.join(block) if block else ''}, "
           f"{'trigger set' if '--triggers' in a else 'cases ' + ','.join(c['id'] for c in cases)}")
     if "--yes" not in a:
         print("not run: add --yes to spend the usage", file=sys.stderr)
@@ -125,7 +129,7 @@ def main(a):
                 for i in range(runs):
                     scratch = tempfile.mkdtemp(prefix="rs-trig-")
                     env = {**os.environ, "RESUME_SKILL_DATA": os.path.join(scratch, "data")}
-                    _, stream = claude(q["query"], model, scratch, env, mode, 3)
+                    _, stream = claude(q["query"], model, scratch, env, mode, 3, block)
                     if baseline and init_lists_skill(stream, "resume-skill"):
                         print("error: a baseline run had resume-skill loaded; the comparison would be invalid", file=sys.stderr)
                         return 1
@@ -140,7 +144,7 @@ def main(a):
                 data = make_data(c, scratch)
                 before = G.tree_hash(data) if os.path.isdir(data) else ""
                 env = {**os.environ, "RESUME_SKILL_DATA": data, "RESUME_SKILL_CONFIG_DIR": os.path.join(scratch, "config")}
-                final, stream = claude(c["prompt"], model, scratch, env, mode, 25)
+                final, stream = claude(c["prompt"], model, scratch, env, mode, 25, block)
                 if baseline and init_lists_skill(stream, "resume-skill"):
                     print("error: a baseline run had resume-skill loaded; the comparison would be invalid", file=sys.stderr)
                     return 1
