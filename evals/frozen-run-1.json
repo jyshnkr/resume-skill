@@ -1,0 +1,17 @@
+{
+ "purpose": "Frozen eval run 1. The cases, trigger queries, runner and skill listed here were fixed BEFORE this run; nothing in them may change until its results are recorded. Failures are reported as they are, not corrected.",
+ "head_before_run": "1bcf85ff66dc6d8afd3d48c647945e7d489ebc85",
+ "sha256": {
+  "evals/cases.json": "64bb4bf36be68f80ce6e5cdf296d2bacdf460adc78e79aa2dadc61c19556166f",
+  "evals/triggers.json": "6a7223108445ead187b7cf20daef707c30d457a49ffd25e9ff845308b519dc13",
+  "tools/run_evals.py": "2346d197f5c3a73aecdb8fff703641d3e0b966704fe74e5c0c4acc7981f54890",
+  "evals/grade.py": "c6f4d9b74e3234811a7c1fb75c9615761ef92c5948f02c96bea1c5b62e5c63b9",
+  "skills/resume-skill/SKILL.md": "8915b8bf4856cd4aeba4888c8dfef8602aa8e5ed597f4a609327cc2ff18ba87b"
+ },
+ "plan": [
+  "triggers: 60 calls, default model, old jd-fit-check off",
+  "cases: 15 calls, default model, old skill off",
+  "cases: 15 calls, Haiku, old skill off"
+ ],
+ "launch_environment": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1; --block-skills anthropic-skills:jd-fit-check"
+}
