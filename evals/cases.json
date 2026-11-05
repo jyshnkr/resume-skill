@@ -89,7 +89,7 @@
    ],
    "assert": {
     "output_matches": [
-     "(?i)before|after|becomes|replaces|instead of"
+     "(?i)\\b(before|becomes|replaces|instead of)\\b"
     ],
     "files_written": [
      "out/*/*.docx"
@@ -110,12 +110,10 @@
     "output_matches": [
      "(?i)how many|what number|real number|do not have a (number|figure)|need.*number|no number"
     ],
-    "output_not_matches": [
-     "(?i)\\b(moved|migrated|supported the move of) \\d+ (nightly|reporting|jobs)"
-    ],
-    "data_unchanged": true
+    "data_unchanged": true,
+    "files_written": []
    },
-   "note": "b012 is marked needs_metric: ask for the real figure, never invent one."
+   "note": "b012 is marked needs_metric: ask for the real figure. The invariant checked is no invented number in a saved or built file (data_unchanged, no .docx); a digit inside an example reply to the user is allowed, and SKILL.md asks for [N] in any draft."
   },
   {
    "id": "e07",

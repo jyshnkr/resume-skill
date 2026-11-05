@@ -127,6 +127,11 @@ class WritingTests(unittest.TestCase):
         self.assertIn("Do not infer", BODY)
         self.assertRegex(BODY, r"outranks")
 
+    def test_a_missing_number_is_asked_for_with_a_placeholder_never_a_digit(self):
+        row = next(l for l in BODY.split("\n") if l.startswith("| A number is missing"))
+        self.assertIn("[N]", row)
+        self.assertIn("never a digit", row)
+
     def test_no_company_or_person_names_from_a_real_user(self):
         # employer names and facts are covered by tools/leak_scan.py; here: no first person, no "he/his" (pronouns unknown)
         self.assertNotRegex(BODY, r"\b(he|his|him|she|her)\b")
