@@ -1,0 +1,43 @@
+{
+ "what": "Re-verification on the 0.1.2 head (settings.yaml, the injection-wording fix, parallel runner). Same cases, queries and checks as frozen run 1; old jd-fit-check off; advisor off in launched processes; recorded as run.",
+ "triggers": {
+  "should_fire_fired": "29 of 30",
+  "must_not_fire_fired": "0 of 30",
+  "miss": "t09 fired 2 of 3"
+ },
+ "default_model": {
+  "passes": "13 of 15",
+  "failed": {
+   "e03": [
+    "matches (?i)which version|full-time or contract|full-time.*contract"
+   ],
+   "e05": [
+    "matches (?i)\\b(becomes|replaces|instead of|was:)\\b|from \"[^\"]{15,}\" to"
+   ]
+  },
+  "reading": {
+   "e03": "correct: stopped and asked which version (A full-time, B contract); the check wants the literal phrase 'full-time or contract' on one line",
+   "e05": "correct: showed every edit as an old-text/new-text table; the check wants becomes/replaces/instead of/was:"
+  },
+  "repeat_with_unchanged_checks": {
+   "e03": "5 of 5 passes",
+   "e05": "3 of 5 passes"
+  },
+  "note": "Below the bar of 14 of 15 in this single run, because of two phrase-matching checks on correct behaviour. The pre-registered gate is frozen run 1 (14 of 15 on the pre-YAML head). No behavioural regression found by reading the outputs."
+ },
+ "smaller_model_haiku": {
+  "passes": "12 of 15",
+  "failed": {
+   "e05": [
+    "matches (?i)\\b(becomes|replaces|instead of|was:)\\b|from \"[^\"]{15,}\" to"
+   ],
+   "e13": [
+    "matches (?i)data folder|set up|setup"
+   ],
+   "e14": [
+    "matches (?i)skip|override|as you asked"
+   ]
+  }
+ },
+ "future": "Phrase-matching checks are brittle in both directions (e05 passes 3 of 5 on repeat). Use a model-graded check for edit display and question-asking cases next time."
+}
