@@ -110,12 +110,12 @@
    "other_skills": {}
   }
  },
- "misses": "t09 (0/3) starts with 'use the contract version for this one too', which assumes an earlier turn a cold run does not have; t08 fired 2 of 3.",
  "finding": "With the old skill out of the list the skill fires on 87% of should-fire runs and never on a near-miss. With it present the same queries fired 4 of 30 (it won the routing).",
  "revised_follow_up_queries": {
-  "note": "t08 and t09 were follow-ups that assume an earlier turn. After the first run they were rewritten to carry that context in the text (a change made after seeing their results) and re-run 3 times each with the old skill off.",
+  "note": "t08 and t09 assume an earlier turn. After the first run they were rewritten to carry that context in the text (changed after seeing their results) and re-run.",
   "t08": "3 of 3 fired",
-  "t09": "2 of 3 fired (the model sometimes finds the skill folder and reads SKILL.md instead of calling the Skill tool; the runner now also records engaged = read SKILL.md or ran its scripts)",
-  "should_fire_total_with_revised_queries": "29 of 30 (26 of 30 with the original wording)"
+  "t09": "0 of 3 in one batch and 2 of 3 in a second batch on the same wording (run-to-run variance)",
+  "should_fire_total": "26 of 30 with the original wording; 27 or 29 of 30 depending on which t09 batch is counted. The threshold of 24 holds under every count.",
+  "t09_miss_cause": "The one recorded miss searched the project transcripts for an earlier Acme conversation that does not exist (the words 'earlier in this chat' send the model looking for it) and never read SKILL.md or called the Skill tool. It is not a case of reading the skill folder by hand."
  }
 }

@@ -45,7 +45,7 @@
   "triggers_at_least_24_of_30_and_0_false_fires": true,
   "smaller_model_at_least_12_of_15": true,
   "no_sent_copy_edited_and_no_number_invented_in_a_saved_or_built_file": true,
-  "disclosed": "Digits appeared inside example replies or placeholder drafts in 2 Haiku/default answers to e06 (e.g. 'for example: Moved 14 nightly reporting jobs'); no file held one."
+  "disclosed": "In 5 of the 6 e06 answers recorded (default and smaller model, before and after the audit) a digit appears inside an example reply to the user (for example 'e.g. 42 jobs; runtime 6 h to 2 h' or 'Moved 14 nightly reporting jobs'); no saved or built file held one. The default-model e06 pass after the audit came after the negative digit check was removed from cases.json: the case now enforces 'no invented number in a saved or built file' through the unchanged-data and no-file checks. The [N] placeholder rule works on the default model (both reruns drafted with [N]); the Haiku rerun did not load the skill."
  },
  "final_reruns_after_the_audit": {
   "note": "After the independent audit, SKILL.md got one added rule (write [N] where a missing number goes, never a digit) and the e05 and e06 assertions were tightened or corrected; e05 and e06 were re-run on the default model and e06 on Haiku.",
