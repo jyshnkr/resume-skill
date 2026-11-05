@@ -18,7 +18,7 @@ Commands in `SKILL.md` are written `python3 scripts/NAME.py`; run them from the 
 ## Optional tools
 - Pillow (line-fit checks): install it in a folder of its own, not the system Python.
 - LibreOffice (page counts): without it every page count reads "not checked" and exit code 2.
-- Liberation Serif (a metric match for Times New Roman) is needed for line-fit checks.
+- A Times New Roman font for line-fit checks: macOS and Windows already have it, and the checker finds it. Where it is missing (Linux), Liberation Serif has the same letter widths.
 Each install is the user's call; ask before running one.
 
 ## Updating

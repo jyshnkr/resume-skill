@@ -22,6 +22,13 @@ try:  # Pillow plus the Liberation Serif font (found by name, or in the current 
 except Exception:
     HAVE_PIL = False
 
+TNR_MAC = "/System/Library/Fonts/Supplemental/Times New Roman.ttf"
+try:  # Pillow with the real Times New Roman installed by the operating system (macOS)
+    from PIL import ImageFont as _IF
+    HAVE_PIL_TNR = os.path.exists(TNR_MAC)
+except Exception:
+    HAVE_PIL_TNR = False
+
 LINE = re.compile(r"^\s+(FAIL|WARN|NOTE|INFO) rule (\d+): ", re.M)
 GOOD = "Cut nightly report runtime from 6 hours to 40 minutes by rewriting the AWS Glue job as partitioned Parquet reads and adding retry-safe checkpoints."
 
@@ -570,6 +577,19 @@ class PagesTests(CheckCase):
         r = self.chk("--pages", "2", os.path.join(self.tmp, "missing.pdf"))
         self.assertEqual(r.returncode, 2)
         self.assertIn("NOTE rule 32: pages: not checked (no such file)", r.stdout)
+
+
+class TimesNewRomanTests(TmpCase):
+    """The resume font is Times New Roman, so the line-fit check measures with it when the system has it (no Liberation Serif needed)."""
+
+    @unittest.skipUnless(HAVE_PIL_TNR, "needs Pillow and Times New Roman installed by the system")
+    def test_line_fit_is_measured_without_a_liberation_font_in_reach(self):
+        empty = os.path.join(self.tmp, "empty")  # the folder the script runs in holds no font file
+        os.makedirs(empty)
+        r = run("check.py", GOOD, env=self.env_for(EXAMPLE), cwd=empty)
+        self.assertIn("wrap:", r.stdout)
+        self.assertNotIn("wrap: not checked", r.stdout, r.stdout)
+        self.assertRegex(r.stdout, r"wrap: \d lines \(want 1 to 2\)")
 
 
 if __name__ == "__main__":

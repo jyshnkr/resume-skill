@@ -121,9 +121,22 @@ def common(t, terms):  # internal names, ADR numbers, bold markers
             + [F("FAIL", 29, "bold", "** bold markers; paste plain text.")] * ("**" in t))
 
 
-def wrap(t, width, lo, hi, rule, short_pct=0):  # Liberation Serif has Times New Roman's metrics; 11pt drawn x100 for precision; no kerning
-    try: from PIL import ImageFont, features; font = ImageFont.truetype("LiberationSerif-Regular.ttf", 1100)
-    except Exception: return [F("NOTE", rule, "wrap", "wrap: not checked (needs Pillow and Liberation Serif)")]
+# The resume font is Times New Roman: use the system's own copy when there is one, else Liberation Serif (same letter widths).
+FONT_FILES = ["/System/Library/Fonts/Supplemental/Times New Roman.ttf", "C:\\Windows\\Fonts\\times.ttf",
+              "/usr/share/fonts/truetype/msttcorefonts/Times_New_Roman.ttf", "/usr/share/fonts/truetype/msttcorefonts/times.ttf",
+              "LiberationSerif-Regular.ttf"]
+
+
+def load_font(ImageFont):
+    for f in FONT_FILES:
+        try: return ImageFont.truetype(f, 1100)  # 11pt drawn x100 for precision
+        except Exception: continue
+    raise OSError("no Times New Roman or Liberation Serif font found")
+
+
+def wrap(t, width, lo, hi, rule, short_pct=0):  # no kerning
+    try: from PIL import ImageFont, features; font = load_font(ImageFont)
+    except Exception: return [F("NOTE", rule, "wrap", "wrap: not checked (needs Pillow and Times New Roman or Liberation Serif)")]
     w, n, cur = lambda s: font.getlength(s, **({"features": ["-kern"]} if features.check("raqm") else {})) / 100, 1, ""
     for word in t.split(): n, cur = (n + 1, word) if cur and w(cur + " " + word) > width else (n, (cur + " " + word).strip())
     out = [F("INFO" if lo <= n <= hi else "FAIL", rule, "wrap", f"wrap: {n} lines (want {lo} to {hi}), last {w(cur):.0f}/{width}pt")]
