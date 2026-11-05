@@ -119,6 +119,58 @@ class InitSkillListTests(unittest.TestCase):
         self.assertFalse(self.f(json.dumps({"type": "result", "result": "x"}), "resume-skill"))
 
 
+class ParallelTests(unittest.TestCase):
+    def setUp(self):
+        sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import run_evals
+        self.run_jobs = run_evals.run_jobs
+        self.build = run_evals.build_cmd
+
+    def test_results_come_back_in_job_order_whatever_finishes_first(self):
+        import time
+        def fn(job):
+            time.sleep(0.05 * (5 - job))  # later jobs finish first
+            return job * 10
+        self.assertEqual(self.run_jobs(list(range(5)), 4, fn), [0, 10, 20, 30, 40])
+
+    def test_never_more_than_the_requested_workers_at_once(self):
+        import threading, time
+        lock, state = threading.Lock(), {"now": 0, "max": 0}
+        def fn(job):
+            with lock:
+                state["now"] += 1
+                state["max"] = max(state["max"], state["now"])
+            time.sleep(0.05)
+            with lock:
+                state["now"] -= 1
+            return job
+        self.run_jobs(list(range(8)), 3, fn)
+        self.assertLessEqual(state["max"], 3)
+        self.assertGreater(state["max"], 1)
+
+    def test_one_worker_runs_in_order_in_the_caller(self):
+        seen = []
+        self.run_jobs([1, 2, 3], 1, lambda j: seen.append(j))
+        self.assertEqual(seen, [1, 2, 3])
+
+    def test_a_failing_job_raises_after_the_others_finished(self):
+        def fn(job):
+            if job == 2:
+                raise RuntimeError("boom")
+            return job
+        with self.assertRaises(RuntimeError):
+            self.run_jobs([1, 2, 3], 2, fn)
+
+    def test_strict_mcp_skips_the_connectors(self):
+        self.assertIn("--strict-mcp-config", self.build("hi", None, "with-skill", 25, strict_mcp=True))
+        self.assertNotIn("--strict-mcp-config", self.build("hi", None, "with-skill", 25))
+
+    def test_plan_names_workers_and_strict_mcp(self):
+        r = sh(RUNNER, "--cases", "e01,e02", "--workers", "4", "--strict-mcp")
+        self.assertIn("4 workers", r.stdout)
+        self.assertIn("without connectors", r.stdout)
+
+
 class EngagedTests(unittest.TestCase):
     """A run engaged the skill when it called the Skill tool OR read its SKILL.md / ran its scripts directly."""
 
