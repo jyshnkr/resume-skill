@@ -8,7 +8,7 @@ RESUME_SKILL_DATA pointing at a fresh copy of examples/data (a case can ask for 
 skill as installed in the skills folder (--plugin-dir loads this repo instead; --baseline turns every skill off to record how the model does without it), saves the output and grades it with
 evals/grade.py. --triggers runs the trigger set instead: for each query it records whether the skill was invoked (a Skill tool
 call named resume-skill), --runs times each. Other skills installed on the machine can also trigger; the run records which
-skill each query invoked. --block-skills adds deny rules so a named competing skill (for example the old jd-fit-check) cannot be called, for a fair measure of this skill alone. Codex is run by hand. Results go to DIR (default evals/runs/<timestamp>, not committed).
+skill each query invoked. --block-skills switches a named competing skill (for example the old jd-fit-check) off for the session, so it is not even listed, for a fair measure of this skill alone. Codex is run by hand. Results go to DIR (default evals/runs/<timestamp>, not committed).
 """
 import json, os, shutil, subprocess, sys, tempfile, time
 
@@ -54,8 +54,8 @@ def build_cmd(prompt, model, mode, max_turns, block=()):
            "--permission-mode", "acceptEdits", "--allowedTools", *TOOLS]
     if model:
         cmd += ["--model", model]
-    if block:  # deny rules for the Skill tool: other installed skills that answer the same questions cannot be called in this run
-        cmd += ["--disallowedTools", *[f"Skill({b})" for b in block]]
+    if block:  # skillOverrides "off" removes a named skill from the session's skill list (a Skill(...) deny rule only blocks the call; the model still tries it first)
+        cmd += ["--settings", json.dumps({"skillOverrides": {b: "off" for b in block}})]
     if mode == "baseline":
         cmd.append("--disable-slash-commands")
     elif mode == "plugin-dir":

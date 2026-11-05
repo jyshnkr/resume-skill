@@ -83,13 +83,14 @@ class RunnerCommandTests(unittest.TestCase):
         self.assertNotIn("--plugin-dir", cmd)
         self.assertEqual(cmd[cmd.index("--model") + 1], "haiku")
 
-    def test_blocked_skills_become_deny_rules_for_the_skill_tool(self):
+    def test_blocked_skills_are_switched_off_in_the_session_settings(self):
         cmd = self.build("hi", None, "with-skill", 25, block=["anthropic-skills:jd-fit-check", "other"])
-        i = cmd.index("--disallowedTools")
-        self.assertEqual(cmd[i + 1:i + 3], ["Skill(anthropic-skills:jd-fit-check)", "Skill(other)"])
+        i = cmd.index("--settings")
+        self.assertEqual(json.loads(cmd[i + 1]), {"skillOverrides": {"anthropic-skills:jd-fit-check": "off", "other": "off"}})
+        self.assertNotIn("--disallowedTools", cmd)
 
-    def test_no_block_list_means_no_deny_flag(self):
-        self.assertNotIn("--disallowedTools", self.build("hi", None, "with-skill", 25))
+    def test_no_block_list_means_no_settings_flag(self):
+        self.assertNotIn("--settings", self.build("hi", None, "with-skill", 25))
 
     def test_plugin_dir_mode_loads_the_repo(self):
         cmd = self.build("hi", None, "plugin-dir", 3)
