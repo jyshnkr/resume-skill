@@ -1,0 +1,564 @@
+{
+ "schema": 1,
+ "when_meaning": {
+  "preflight": "checked by script on every bank bullet before a run",
+  "posting": "applies while reading a posting",
+  "tailoring": "applies while editing the resume for a posting",
+  "final": "applies at the last look and in the build",
+  "reading": "judgement rule: read it, no script"
+ },
+ "rules": [
+  {
+   "n": 1,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "via": [
+    2,
+    3,
+    10
+   ],
+   "text": "Build each bullet in this order: strong verb, the result with its number, the word 'by', then how you did it. A count of services or a product number is not the result number (rule 10)."
+  },
+  {
+   "n": 2,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Use 'by' exactly once, right before the method. Not 'by 40%': put the number in the result ('load time 40%' or 'from A to B')."
+  },
+  {
+   "n": 3,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Start with a strong past-tense verb; no two bullets in one resume start with the same verb. Skip Helped, Responsible for, Worked on, Ensured, Assisted, Participated, plain Built or Designed."
+  },
+  {
+   "n": 4,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Keep each bullet inside the limits in settings (default 20 to 30 words, 215 characters, about two lines). Never pad with invented detail."
+  },
+  {
+   "n": 5,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Write numbers as digits ('zero' and 'single' may stay words). Mark estimates with '~' and floors with '+'. Write a unit once: 'from 480 to 140 ms'."
+  },
+  {
+   "n": 6,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Do not repeat a word inside one bullet, product names included. Small words and numbers do not count. A repeat approved in the bank (allowed_repeats) stays."
+  },
+  {
+   "n": 7,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "No keyword soup: name the few tools that mattered to the result, usually 2 to 5. Never add a tool only to place a posting word (rule 41)."
+  },
+  {
+   "n": 8,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "The first AWS service in a bullet carries 'AWS' or 'Amazon' (AWS Lambda, Amazon DynamoDB); later ones can be bare. Use the real brand: Amazon SQS, not 'AWS SQS'."
+  },
+  {
+   "n": 9,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Name the product, not a class, method or API name (the jargon list in settings). Heavy jargon gets a note (rule 38), never a failure."
+  },
+  {
+   "n": 10,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "A count of services, customers, teams or records is scope, not a result; a version or product number (HTML5, JDK 17) is not a number. A project bullet may skip the number but must say what the project does."
+  },
+  {
+   "n": 11,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "Add a cloud-platform bracket only when the posting names a platform you have not used as one the role uses, never as an analogy. A tailoring may add its equivalent in brackets right after the AWS service you did use, for example 'Amazon SQS (Azure Service Bus-style)'. One per bullet, and the bullet must still pass the checker. Never in a version, the bank, a summary or skills lines. Read brackets.md before adding one."
+  },
+  {
+   "n": 12,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Use real numbers only; never invent a number or a fact. A size word with no numeral ('millions', 'dozens of') is not a number: get the figure or leave it out. An estimate as a numeral with '~' is fine."
+  },
+  {
+   "n": 13,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "A bullet with no measured result (rule 10) stays a capability bullet marked needs_metric in the bank, or the tool stays in the skills line only. Never swap in an estimate you cannot back."
+  },
+  {
+   "n": 14,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "Never replace a bullet that has a number with one that does not, unless the posting needs that skill and nothing else on the resume shows it."
+  },
+  {
+   "n": 15,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Say it accurately: 'implemented' if someone else designed it; 'designed', 'co-designed' or 'architected' only for work you designed end to end. Say 'passed the review', never 'cleared' it."
+  },
+  {
+   "n": 16,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Keep private things out: no internal names, internal config, decision-record numbers or colleague names in resume text or any public data file."
+  },
+  {
+   "n": 17,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "Never write anything on your do-not-claim list as experience, and never add a posting keyword you have not used. Close real gaps in interview prep with a bridge from what you did."
+  },
+  {
+   "n": 18,
+   "section": "Words and style",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Warn on the robot words and phrases in assets/phrases/robot-phrases.json (extend or mute them in settings). Weak verbs (Helped, Assisted, Participated, Ensured, Responsible for, Worked on) count only at the start of a bullet or summary sentence, not inside a compound such as 'AI-assisted'. Warn only."
+  },
+  {
+   "n": 19,
+   "section": "Words and style",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Warn on tired patterns the checker can see: a last clause that opens with a vague '-ing' outcome ('improving customer experience'), passive voice, em dashes. Other patterns (it's not X, it's Y; lists of three) are for your read-aloud pass (rule 22)."
+  },
+  {
+   "n": 20,
+   "section": "Words and style",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "No first-person words (I, we, my, our, us, me) anywhere in a resume line."
+  },
+  {
+   "n": 21,
+   "section": "Words and style",
+   "status": "live",
+   "when": "final",
+   "enforced": "reading",
+   "text": "Keep it sounding like you: drafts follow your voice notes in profile.md, and each new or reworded bullet answers your voice questions before you see it."
+  },
+  {
+   "n": 22,
+   "section": "Words and style",
+   "status": "live",
+   "when": "final",
+   "enforced": "reading",
+   "text": "Before you send, read the bullets and summary aloud once and fix any typo."
+  },
+  {
+   "n": 23,
+   "section": "The summary",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "check",
+   "text": "Write exactly 3 sentences (about 4 lines). Sentence 1 opens with your title, 'with X+ years of experience in ...' (the pattern is in settings); the years run from your first listed start to your last listed end, degrees included, rounded down."
+  },
+  {
+   "n": 24,
+   "section": "The summary",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "check",
+   "text": "Sentence 2 gives one headline result for each of your three most recent roles. Sentence 3 covers your strengths (tools, quality, leadership) in past tense, never as an instruction."
+  },
+  {
+   "n": 25,
+   "section": "The summary",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "check",
+   "text": "Every claim in the summary traces to a bullet in the same resume; build it from the bank's numbered bullets. No platform brackets and no retired wording in a summary."
+  },
+  {
+   "n": 26,
+   "section": "Skills and posting words",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "Put the skills section after Education. List tools, technologies and engineering practices only; soft skills go in bullets. A new skills item needs your OK and a source in a version or profile.md."
+  },
+  {
+   "n": 27,
+   "section": "Skills and posting words",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "For each job, reorder the skills lines so the lines with the most posting mentions come first, and trim items the posting never needs. Add an item only from another version's skills lines or what profile.md allows (rules 17, 26)."
+  },
+  {
+   "n": 28,
+   "section": "Skills and posting words",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "For each posting, list every skill word it names twice or more and mark each: in the resume; true for you but not written; not yours (do-not-claim); unknown (ask). Warn when a repeated word that is true for you is missing."
+  },
+  {
+   "n": 29,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "One fixed layout: Times New Roman 11 pt, US Letter, 0.5-inch margins, bold uppercase headings, dates right-aligned with an en dash, round-dot bullets; a title or sub-line never stands alone at a page bottom."
+  },
+  {
+   "n": 30,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "export.py",
+   "text": "Page caps come from each version's page_cap in the data folder. A resume over its cap is not final."
+  },
+  {
+   "n": 31,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "One column, plain section names (Summary, Professional Experience, Education, Technical Skills, Projects), no tables, text boxes or pictures for anything that matters, nothing important in the header or footer area."
+  },
+  {
+   "n": 32,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "export.py",
+   "text": "Deliver the .docx; check the page count on a real render. If no renderer is available, say 'pages not checked' and never call the count checked."
+  },
+  {
+   "n": 33,
+   "section": "Tailoring for a posting",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "Start from a version and change only what the posting needs. Use an approved bank bullet; a rewrite that keeps less than half of a bank bullet's words is a new bank row and needs your OK. Adding a bullet to a full version means cutting one of the same length."
+  },
+  {
+   "n": 34,
+   "section": "Tailoring for a posting",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "build",
+   "by": "save.py",
+   "text": "A resume that has been sent is frozen: no edit, and no later bank change flows into it. A new mix of postings gets a new copy. The one exception is a correction of a claim found untrue, with your explicit yes and a 'Correction' note."
+  },
+  {
+   "n": 35,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "Inside each role put first the bullet that best matches the posting, so the strongest proof is never buried."
+  },
+  {
+   "n": 36,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "Name the business domain in at least one bullet per role (payments, retail, logistics) so the reader sees industry experience."
+  },
+  {
+   "n": 37,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "Punctuate every bullet the same way (all end with a period, or none do) and keep every lead verb in past tense; clauses inside may be present tense."
+  },
+  {
+   "n": 38,
+   "section": "Words and style",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "Use the short form for AWS service names and common abbreviations (JWT, TLS, CI/CD, SQL). Spell out only a niche in-house abbreviation, and only if the bullet stays inside the limits; otherwise use plain words."
+  },
+  {
+   "n": 39,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "When an amount is confidential, give the real percentage change instead ('cut spend 30%'), never a vague or made-up figure."
+  },
+  {
+   "n": 40,
+   "section": "Tailoring for a posting",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "Where you really did the work, use the posting's exact term (in a bullet or a skills-line label) instead of your synonym; never for work you did not do."
+  },
+  {
+   "n": 41,
+   "section": "Tailoring for a posting",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "Each important posting word that is true for you appears in the skills lines and in at least one bullet or the summary. Never add a word to a bullet only to place it (rule 7)."
+  },
+  {
+   "n": 42,
+   "section": "Tailoring for a posting",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "When cutting for space, keep each role's headline result, then cut the line the posting cares about least; cut by age only after relevance cuts run out. Never cut a line whose absence would mislead. (Rule 64 merged here.)"
+  },
+  {
+   "n": 43,
+   "section": "Tailoring for a posting",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "For each posting, list what a recruiter may doubt about you (for example seniority) and make sure a real bullet near the top answers each doubt."
+  },
+  {
+   "n": 44,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "posting",
+   "enforced": "reading",
+   "text": "A posting term you have used may replace your synonym only when it means the same thing at the same scope. Count school projects as projects, not as a job."
+  },
+  {
+   "n": 45,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "final",
+   "enforced": "reading",
+   "text": "Test every reworded bullet: could you explain it in an interview without backtracking? If not, tone it down or drop it."
+  },
+  {
+   "n": 46,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "final",
+   "enforced": "reading",
+   "text": "Label unfinished work as it is: a degree 'in progress' or 'expected <month year>', other work 'under review' or 'internal', never as finished or published."
+  },
+  {
+   "n": 47,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "Keep each job title exactly as on your version; never upgrade it for a posting."
+  },
+  {
+   "n": 48,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "For every reworded bullet, show before and after and one line on why it stays accurate."
+  },
+  {
+   "n": 49,
+   "section": "Numbers and honesty",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "Never hide keywords or instructions in white, tiny or invisible text; every word must be visible to a person."
+  },
+  {
+   "n": 50,
+   "section": "The summary",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "Do not write an objective statement; open with the three-sentence summary."
+  },
+  {
+   "n": 51,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "Leave off a photo, home address, age, gender, marital status, nationality and 'references available'; never start a line with a date."
+  },
+  {
+   "n": 52,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "Put email, phone, LinkedIn and GitHub in the header as full visible text with a professional email address; never only an icon or the word 'LinkedIn'."
+  },
+  {
+   "n": 53,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "Set your name in bold at 16 pt at most, with the contact line below it in the body font size."
+  },
+  {
+   "n": 54,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "export.py",
+   "text": "Name the file with your full name and a label: the client or job for a tailoring, the version name for a version."
+  },
+  {
+   "n": 55,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "Put a line under each section heading."
+  },
+  {
+   "n": 56,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "Keep the job title and the degree bold; the company name stays in the same bold run as the title; location and school in italic."
+  },
+  {
+   "n": 57,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "Delete an empty optional section together with its heading."
+  },
+  {
+   "n": 58,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "List jobs newest first, and never move a better-fitting older role to the top."
+  },
+  {
+   "n": 59,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "reading",
+   "text": "Fill the last page at least halfway. If it is less, trim to the page before, or add an approved bank bullet; a full version adds one only by cutting one (rule 33)."
+  },
+  {
+   "n": 60,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "preflight",
+   "enforced": "check",
+   "text": "A bullet's last line should not be a near-orphan: the checker notes a bullet whose second line is under half the text width (note only, needs Pillow). Fix it by rewording within rule 4, never by adding words."
+  },
+  {
+   "n": 61,
+   "section": "Layout and length",
+   "status": "live",
+   "when": "final",
+   "enforced": "reading",
+   "text": "Before sending, extract the file's text and check every section is there, readable and in order, not only the page count."
+  },
+  {
+   "n": 62,
+   "section": "Other",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "List each degree with its school and dates; leave out high school; add coursework only when you have little work experience."
+  },
+  {
+   "n": 63,
+   "section": "Other",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "build",
+   "by": "build_docx.py",
+   "text": "If you hold a certification or award the posting values, list it near Education (the version's certifications list). An empty list prints nothing."
+  },
+  {
+   "n": 64,
+   "section": "Other",
+   "status": "merged",
+   "into": 42
+  },
+  {
+   "n": 65,
+   "section": "Other",
+   "status": "merged",
+   "into": 25
+  },
+  {
+   "n": 66,
+   "section": "Other",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "reading",
+   "text": "For a bullet with no result, ask what problem it solved and what time or money it saved."
+  },
+  {
+   "n": 67,
+   "section": "Building a bullet",
+   "status": "live",
+   "when": "tailoring",
+   "enforced": "check",
+   "text": "Name the language or runtime when a bullet is about code you wrote or changed ('Node.js AWS Lambda'). It counts toward rule 7's 2 to 5 tools. Skip it when the work was not code. If length is the problem, trim other words first."
+  }
+ ]
+}

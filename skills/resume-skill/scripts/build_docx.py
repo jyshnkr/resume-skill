@@ -4,6 +4,7 @@
     python3 build_docx.py full-time out.docx
     python3 build_docx.py tailoring:acme-backend out.docx
     python3 build_docx.py full-time out.docx --no-contact   # placeholder contact line: paste the real one before sending
+    python3 build_docx.py full-time out.docx --font Arial   # default font: settings.json output.font (Times New Roman)
 
 Without private/contact.json the build stops unless --no-contact is given: the file would carry "<phone>" and no
 email or links.
@@ -11,6 +12,8 @@ email or links.
 Format (references/tailoring.md): Times New Roman 11pt, letter, 0.5in margins; bold title, italic location, dates on a
 right tab at 7.5in; bold uppercase section headings with a bottom border; ● bullets at the margin with text at 0.25in;
 black hyperlinks; "keep with next" on every job title and its sub-line. Bullets use one paragraph style ("B").
+An optional Certifications section follows Projects when the resume has certifications (strings or {name, issuer, dates});
+with none, the section and its heading are left out. The file is byte-identical on every rebuild of the same resume.
 """
 # PDFs: CI installs Microsoft's core fonts (ttf-mscorefonts-installer), so LibreOffice embeds Times New Roman, not Liberation Serif.
 import os, sys, zipfile
@@ -24,7 +27,16 @@ W = ('xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" '
 TAB = '<w:r><w:tab/></w:r>'
 
 
+ZIP_DATE = (1980, 1, 1, 0, 0, 0)  # fixed, so the same resume always gives the same bytes
+
+
+def default_font(root=None):
+    """settings.json output.font (Times New Roman unless the user changed it)."""
+    return rd.settings(root)["output"]["font"]
+
+
 def build(r, out, font="Times New Roman", allow_placeholder=False):
+    """Write the resume r (from resume_data.resolve) to out: a path or a binary file object."""
     if r["contact"].get("placeholder") and not allow_placeholder:
         raise SystemExit("no contact details in private/contact.json: add them, or rerun with --no-contact and replace the "
                          "placeholder contact line before sending")
@@ -80,6 +92,11 @@ def build(r, out, font="Times New Roman", allow_placeholder=False):
         body.append(p([run(pr["title"], b=True), TAB, link(pr["link_text"], pr.get("url"), b=True)], tabs=True, keep=True,
                       before=0 if n == 0 else 60))
         body += [p([run(b)], style="B") for b in pr["bullets"]]
+    if r.get("certifications"):
+        heading("Certifications")
+    for c in r.get("certifications") or []:
+        body.append(p([run(c if isinstance(c, str) else " ".join(str(c[k]) for k in ("name", "issuer", "dates") if c.get(k)))],
+                      style="B"))
 
     sect = ('<w:sectPr><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="720" w:right="720" w:bottom="720" w:left="720" '
             'w:header="360" w:footer="360" w:gutter="0"/></w:sectPr>')
@@ -116,12 +133,11 @@ def build(r, out, font="Times New Roman", allow_placeholder=False):
           f'package/2006/relationships"><Relationship Id="rId1" Type="{rel}/officeDocument" Target="word/document.xml"/>'
           '</Relationships>')
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
-        z.writestr("[Content_Types].xml", ct)
-        z.writestr("_rels/.rels", rr)
-        z.writestr("word/document.xml", doc)
-        z.writestr("word/_rels/document.xml.rels", drels)
-        z.writestr("word/styles.xml", styles)
-        z.writestr("word/numbering.xml", numbering)
+        for name, data in (("[Content_Types].xml", ct), ("_rels/.rels", rr), ("word/document.xml", doc),
+                           ("word/_rels/document.xml.rels", drels), ("word/styles.xml", styles), ("word/numbering.xml", numbering)):
+            info = zipfile.ZipInfo(name, ZIP_DATE)
+            info.compress_type, info.external_attr = zipfile.ZIP_DEFLATED, 0o644 << 16
+            z.writestr(info, data, compresslevel=9)
     return out
 
 
@@ -131,5 +147,7 @@ if __name__ == "__main__":
     if len(sys.argv) < 3:
         raise SystemExit(__doc__)
     a = sys.argv[1:]
-    font = a[a.index("--font") + 1] if "--font" in a else "Times New Roman"
+    if "--font" in a and a.index("--font") + 1 >= len(a):
+        raise SystemExit("error: --font needs a font name")
+    font = a[a.index("--font") + 1] if "--font" in a else default_font()
     print(build(rd.resolve(a[0]), a[1], font, allow_placeholder="--no-contact" in a))

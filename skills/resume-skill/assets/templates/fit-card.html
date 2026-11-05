@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{title}}</title>
+<style>
+:root { --bg:#f7f7f5; --card:#ffffff; --ink:#1d2127; --muted:#5b6470; --line:#d9dce1; --accent:#1f5fbf; --track:#e6e8ec; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#14171b; --card:#1d2127; --ink:#eceff3; --muted:#a3acb8; --line:#333a44; --accent:#6aa4f5; --track:#2b313a; }
+}
+* { box-sizing: border-box; }
+body { margin:0; padding:16px; background:var(--bg); color:var(--ink); font:16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width:36rem; margin:0 auto; background:var(--card); border:1px solid var(--line); border-radius:12px; padding:20px 16px; }
+h1 { margin:0; font-size:2.25rem; line-height:1.1; }
+.legend { margin:4px 0 0; font-size:1.05rem; }
+.lean { margin:2px 0 0; color:var(--muted); }
+h2 { margin:20px 0 6px; font-size:0.85rem; letter-spacing:0.04em; text-transform:uppercase; color:var(--muted); }
+ul { margin:0; padding-left:1.2rem; }
+.axis { display:flex; align-items:center; gap:8px; margin:6px 0; }
+.axis-label { flex:0 0 9.5rem; font-size:0.95rem; }
+.bar { flex:1 1 auto; height:10px; background:var(--track); border-radius:5px; overflow:hidden; }
+.fill { display:block; height:100%; background:var(--accent); }
+.axis-val { flex:0 0 3rem; text-align:right; color:var(--muted); font-size:0.9rem; }
+details { margin-top:20px; border-top:1px solid var(--line); padding-top:12px; }
+summary { cursor:pointer; color:var(--muted); }
+details p { margin:8px 0 0; overflow-wrap:anywhere; }
+@media (max-width: 30rem) { .axis { flex-wrap:wrap; } .axis-label { flex-basis:100%; } .bar { flex:1 1 0; } }
+</style>
+</head>
+<body>
+<main>
+<h1>{{score}}</h1>
+<p class="legend">{{legend}}</p>
+<p class="lean">{{lean}}</p>
+<h2>Requirements</h2>
+<ul>{{counts}}</ul>
+<h2>Flags</h2>
+<ul>{{flags}}</ul>
+<h2>Match</h2>
+<div>{{axes}}</div>
+<details>
+<summary>Text version</summary>
+<p>{{text}}</p>
+</details>
+</main>
+</body>
+</html>
