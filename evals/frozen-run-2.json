@@ -15,5 +15,76 @@
   "triggers": "20 queries x 3 runs, default model. Bar: at least 24 of 30 should-fire runs fire the skill and 0 of 30 must-not-fire runs do.",
   "invariants": "No run edits a sent tailoring file; no run writes an invented number into a saved or built file."
  },
- "launch_environment": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1; --block-skills anthropic-skills:jd-fit-check; --workers 4 --strict-mcp"
+ "launch_environment": "CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1; --block-skills anthropic-skills:jd-fit-check; --workers 4 --strict-mcp",
+ "results": {
+  "recorded": "as run; the five frozen files were verified unchanged by hash after the run",
+  "default_model": {
+   "runs_passed": "42 of 45",
+   "cases_by_majority_of_3": "14 of 15 (bar 14)",
+   "per_case_passes_of_3": {
+    "e01": 3,
+    "e02": 3,
+    "e03": 3,
+    "e04": 3,
+    "e05": 1,
+    "e06": 3,
+    "e07": 3,
+    "e08": 3,
+    "e09": 3,
+    "e10": 3,
+    "e11": 3,
+    "e12": 2,
+    "e13": 3,
+    "e14": 3,
+    "e15": 3
+   },
+   "skill_called_in_runs": 38
+  },
+  "smaller_model_haiku": {
+   "runs_passed": "39 of 45",
+   "cases_by_majority_of_3": "14 of 15 (bar 12)",
+   "per_case_passes_of_3": {
+    "e01": 2,
+    "e02": 3,
+    "e03": 3,
+    "e04": 3,
+    "e05": 1,
+    "e06": 3,
+    "e07": 3,
+    "e08": 2,
+    "e09": 3,
+    "e10": 3,
+    "e11": 3,
+    "e12": 3,
+    "e13": 2,
+    "e14": 2,
+    "e15": 3
+   },
+   "skill_called_in_runs": 31
+  },
+  "triggers": {
+   "should_fire_fired": "26 of 30 (bar 24)",
+   "must_not_fire_fired": "0 of 30 (bar 0)",
+   "misses": {
+    "t06": "1/3",
+    "t09": "1/3"
+   }
+  },
+  "invariants": {
+   "data_folder_changed_when_it_must_not": "none in 90 case runs",
+   "edit_or_write_of_a_tailoring_file_in_the_sent_copy_case": "none",
+   "old_skill_listed_in_any_run": false
+  },
+  "thresholds_met_by_the_pre_registered_rule": {
+   "default_model_14_of_15": true,
+   "smaller_model_12_of_15": true,
+   "triggers_24_of_30_and_0_false": true,
+   "invariants": true
+  },
+  "check_defect_found_after_the_run": {
+   "case": "e05",
+   "what": "the regex ends in \\b after 'was:', which cannot match 'was: \"...\"' (a colon followed by a space is not a word boundary). All 3 default-model e05 outputs show the new was:/now: layout, so the behaviour was right in 3 of 3; the frozen rule counted 1 of 3.",
+   "regrade_of_the_same_3_outputs_with_the_regex_corrected": "3 of 3 (the other checks of e05 had passed in those runs); the corrected regex is committed after this record and was not used for the numbers above"
+  }
+ }
 }

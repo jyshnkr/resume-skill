@@ -89,7 +89,7 @@
    ],
    "assert": {
     "output_matches": [
-     "(?i)\\b(becomes|replaces|instead of|was:)\\b|from \"[^\"]{15,}\" to"
+     "(?i)\\b(becomes|replaces|instead of)\\b|\\bwas:|from \"[^\"]{15,}\" to"
     ],
     "files_written": [
      "out/*/*.docx"
