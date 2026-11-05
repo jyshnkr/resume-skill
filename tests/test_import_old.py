@@ -4,7 +4,7 @@ from helpers import TmpCase, run, write, ROOT, FIXTURES, SKILL
 
 TOOLS = os.path.join(ROOT, "tools")
 OLD = os.path.join(FIXTURES, "old-repo")
-DEFAULTS = os.path.join(SKILL, "assets", "defaults", "settings.json")
+DEFAULTS = os.path.join(SKILL, "assets", "defaults", "settings.yaml")
 
 FIXES = [
     {"id": "f1", "description": "Say the course use of Kubernetes", "op": "replace", "file": "profile.md", "find": "- Kubernetes.", "replace": "- Kubernetes (course only)."},
@@ -130,7 +130,7 @@ class ImportOldTests(TmpCase):
 
     def test_settings_are_the_shipped_defaults(self):
         self.imp()
-        with open(DEFAULTS, "rb") as a, open(os.path.join(self.new, "settings.json"), "rb") as b:
+        with open(DEFAULTS, "rb") as a, open(os.path.join(self.new, "settings.yaml"), "rb") as b:
             self.assertEqual(a.read(), b.read())
 
     def test_the_new_folder_has_the_standard_layout(self):

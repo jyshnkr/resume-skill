@@ -1,30 +1,39 @@
 #!/usr/bin/env python3
 """Create the user's data folder (or top up its settings), then check it. Flags only: it never prompts.
 
-    python3 setup.py --data PATH [--yes] [--dry-run] [--save-location] [--add-missing-settings] [--json]
+    python3 setup.py --data PATH [--yes] [--dry-run] [--save-location] [--add-missing-settings] [--convert-settings] [--json]
 
   --data PATH               where the data folder lives (created if missing; an empty existing folder is fine)
   --yes                     apply the plan. Without --yes (and without --dry-run) the plan is printed and nothing is written.
   --dry-run                 print the plan, write nothing. Wins over --yes.
   --save-location           write PATH to <config>/location so the other scripts find it (config = RESUME_SKILL_CONFIG_DIR
                             or ~/.config/resume-skill). Only done when asked.
-  --add-missing-settings    add options that the shipped assets/defaults/settings.json has and the folder's settings.json
-                            lacks (nested keys too). Never changes a value that is already there. With --dry-run only lists them.
+  --add-missing-settings    add options that the shipped assets/defaults/settings.yaml has and the folder's settings file
+                            (settings.yaml, or the older settings.json) lacks (nested keys too). Never changes a value that is
+                            already there; options you added yourself stay at the end of their section. The result is written
+                            as settings.yaml with the shipped hints, so your own comments in the file are replaced (the command
+                            says so). With --dry-run only lists the options.
+  --convert-settings        for a folder that has only the older settings.json: write settings.yaml from it (every value kept,
+                            every missing option and the hints added) and move settings.json to archive/settings.json (archive/
+                            settings-1.json, -2 and so on when that name is taken; nothing in archive/ is overwritten).
   --json                    print one JSON document instead of text lines
 
-Plan -> validate -> confirm -> apply -> verify. A new folder gets: settings.json, profile.md (headings only), bank.json,
+Plan -> validate -> confirm -> apply -> verify. A new folder gets: settings.yaml (a byte copy of the shipped, commented
+defaults), profile.md (headings only), bank.json,
 summaries.json, versions/, private/{contact.json,terms.json,bank-notes.md,recruiters.md}, jobs/, changes/, backups/, out/,
-archive/. It never overwrites a file: running it again on a data folder (one that holds settings.json) changes nothing and
+archive/. It never overwrites a file: running it again on a data folder (one that holds settings.yaml, settings.yml or
+settings.json) changes nothing and
 says "already set up". It refuses a PATH inside the skill folder, and a non-empty folder that is not a data folder.
-After a real run it verifies the folder with validate.py (a fresh folder has warnings, not errors) and, if preflight.py
-exists, ends with `preflight.py --if-stale --quiet`.
+After a real run it verifies the folder with validate.py (a fresh folder has warnings, not errors; a folder that still holds
+settings.json gets a note to convert it) and, if preflight.py exists, ends with `preflight.py --if-stale --quiet`.
 
 Exit 0: done, already set up, or a dry run. Exit 1: refused, or the check of the new folder found errors.
 Exit 2: the plan was printed and needs --yes.
 """
-import json, os, subprocess, sys
+import json, os, shutil, subprocess, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import miniyaml  # noqa: E402
 import resume_data as rd  # noqa: E402
 import where  # noqa: E402
 
@@ -82,11 +91,36 @@ def missing_settings(default, user, prefix=""):
     return out
 
 
-def put(doc, dotted, value):
-    keys = dotted.split(".")
-    for k in keys[:-1]:
-        doc = doc[k]
-    doc[keys[-1]] = value
+def ordered(default, user):
+    """The user's values in the shipped order, every missing option filled from the defaults; options the user added come last."""
+    out = {}
+    for k, v in default.items():
+        if k not in user:
+            out[k] = v
+        elif isinstance(v, dict) and isinstance(user[k], dict):
+            out[k] = ordered(v, user[k])
+        else:
+            out[k] = user[k]
+    for k, v in user.items():
+        if k not in default:
+            out[k] = v
+    return out
+
+
+def settings_file(path):
+    """Where the settings are written: the yaml/yml file the folder has, else settings.yaml."""
+    cur = rd.settings_path(path)
+    return cur if cur and not cur.endswith(".json") else os.path.join(path, "settings.yaml")
+
+
+def archive_name(path):
+    """archive/settings.json, or archive/settings-1.json, -2 ... when the name is taken."""
+    n = 0
+    while True:
+        name = "settings.json" if n == 0 else f"settings-{n}.json"
+        if not os.path.exists(os.path.join(path, "archive", name)):
+            return name
+        n += 1
 
 
 def plan_for(path, state, args):
@@ -95,18 +129,29 @@ def plan_for(path, state, args):
     if state == "new":
         acts.append({"kind": "folder", "name": ".", "detail": "the data folder itself"} if not os.path.isdir(path) else None)
         acts += [{"kind": "folder", "name": d + "/"} for d in DIRS]
-        acts.append({"kind": "file", "name": "settings.json", "detail": "copy of the shipped defaults"})
+        acts.append({"kind": "file", "name": "settings.yaml", "detail": "copy of the shipped defaults, with hints"})
         acts += [{"kind": "file", "name": n} for n in FILES]
         acts = [a for a in acts if a]
-    if "--add-missing-settings" in args and state == "ready":
-        sp = os.path.join(path, "settings.json")
+    converting = False
+    if "--convert-settings" in args and state == "ready":
+        old = os.path.join(path, "settings.json")
+        newer = [n for n in ("settings.yaml", "settings.yml") if os.path.isfile(os.path.join(path, n))]
+        if os.path.isfile(old) and newer:
+            refuse(f"{path} holds both {newer[0]} and settings.json; {newer[0]} is the one that is used. "
+                   "Check that nothing is missing from it, then move settings.json out of the folder yourself.")
+        if os.path.isfile(old):
+            try:
+                rd.user_settings(path)
+            except (OSError, ValueError) as e:
+                refuse(f"{e}; fix it before converting")
+            converting = True
+            acts.append({"kind": "convert", "name": "settings.yaml", "detail": "every value of settings.json kept, missing options and hints added"})
+            acts.append({"kind": "archive", "name": "settings.json", "detail": "archive/" + archive_name(path)})
+    if "--add-missing-settings" in args and state == "ready" and not converting:
         try:
-            with open(sp, encoding="utf-8") as f:
-                mine = json.load(f)
+            mine = rd.user_settings(path)
         except (OSError, ValueError) as e:
-            refuse(f"cannot read {sp} as JSON ({e}); fix it before adding missing settings")
-        if not isinstance(mine, dict):
-            refuse(f"{sp} should hold a JSON object")
+            refuse(f"{e}; fix it before adding missing settings")
         acts += [{"kind": "setting", "name": k, "value": v} for k, v in missing_settings(rd.default_settings(), mine)]
     if "--save-location" in args and where.saved_location() != path:
         acts.append({"kind": "location", "name": os.path.join(where.config_dir(), "location"), "detail": path})
@@ -123,21 +168,22 @@ def apply(path, acts):
             full = os.path.join(path, a["name"])
             if os.path.exists(full):  # never overwrite
                 continue
-            if a["name"] == "settings.json":
+            if a["name"] == "settings.yaml":
                 with open(rd.DEFAULT_SETTINGS, "rb") as src, open(full, "xb") as dst:
                     dst.write(src.read())
             else:
                 with open(full, "x", encoding="utf-8") as f:
                     f.write(FILES[a["name"]])
     adds = [a for a in acts if a["kind"] == "setting"]
-    if adds:
-        sp = os.path.join(path, "settings.json")
-        with open(sp, encoding="utf-8") as f:
-            mine = json.load(f)
-        for a in adds:
-            put(mine, a["name"], a["value"])
-        with open(sp, "w", encoding="utf-8") as f:
-            f.write(jtext(mine))
+    conv = [a for a in acts if a["kind"] == "convert"]
+    if adds or conv:
+        merged = ordered(rd.default_settings(), rd.user_settings(path))
+        with open(settings_file(path), "x" if conv else "w", encoding="utf-8") as f:
+            f.write(miniyaml.dumps(merged, rd.default_comments()))
+    for a in acts:
+        if a["kind"] == "archive":
+            os.makedirs(os.path.join(path, "archive"), exist_ok=True)
+            shutil.move(os.path.join(path, a["name"]), os.path.join(path, a["detail"]))
     for a in acts:
         if a["kind"] == "location":
             os.makedirs(os.path.dirname(a["name"]), exist_ok=True)
@@ -156,6 +202,10 @@ def describe(a):
         return f"add setting   {a['name']} = {json.dumps(a['value'], ensure_ascii=False)}"
     if a["kind"] == "location":
         return f"save location {a['name']} -> {a['detail']}"
+    if a["kind"] == "convert":
+        return f"write settings.yaml  ({a['detail']})"
+    if a["kind"] == "archive":
+        return f"move {a['name']} -> {a['detail']}"
     return f"create {a['kind']:<6} {a['name']}" + (f"  ({a['detail']})" if a.get("detail") else "")
 
 
@@ -163,7 +213,7 @@ def main(a):
     if {"-h", "--help"} & set(a):
         print(__doc__)
         return 0
-    known = {"--data", "--yes", "--dry-run", "--save-location", "--add-missing-settings", "--json"}
+    known = {"--data", "--yes", "--dry-run", "--save-location", "--add-missing-settings", "--convert-settings", "--json"}
     bad = [x for i, x in enumerate(a) if x.startswith("-") and x not in known]
     if bad:
         refuse(f"unknown option {bad[0]!r}; see --help")
@@ -175,7 +225,7 @@ def main(a):
         refuse(f"{path} is inside the skill folder ({SKILL_DIR}); a skill update would erase it. Pick a folder outside it.")
     if os.path.isfile(path):
         refuse(f"{path} is a file, not a folder")
-    if os.path.isdir(path) and os.path.isfile(os.path.join(path, where.MARKER)):
+    if os.path.isdir(path) and where.has_settings(path):
         state = "ready"
     elif os.path.isdir(path) and os.listdir(path):
         refuse(f"{path} is not empty and is not a resume-skill data folder (no {where.MARKER}); pick an empty or new folder")
@@ -193,9 +243,15 @@ def main(a):
         return code
     if not acts:
         doc["status"] = "already set up"
+        if "--convert-settings" in a and state == "ready" and "--add-missing-settings" not in a:
+            return emit([f"nothing to convert: {path} has no settings.json (nothing changed)"], 0)
         return emit([f"already set up: {path} (nothing changed)"], 0)
     head = f"plan for {path} ({'new data folder' if state == 'new' else 'existing data folder'}):"
     lines = [head] + ["  " + describe(x) for x in acts]
+    if any(x["kind"] == "setting" for x in acts):
+        note = "settings.yaml is written with the shipped hints: your values and extra options are kept, your own comments in the file are replaced."
+        lines.append(note)
+        doc["note"] = note
     if dry:
         doc["status"] = "dry run"
         return emit(lines + ["dry run: nothing was written."], 0)

@@ -1,6 +1,6 @@
 """Seam: validate.py. A data folder in (via RESUME_SKILL_DATA), error and warning lines out, exit 0 clean / 1 on any error."""
 import json, os, unittest
-from helpers import TmpCase, run, write, EXAMPLE
+from helpers import TmpCase, run, write, edit_settings, EXAMPLE
 
 
 class ValidateTests(TmpCase):
@@ -18,7 +18,7 @@ class ValidateTests(TmpCase):
         return run("validate.py", *args, env=self.env_for(self.d))
 
     def fresh(self):
-        """A folder hand-built from the setup spec (not by running setup.py)."""
+        """A folder hand-built from the setup spec (not by running setup.py), with the older settings.json marker (legacy path)."""
         d = os.path.join(self.tmp, "fresh")
         write(os.path.join(d, "settings.json"), "{}")
         write(os.path.join(d, "bank.json"), '{"roles": [], "bullets": []}')
@@ -186,13 +186,13 @@ class ValidateTests(TmpCase):
     def test_new_default_setting_is_a_warning_with_the_fix(self):
         def drop(s):
             del s["output"]["font"]
-        self.edit("settings.json", drop)
+        edit_settings(self.d, drop)
         r = self.validate()
         self.assertEqual(r.returncode, 0)
         self.assertIn("WARN settings: new option 'output.font' (run setup.py --add-missing-settings)", r.stdout)
 
     def test_unknown_setting_is_a_warning(self):
-        self.edit("settings.json", lambda s: s["limits"].update(colour="blue"))
+        edit_settings(self.d, lambda s: s["limits"].update(colour="blue"))
         r = self.validate()
         self.assertEqual(r.returncode, 0)
         self.assertIn("WARN settings: unknown option 'limits.colour'", r.stdout)

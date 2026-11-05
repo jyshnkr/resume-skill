@@ -64,7 +64,7 @@ jobs/acme-backend/ = posting.md, fit.json, fit.html, tailoring.json
 |---|---|---|
 | Posting | Yes | Pasted text, a link, or a job ID |
 | Version | No: ask if the posting does not decide it | `full-time`, `contract` |
-| Rate, location, work type | No: read from `settings.json` preferences | |
+| Rate, location, work type | No: read from the `preferences` block of settings.yaml | |
 
 Output, in this order: 1. fit line, 2. requirement table, 3. gaps and unstated experience, 4. flags (at most 3), 5. questions (at most 5), 6. edits to paste with before/after, 7. the file path, 8. the final read list. Saving is offered after.
 
@@ -83,7 +83,7 @@ File: DATA/out/acme-backend/Jordan_Ellis_acme-backend.docx   (pages: not checked
 
 - [ ] 1. Find the data: `python3 scripts/where.py` (see User data).
 - [ ] 2. Pre-flight: `python3 scripts/preflight.py --if-stale`. Silent means nothing changed since the last run; the exit code still gives the stored verdict (1 = a bullet is held back, 2 = warnings only). Bullets listed under `hold_back` in `out/preflight.json` are never offered as swaps.
-- [ ] 3. Read `profile.md` (claim boundaries, do-not-claim), `settings.json`, the version files and the bank, then `references/rules-1.md`, `rules-2.md`, `rules-3.md`.
+- [ ] 3. Read `profile.md` (claim boundaries, do-not-claim), `settings.yaml`, the version files and the bank, then `references/rules-1.md`, `rules-2.md`, `rules-3.md`.
 - [ ] 4. Read the posting and pick the version (`references/workflow.md`). Several postings: one short table (posting, lean, version) and the user picks.
 - [ ] 5. Fit: fill requirement rows and run `scripts/fit_score.py` (`references/fit.md`).
 - [ ] 6. Edits and checks: draft from the bank only, run `scripts/check.py` on every bullet and summary (`references/tailoring.md`). Show before/after and why each stays accurate.

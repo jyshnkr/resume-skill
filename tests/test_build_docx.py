@@ -1,7 +1,7 @@
 """Seam 8 (tracer part): build_docx.py turns a version into a .docx whose text, margins and font read back from the file."""
 import json, os, re, unittest, zipfile
 from xml.sax.saxutils import unescape
-from helpers import TmpCase, run, write, EXAMPLE
+from helpers import TmpCase, run, write, edit_settings, EXAMPLE
 
 
 def parts(path):
@@ -118,9 +118,7 @@ class ReadBackTests(TmpCase):
 
     def test_font_comes_from_settings_and_the_flag_wins(self):
         data = self.example_copy()
-        s = self.jload(data, "settings.json")
-        s["output"]["font"] = "Georgia"
-        write(os.path.join(data, "settings.json"), json.dumps(s))
+        edit_settings(data, lambda s: s["output"].update(font="Georgia"))
         self.assertIn('w:ascii="Georgia"', parts(self.build_to("full-time", data))["word/styles.xml"])
         self.assertIn('w:ascii="Arial"', parts(self.build_to("full-time", data, "--font", "Arial"))["word/styles.xml"])
 

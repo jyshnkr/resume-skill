@@ -1,10 +1,10 @@
 """Seam: setup.py. Flags in, a data folder (or a plan on screen) out. Expected layout is written by hand from the spec."""
 import hashlib, json, os, unittest
-from helpers import TmpCase, run, write, SKILL
+from helpers import TmpCase, run, write, edit_settings, miniyaml, SKILL
 
-DEFAULTS = os.path.join(SKILL, "assets", "defaults", "settings.json")
+DEFAULTS = os.path.join(SKILL, "assets", "defaults", "settings.yaml")
 DIRS = ["versions", "private", "jobs", "changes", "backups", "out", "archive"]
-FILES = ["settings.json", "profile.md", "bank.json", "summaries.json", "private/contact.json", "private/terms.json",
+FILES = ["settings.yaml", "profile.md", "bank.json", "summaries.json", "private/contact.json", "private/terms.json",
          "private/bank-notes.md", "private/recruiters.md"]
 
 
@@ -32,7 +32,7 @@ class SetupTests(TmpCase):
         r = self.setup()
         self.assertEqual(r.returncode, 2, r.stderr)
         self.assertIn("re-run with --yes", r.stdout)
-        self.assertIn("settings.json", r.stdout)
+        self.assertIn("settings.yaml", r.stdout)
         self.assertFalse(os.path.exists(self.d))
         self.assertFalse(os.path.exists(self.config))
 
@@ -41,7 +41,7 @@ class SetupTests(TmpCase):
         for extra in ([], ["--yes"], ["--yes", "--save-location"]):
             r = self.setup("--dry-run", *extra)
             self.assertEqual(r.returncode, 0, r.stderr)
-            self.assertIn("settings.json", r.stdout)
+            self.assertIn("settings.yaml", r.stdout)
             self.assertEqual(tree(self.tmp), before)
 
     def test_yes_creates_the_layout_and_exits_0(self):
@@ -56,7 +56,7 @@ class SetupTests(TmpCase):
 
     def test_file_contents(self):
         self.setup("--yes")
-        with open(DEFAULTS, "rb") as a, open(os.path.join(self.d, "settings.json"), "rb") as b:
+        with open(DEFAULTS, "rb") as a, open(os.path.join(self.d, "settings.yaml"), "rb") as b:
             self.assertEqual(a.read(), b.read())
         self.assertEqual(self.jload(self.d, "bank.json"), {"roles": [], "bullets": []})
         self.assertEqual(self.jload(self.d, "summaries.json"), {"summaries": []})
@@ -91,7 +91,7 @@ class SetupTests(TmpCase):
         os.makedirs(self.d)
         r = self.setup("--yes")
         self.assertEqual(r.returncode, 0, r.stdout)
-        self.assertTrue(os.path.isfile(os.path.join(self.d, "settings.json")))
+        self.assertTrue(os.path.isfile(os.path.join(self.d, "settings.yaml")))
 
     def test_refuses_a_folder_inside_the_skill_folder(self):
         for sub in ("x", os.path.join("assets", "mydata")):
@@ -166,12 +166,12 @@ class SetupTests(TmpCase):
     # --add-missing-settings
     def trimmed(self):
         d = self.example_copy()
-        s = self.jload(d, "settings.json")
-        del s["output"]["font"]
-        del s["fit"]["weights"]["preferred"]
-        del s["checks"]
-        s["limits"]["chars"] = 999
-        write(os.path.join(d, "settings.json"), json.dumps(s, indent=2) + "\n")
+        def cut(s):
+            del s["output"]["font"]
+            del s["fit"]["weights"]["preferred"]
+            del s["checks"]
+            s["limits"]["chars"] = 999
+        s = edit_settings(d, cut)
         return d, s
 
     def test_add_missing_settings_dry_run_lists_and_writes_nothing(self):
@@ -187,8 +187,8 @@ class SetupTests(TmpCase):
         d, mine = self.trimmed()
         r = self.setup("--add-missing-settings", "--yes", path=d)
         self.assertEqual(r.returncode, 0, r.stdout)
-        got = self.jload(d, "settings.json")
-        default = self.jload(DEFAULTS)
+        got = miniyaml.load(os.path.join(d, "settings.yaml"))
+        default = miniyaml.load(DEFAULTS)
         self.assertEqual(got["output"]["font"], default["output"]["font"])
         self.assertEqual(got["fit"]["weights"], default["fit"]["weights"])
         self.assertEqual(got["checks"], default["checks"])
@@ -210,11 +210,11 @@ class SetupTests(TmpCase):
 
     def test_add_missing_settings_refuses_a_broken_settings_file(self):
         d = self.example_copy()
-        write(os.path.join(d, "settings.json"), "{ nope")
+        write(os.path.join(d, "settings.yaml"), "limits:\n  no colon here\n")
         before = tree(d)
         r = self.setup("--add-missing-settings", "--yes", path=d)
         self.assertEqual(r.returncode, 1)
-        self.assertIn("settings.json", r.stderr)
+        self.assertIn("settings.yaml", r.stderr)
         self.assertEqual(tree(d), before)
 
 

@@ -8,7 +8,7 @@
     add --json to print one JSON object (docx, copy, pages, page_cap, pages_status, reason) instead of lines
 
 The name is the contact name with underscores; the label is the version name, or the tailoring slug with a capital
-letter, unless --label is given (v0.1 builds .docx only: no PDF). The font is settings.json output.font. Rebuilding the
+letter, unless --label is given (v0.1 builds .docx only: no PDF). The font is settings.yaml output.font. Rebuilding the
 same resume overwrites the same file with the same bytes. It prints the .docx path, then the page line, which comes from
 render_check.py and needs LibreOffice (`soffice` or `libreoffice` on PATH):
     PAGES OK: 2 (cap 2)  |  PAGES FAIL: 4 (cap 3)  |  PAGES not checked: LibreOffice not installed

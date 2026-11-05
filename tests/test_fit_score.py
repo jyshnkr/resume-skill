@@ -1,7 +1,7 @@
 """fit_score.py: the arithmetic of the fit score. The worked examples in references/fit.md are the spec."""
 import json, os, re, unittest
 
-from helpers import SKILL, TmpCase, run, write
+from helpers import SKILL, TmpCase, run, write, edit_settings
 
 FIT_MD = os.path.join(SKILL, "references", "fit.md")
 
@@ -92,9 +92,7 @@ class NoScore(FitCase):
     def test_min_rows_comes_from_settings(self):
         doc = self.pairs(("required", "met"), ("required", "met"))
         self.assertEqual(self.score(doc)[0].returncode, 2)
-        s = self.jload(self.data, "settings.json")
-        s["fit"]["min_rows"] = 2
-        write(os.path.join(self.data, "settings.json"), json.dumps(s))
+        edit_settings(self.data, lambda s: s["fit"].update(min_rows=2))
         r, res = self.score(doc)
         self.assertEqual(r.returncode, 0)
         self.assertEqual(res["score"], 5)
@@ -104,25 +102,23 @@ class SettingsDrive(FitCase):
     def test_weights_partial_credit_and_legend_come_from_settings(self):
         doc = self.pairs(("required", "met"), ("required", "met"), ("required", "met"), ("required", "partly"),
                          ("preferred", "met"), ("preferred", "not"))  # example B: 76.25 with the defaults
-        s = self.jload(self.data, "settings.json")
-        s["fit"]["weights"] = {"required": 50, "preferred": 50}  # 0.5 x 87.5 + 0.5 x 50 = 68.75
-        write(os.path.join(self.data, "settings.json"), json.dumps(s))
+        edit_settings(self.data, lambda s: s["fit"].update(weights={"required": 50, "preferred": 50}))  # 0.5 x 87.5 + 0.5 x 50 = 68.75
         _, res = self.score(doc)
         self.assertEqual(res["pct"], 68.75)
         self.assertEqual(res["score"], 3)
         self.assertEqual(res["lean"], "your call")
-        s["fit"]["partial_credit"] = 0  # required 75, preferred 50 -> 0.5 x 75 + 0.5 x 50 = 62.5
-        s["fit"]["legend"]["3"] = 65  # 62.5 is now under the 3 edge
-        write(os.path.join(self.data, "settings.json"), json.dumps(s))
+
+        def tighter(s):
+            s["fit"]["partial_credit"] = 0  # required 75, preferred 50 -> 0.5 x 75 + 0.5 x 50 = 62.5
+            s["fit"]["legend"]["3"] = 65  # 62.5 is now under the 3 edge
+        edit_settings(self.data, tighter)
         _, res = self.score(doc)
         self.assertEqual(res["pct"], 62.5)
         self.assertEqual(res["score"], 2)
         self.assertEqual(res["lean"], "skip")
 
     def test_apply_lean_from(self):
-        s = self.jload(self.data, "settings.json")
-        s["fit"]["apply_lean_from"] = 3
-        write(os.path.join(self.data, "settings.json"), json.dumps(s))
+        edit_settings(self.data, lambda s: s["fit"].update(apply_lean_from=3))
         ex = next(e for e in examples() if e["name"] == "E edge 60")  # score 3
         _, res = self.score({"kind": "posting", "rows": ex["rows"]})
         self.assertEqual(res["lean"], "apply")
@@ -139,9 +135,7 @@ class Flags(FitCase):
         self.assertIn("(+2 more)", r.stdout)
 
     def test_max_flags_comes_from_settings(self):
-        st = self.jload(self.data, "settings.json")
-        st["fit"]["max_flags"] = 1
-        write(os.path.join(self.data, "settings.json"), json.dumps(st))
+        edit_settings(self.data, lambda s: s["fit"].update(max_flags=1))
         doc = self.pairs(("required", "met"), ("required", "met"), ("required", "met"))
         doc["flags"] = ["one", "two", "three"]
         _, res = self.score(doc)

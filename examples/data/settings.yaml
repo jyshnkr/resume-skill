@@ -1,0 +1,273 @@
+# resume-skill settings. This is a plain text file; lines that start with # are notes for you and the program ignores them.
+# Start with the 'preferences' block below, save the file, and the next run uses it.
+# Rules: keep the 2-space indentation (no tabs). Put text that has special characters in quotes. A list is written [a, b] or
+# one '- item' per line. 'null' means 'not set'. If you break something, the error message names the line.
+
+# START HERE. What you want in a job. The fit check flags a posting that does not match.
+# Leave a value empty if you do not care about it.
+preferences:
+  # Kinds of work you want, for example [full-time, contract]. A posting of another kind gets a flag.
+  work_type: [full-time, contract]
+  # The city or region you work from or want, for example Austin, TX.
+  location: 'Austin, TX'
+  # What you accept: for example remote, hybrid, on-site, or 'remote or hybrid'.
+  remote: remote or hybrid
+  # The lowest pay you would take, as a number without a currency sign, for example 70. null = no minimum.
+  # The next line says whether the number is per hour or per year.
+  minimum_rate: 70
+  # hour or year. Use hour for contract rates and year for a salary.
+  minimum_rate_unit: hour
+  # Industries you want or have worked in, for example [logistics, payments]. Used when judging domain fit.
+  domains: [logistics, payments]
+# Where finished files go. Both extra folders are off (null) until you set a path.
+output:
+  # The resume font. Times New Roman is the layout the rules assume; change it only if you accept that.
+  font: Times New Roman
+  # A folder that also receives a copy of every .docx built, for example ~/Documents/resumes. null = no copy.
+  copy_resumes_to: null
+  # A folder that also receives a copy of every save backup. null = no extra copy.
+  backup_copy_to: null
+# The fit score (1 to 5). The model fills the requirement rows; a script does the arithmetic with these numbers.
+fit:
+  # How much each kind of requirement counts. required 70 and preferred 30 means required items are worth 70 points of 100.
+  weights:
+    required: 70
+    preferred: 30
+  # Credit for a 'partly met' requirement: 0.5 = half a point.
+  partial_credit: 0.5
+  # The score steps. A percent at or above the number earns that score: 90 or more = 5, 75 or more = 4, 60 or more = 3, 40 or more = 2, else 1.
+  legend:
+    5: 90
+    4: 75
+    3: 60
+    2: 40
+  # The words shown next to each score.
+  legend_text:
+    5: 'strong fit, apply'
+    4: 'good fit, apply'
+    3: 'possible, your call'
+    2: 'weak, skip unless you want a stretch'
+    1: 'poor fit, skip'
+  # Scores at or above this lean 'apply' (4 = scores 4 and 5). A score of 3 is 'your call'; lower leans 'skip'. A lean is only advice.
+  apply_lean_from: 4
+  # The most flags shown in the reply (extra ones are counted, not listed).
+  max_flags: 3
+  # Fewer requirement rows than this = no score (too little to judge).
+  min_rows: 3
+# ADVANCED. Size limits for bullets and the summary. Change only if you know why.
+limits:
+  # Bullet length in words: [fewest, most].
+  words: [20, 30]
+  # Most characters in one bullet.
+  chars: 215
+  # Width of the text area in points (US Letter with 0.5 inch margins = 540).
+  text_pt: 540
+  # How far a bullet's text is indented, in points.
+  bullet_indent_pt: 18
+  # Lines a bullet may take when printed: [fewest, most]. Needs Pillow to measure.
+  bullet_lines: [1, 2]
+  # Lines the summary should take when printed.
+  summary_lines: 4
+  # Sentences in the summary.
+  summary_sentences: 3
+# ADVANCED. Word lists the checker uses on bullets.
+bullets:
+  # First words a bullet may not start with (rule 3).
+  banned_leads: [helped, responsible, worked, ensured, assisted, participated, built, designed]
+  # Past-tense verbs that do not end in -ed (they count as past tense).
+  irregular_past:
+    - led
+    - cut
+    - shrank
+    - drove
+    - ran
+    - won
+    - wrote
+    - rewrote
+    - rebuilt
+    - made
+    - set
+    - took
+    - grew
+    - sped
+    - held
+    - kept
+    - split
+    - oversaw
+    - taught
+    - brought
+    - sent
+    - spent
+    - found
+    - began
+    - chose
+    - drew
+    - sold
+    - bought
+    - stood
+    - upheld
+    - overcame
+    - undertook
+    - spun
+  # Words that end in -ed but are not past tense.
+  not_past: [need, speed, feed, seed, embed, breed, proceed, exceed, succeed]
+  # Small words ignored when looking for repeated words (rule 6).
+  stop_words:
+    - a
+    - an
+    - and
+    - the
+    - of
+    - to
+    - by
+    - for
+    - in
+    - 'on'
+    - with
+    - from
+    - into
+    - that
+    - as
+    - at
+    - or
+    - its
+    - each
+    - their
+    - all
+  # Class or API names that should be replaced by the product name (rule 9). Add your own.
+  jargon: [DoFn, ParDo, GroupByKey, UICollectionView, '@PreAuthorize', cy.intercept, GSIs, GSI]
+  # AWS service names; the first one in a bullet must be written AWS ... or Amazon ... (rule 8).
+  aws_services:
+    - Lambda
+    - DynamoDB
+    - S3
+    - Glue
+    - CloudWatch
+    - Step Functions
+    - SQS
+    - SNS
+    - Secrets Manager
+    - SSM
+    - Athena
+    - API Gateway
+    - Route 53
+    - Cognito
+    - CloudFront
+    - KMS
+    - IAM
+    - EventBridge
+    - AppConfig
+    - Lake Formation
+    - Kinesis
+    - Fargate
+    - X-Ray
+    - ECS
+    - EKS
+    - RDS
+    - Aurora
+    - ElastiCache
+    - Redshift
+    - OpenSearch
+  # Phrases to avoid and what to say instead (rule 15). pattern is a regular expression: keep it in single quotes.
+  phrase_replacements:
+    - pattern: '(?i)\bcleared\b'
+      say: passed the review
+      rule: 15
+  # true = check that the first AWS service carries AWS or Amazon.
+  require_aws_prefix: true
+# ADVANCED. The summary checks.
+summary:
+  # A regular expression the first sentence must match (rule 23). Keep it in single quotes.
+  # Example for a title of your own: '^Senior Software Engineer with \d+\+ years of experience(, specializing)? in '
+  opening_pattern: '^[A-Z][A-Za-z ]+ with \d+\+ years of experience(, specializing)? in '
+  # Wordings you retired; the checker fails a summary that contains one. Regular expressions in single quotes.
+  retired_wording: []
+# ADVANCED. Settings for the extra checks.
+checks:
+  # A bullet whose last printed line fills less than this percent of the width gets a note (rule 60). Needs Pillow.
+  short_last_line_pct: 50
+  # Vague '-ing' openers the checker warns about when a bullet ends on them (rule 19).
+  vague_ing_verbs:
+    - improving
+    - enhancing
+    - driving
+    - ensuring
+    - leveraging
+    - streamlining
+    - optimizing
+    - boosting
+    - fostering
+    - empowering
+  # Your own words and phrases to warn about, added to the shipped list (rule 18).
+  robot_phrases_extra: []
+  # Words from the shipped list that you do not want warnings for.
+  robot_phrases_ignore: []
+  # Irregular participles that mark passive voice (rule 19), besides words ending in -ed.
+  passive_participles:
+    - built
+    - made
+    - run
+    - held
+    - kept
+    - done
+    - shown
+    - given
+    - taken
+    - written
+    - chosen
+    - broken
+    - driven
+    - known
+    - seen
+    - sent
+    - found
+    - left
+    - lost
+    - paid
+    - put
+    - read
+    - sold
+    - spent
+    - told
+    - won
+    - brought
+    - begun
+    - grown
+    - drawn
+    - hidden
+    - frozen
+    - stolen
+    - spoken
+    - beaten
+    - caught
+    - taught
+    - led
+    - cut
+    - set
+    - split
+    - rewritten
+    - overwritten
+    - rebuilt
+    - rerun
+  # Language and runtime names the stack note lists first (rule 67).
+  stack_languages:
+    - Python
+    - Java
+    - Node.js
+    - TypeScript
+    - JavaScript
+    - Go
+    - Kotlin
+    - 'C#'
+    - Ruby
+    - Rust
+    - Scala
+    - PHP
+    - Swift
+    - C++
+    - JDK
+    - JVM
+    - Bash
+    - SQL
+# Format version of this file. Leave as it is.
+schema: 1

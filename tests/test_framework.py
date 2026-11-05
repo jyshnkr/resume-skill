@@ -178,7 +178,7 @@ class ScriptTests(TmpCase):
         self.assertRegex(scripts_section, r"RUN these")
         for s in SCRIPT_FILES:
             name = os.path.basename(s)
-            if name in ("resume_data.py", "build_docx.py"):
+            if name in ("resume_data.py", "build_docx.py", "miniyaml.py"):
                 continue  # libraries used by the others, not commands
             self.assertIn(f"scripts/{name}", scripts_section, name)
 

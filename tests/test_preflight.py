@@ -1,6 +1,6 @@
 """Seam 5: preflight.py runs the one-bullet checks on every bank bullet and writes out/preflight.json. It never edits the bank."""
 import hashlib, json, os, re, time, unittest
-from helpers import TmpCase, run, write, EXAMPLE
+from helpers import TmpCase, run, write, edit_settings, EXAMPLE
 
 
 try:  # Pillow plus the Liberation Serif font (found by name, or in the current folder)
@@ -148,10 +148,7 @@ class StaleTests(PreflightCase):
     def test_if_stale_reruns_after_a_settings_edit(self):
         self.pre()
         old = self.result()
-        p = os.path.join(self.data, "settings.json")
-        s = self.jload(p)
-        s["limits"]["words"] = [5, 9]
-        write(p, json.dumps(s, indent=2))
+        edit_settings(self.data, lambda s: s["limits"].update(words=[5, 9]))
         r = self.pre("--if-stale")
         self.assertEqual(r.returncode, 1, r.stdout)
         self.assertNotEqual(self.result()["fingerprint"], old["fingerprint"])

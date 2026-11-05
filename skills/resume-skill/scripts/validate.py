@@ -8,8 +8,11 @@ Stdlib only. Exit 0 clean (warnings print but do not fail), 1 on any error.
 
 Checks: bank rows (ids, role is in bank.json "roles", marks for every version, lead word, tech list), summaries,
 every versions/*.json, every jobs/<slug>/tailoring.json (base is a version, posting file exists, status, submitted
-tailorings carry sent_on or bank_commit, override lint), private terms from private/terms.json, and settings.json
-against assets/defaults/settings.json (new options are warnings, unknown options are warnings).
+tailorings carry sent_on or bank_commit, override lint), private terms from private/terms.json, and the settings file
+(settings.yaml; the older settings.json is still read) against assets/defaults/settings.yaml: new options are warnings,
+unknown options are warnings, a file that does not parse is an error naming the line, and a hand edit of the wrong kind
+(a text where a list belongs, a rate that is not a number, minimum_rate_unit other than hour or year) is an error naming the key.
+A folder that still holds settings.json gets a warning to run setup.py --convert-settings --yes.
 """
 import glob, json, os, re, sys
 
@@ -83,10 +86,38 @@ def scan(rx, text, where):
             err(f"{where}: private term {m.group(0)!r} in a public field (move it to private_note or mark the row private)")
 
 
+def is_text(v): return isinstance(v, str)
+def is_number(v): return isinstance(v, (int, float)) and not isinstance(v, bool)
+def is_text_list(v): return isinstance(v, list) and all(isinstance(x, str) for x in v)
+
+
+# key path -> (check, what it should be). Run on the user's values laid over the defaults, so a missing key is never a type error.
+SETTING_TYPES = {
+    ("preferences", "work_type"): (is_text_list, "a list of text, for example [full-time, contract]"),
+    ("preferences", "location"): (is_text, "text"),
+    ("preferences", "remote"): (is_text, "text"),
+    ("preferences", "minimum_rate"): (lambda v: v is None or is_number(v), "a number or null"),
+    ("preferences", "minimum_rate_unit"): (lambda v: v in ("hour", "year"), "exactly hour or year"),
+    ("preferences", "domains"): (is_text_list, "a list of text"),
+    ("output", "copy_resumes_to"): (lambda v: v is None or is_text(v), "text (a folder) or null"),
+    ("output", "backup_copy_to"): (lambda v: v is None or is_text(v), "text (a folder) or null"),
+}
+
+
 def settings_diff(root):
-    """New options (in the shipped defaults, not in the user's file) and unknown options (the reverse). Dicts only, never lists."""
-    mine = load("settings.json", root)
-    if not isinstance(mine, dict):
+    """New options (in the shipped defaults, not in the user's file) and unknown options (the reverse), then the type checks.
+    Dicts only, never lists."""
+    path = rd.settings_path(root)
+    if path is None:
+        err("settings: no settings.yaml in the data folder")
+        return
+    name = os.path.basename(path)
+    if os.path.isfile(os.path.join(root, "settings.json")):
+        warn("settings: settings.json is the old format; run setup.py --convert-settings --yes for settings.yaml with hints")
+    try:
+        mine = rd.user_settings(root)
+    except (OSError, ValueError) as e:
+        err(str(e) if str(e).startswith(name) else f"{name}: {e}")
         return
 
     def walk(default, user, path):
@@ -99,6 +130,18 @@ def settings_diff(root):
             if k not in default:
                 warn(f"settings: unknown option '{path}{k}'")
     walk(rd.default_settings(), mine, "")
+    merged = rd.settings(root)
+    for keys, (ok, want) in SETTING_TYPES.items():
+        v = merged.get(keys[0], {}).get(keys[1]) if isinstance(merged.get(keys[0]), dict) else None
+        if not ok(v):
+            err(f"{name}: {'.'.join(keys)} should be {want}, not {v!r}")
+    weights = merged.get("fit", {}).get("weights") if isinstance(merged.get("fit"), dict) else None
+    if not isinstance(weights, dict):
+        err(f"{name}: fit.weights should be a list of 'name: number' entries (required and preferred), not {weights!r}")
+    else:
+        for k, v in weights.items():
+            if not is_number(v):
+                err(f"{name}: fit.weights.{k} should be a number, not {v!r}")
 
 
 def main(as_json=False):

@@ -4,7 +4,7 @@ LibreOffice is not needed for most tests: a stand-in `soffice` on PATH writes a 
 exit codes and the PAGES lines are tested everywhere. Tests that need the real LibreOffice are skipped when it is missing.
 """
 import hashlib, json, os, re, shutil, stat, sys, unittest, zipfile
-from helpers import TmpCase, run, write, EXAMPLE, SKILL
+from helpers import TmpCase, run, write, edit_settings, EXAMPLE, SKILL
 
 HAVE_LO = bool(shutil.which("soffice") or shutil.which("libreoffice"))
 
@@ -185,9 +185,7 @@ class ExportPagesTests(ExportBase):
 class CopyFolderTests(ExportBase):
     def data_with_copy_to(self, folder):
         data = self.example_copy()
-        s = self.jload(data, "settings.json")
-        s["output"]["copy_resumes_to"] = folder
-        write(os.path.join(data, "settings.json"), json.dumps(s))
+        edit_settings(data, lambda s: s["output"].update(copy_resumes_to=folder))
         return data
 
     def test_copy_goes_to_an_existing_folder_and_its_path_is_printed(self):
@@ -273,9 +271,7 @@ class SkillFolderGuardTests(ExportBase):
 
     def test_copy_resumes_to_inside_the_skill_folder_is_refused_and_nothing_is_written(self):
         data = self.example_copy()
-        s = self.jload(data, "settings.json")
-        s["output"]["copy_resumes_to"] = os.path.join(self.skill, "assets")
-        write(os.path.join(data, "settings.json"), json.dumps(s))
+        edit_settings(data, lambda s: s["output"].update(copy_resumes_to=os.path.join(self.skill, "assets")))
         r = self.run_copy("export.py", "full-time", self.out, data=data, cwd=self.tmp)
         self.assert_refused(r)
         self.assertFalse(os.path.exists(self.out))

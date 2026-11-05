@@ -6,7 +6,7 @@
 Each bullet is checked as check.py --all checks it: the leads of the other bullets in the first version that holds it count as used.
 A bullet with a FAIL is listed in "hold_back": do not offer it as a swap. A WARN never holds a bullet back. The bank is never edited.
 The file holds {fingerprint, ran_at, bullets: {id: {status OK|WARN|FAIL, findings}}, hold_back, summary}. The fingerprint covers
-bank.json, settings.json, private/terms.json, the shipped rules registry, robot-phrase list, default settings and check.py, so a
+bank.json, the settings file (settings.yaml, or the older settings.json), private/terms.json, the shipped rules registry, robot-phrase list, default settings and check.py, so a
 stored result is stale as soon as any of them changes.
 
   --if-stale  run only when the stored fingerprint differs from the current one; print nothing when it is unchanged
@@ -25,11 +25,11 @@ import resume_data as rd  # noqa: E402
 
 def fingerprint(root):
     """sha256 over the files whose content decides a result; a missing file counts as empty."""
-    files = [os.path.join(root, "bank.json"), os.path.join(root, "settings.json"), os.path.join(root, "private", "terms.json"),
+    files = [os.path.join(root, "bank.json"), rd.settings_path(root) or "", os.path.join(root, "private", "terms.json"),
              os.path.join(rd.SKILL_DIR, "assets", "rules", "registry.json"), check.PHRASES, rd.DEFAULT_SETTINGS, os.path.abspath(check.__file__)]
     h = hashlib.sha256()
     for p in files:
-        if not os.path.exists(p): continue
+        if not p or not os.path.exists(p): continue
         with open(p, "rb") as f: h.update(os.path.basename(p).encode() + b"\0" + f.read() + b"\0")
     return h.hexdigest()
 

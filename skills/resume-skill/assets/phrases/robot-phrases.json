@@ -1,5 +1,5 @@
 {
- "about": "Robot-sounding words and phrases. check.py warns (rule 18) when one appears. start_only rows count only at the start of a bullet or summary sentence. Edit checks.robot_phrases_extra / robot_phrases_ignore in settings.json instead of this file.",
+ "about": "Robot-sounding words and phrases. check.py warns (rule 18) when one appears. start_only rows count only at the start of a bullet or summary sentence. Edit checks.robot_phrases_extra / robot_phrases_ignore in settings.yaml instead of this file.",
  "phrases": [
   {
    "phrase": "actually",

@@ -13,10 +13,11 @@ The data folder comes from where.py (RESUME_SKILL_DATA, saved location, default)
 import copy, glob, json, os, stat, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import miniyaml  # noqa: E402
 import where  # noqa: E402
 
 SKILL_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEFAULT_SETTINGS = os.path.join(SKILL_DIR, "assets", "defaults", "settings.json")
+DEFAULT_SETTINGS = os.path.join(SKILL_DIR, "assets", "defaults", "settings.yaml")
 
 
 def data_root(start=None):
@@ -37,17 +38,50 @@ def _merge(base, over):
 
 
 def default_settings():
-    with open(DEFAULT_SETTINGS, encoding="utf-8") as f:
-        return json.load(f)
+    """The shipped defaults (assets/defaults/settings.yaml) as a dict."""
+    return miniyaml.load(DEFAULT_SETTINGS)
+
+
+def default_comments():
+    """The shipped hints: {key path: [comment lines above that key]}, as miniyaml.dumps wants them."""
+    comments = {}
+    miniyaml.load(DEFAULT_SETTINGS, comments)
+    return comments
+
+
+def settings_path(root=None):
+    """The user's settings file: settings.yaml, else settings.yml, else the legacy settings.json; None when there is none."""
+    root = root or data_root()
+    for name in where.SETTINGS_FILES:
+        p = os.path.join(root, name)
+        if os.path.isfile(p):
+            return p
+    return None
+
+
+def user_settings(root=None):
+    """The user's settings file as a dict ({} when there is none). Raises ValueError('settings.yaml: line N: ...') when it does not
+    parse, so validate.py can report it; settings() turns that into one error line."""
+    p = settings_path(root)
+    if p is None:
+        return {}
+    try:
+        mine = miniyaml.load(p)
+    except ValueError as e:
+        raise ValueError(e if str(e).startswith(os.path.basename(p)) else f"{os.path.basename(p)}: {e}")
+    if not isinstance(mine, dict):
+        raise ValueError(f"{os.path.basename(p)}: should hold a list of 'key: value' entries")
+    return mine
 
 
 def settings(root=None):
-    """Shipped defaults with the user's settings.json laid over them (nested keys merged)."""
+    """Shipped defaults with the user's settings file laid over them (nested keys merged). A file that does not parse exits with
+    one line: error: settings.yaml: line N: <what>."""
     root = root or data_root()
     try:
-        mine = load("settings.json", root)
-    except (OSError, ValueError):
-        mine = {}
+        mine = user_settings(root)
+    except (OSError, ValueError) as e:
+        raise SystemExit(f"error: {e}")
     return _merge(default_settings(), mine)
 
 

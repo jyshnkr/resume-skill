@@ -10,7 +10,7 @@
   check.py --all                                            every bank bullet, leads per version (needs a data folder)
   add --json to print the results as a list of {text, status, words, chars, findings[]}
 
-Limits, word lists and private names come from the data folder (settings.json, bank.json, private/terms.json; where.py finds it).
+Limits, word lists and private names come from the data folder (settings.yaml, bank.json, private/terms.json; where.py finds it).
 Without a data folder the shipped default settings run and private names are not checked (a NOTE says so).
 A result line is a plain sentence: LEVEL rule N: what is wrong. Rule numbers are the rule numbers of the resume rule list.
 Exit 0 clean, 1 any FAIL, 2 WARN only (NOTE and INFO never change the exit code), except --pages, which exits 2 when the page count

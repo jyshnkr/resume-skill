@@ -11,8 +11,8 @@ Mapping: bank, summaries, profile and versions are copied (version names and mar
 tailorings/<slug>.json becomes jobs/<slug>/tailoring.json; its jd_files are copied to jobs/<slug>/posting.md (posting-2.md, ...)
 and "posting" is set (jd_files is dropped: those paths no longer exist); status and bank_commit are kept, sent_on is null.
 retired.json, bank-notes.md and drive.json go to archive/, changelog/ to archive/history/, CHANGELOG.md to archive/,
-resumes/ to archive/resumes/. settings.json is the shipped defaults: the user-specific values the old check.py held are NOT
-carried; set them in settings.json by hand.
+resumes/ to archive/resumes/. settings.yaml is the shipped defaults: the user-specific values the old check.py held are NOT
+carried; set them in settings.yaml by hand.
 
 Fixes file: a JSON list of {id, description, op, ...}. Ops (file paths are relative to the NEW data folder):
   replace          {file, find, replace}              the exact text must occur once, else "not applicable: text not found"
@@ -114,7 +114,7 @@ def build_plan(old):
     for folder, dest in (("changelog", "archive/history"), ("resumes", "archive/resumes")):
         for rel in files_under(os.path.join(old, folder)) if os.path.isdir(os.path.join(old, folder)) else []:
             plan[f"{dest}/{rel}"] = ("copy", os.path.join(old, folder, rel))
-    plan["settings.json"] = ("copy", rd.DEFAULT_SETTINGS)
+    plan["settings.yaml"] = ("copy", rd.DEFAULT_SETTINGS)
     for name, text in su.FILES.items():  # starters for anything the old repo did not have (recruiters.md, ...)
         plan.setdefault(name, ("text", text))
     return plan, notes
@@ -304,8 +304,8 @@ def main(argv):
     locked = rd.lock_frozen(new)  # sent tailorings become read-only on disk
     if locked:
         print(f"locked {len(locked)} sent tailoring file(s) read-only.")
-    print("settings.json is the shipped defaults. Values the old check.py held (limits, banned words, internal names, "
-          "and anything else user-specific) are not carried: set them in settings.json by hand.")
+    print("settings.yaml is the shipped defaults. Values the old check.py held (limits, banned words, internal names, "
+          "and anything else user-specific) are not carried: set them in settings.yaml by hand.")
     r = child("validate.py", new)
     print(r.stdout.rstrip())
     if r.stderr.strip():

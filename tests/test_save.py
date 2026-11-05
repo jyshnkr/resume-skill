@@ -1,7 +1,7 @@
 """save.py: plan -> validate -> confirm -> apply -> verify, with a backup and an undo."""
 import datetime, json, os, shutil, unittest
 
-from helpers import TmpCase, run, write
+from helpers import TmpCase, run, write, edit_settings
 
 TAILORING = os.path.join("jobs", "acme-backend", "tailoring.json")
 
@@ -100,9 +100,7 @@ class Apply(SaveCase):
 
     def test_backup_copy_to(self):
         dest = os.path.join(self.tmp, "mirror")
-        s = self.jload(self.data, "settings.json")
-        s["output"]["backup_copy_to"] = dest
-        write(os.path.join(self.data, "settings.json"), json.dumps(s))
+        edit_settings(self.data, lambda s: s["output"].update(backup_copy_to=dest))
         self.save(self.plan([{"path": TAILORING, "content": self.tailoring_with(client="X")}]), "--yes")
         self.assertTrue(os.path.exists(os.path.join(dest, "2026-11-04-test", TAILORING)))
 

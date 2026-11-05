@@ -13,7 +13,7 @@ Hard-coded spots made data-driven (one test each):
  6 BANNED/IRREGULAR/NOT_PAST/STOP -> bullets.*    12 wording that named the owner ('his') -> neutral
 """
 import importlib.util, json, os, re, sys, unittest
-from helpers import TmpCase, run, write, EXAMPLE, FIXTURES, SCRIPTS
+from helpers import TmpCase, run, write, edit_settings, EXAMPLE, FIXTURES, SCRIPTS
 
 try:  # Pillow plus the Liberation Serif font (found by name, or in the current folder)
     from PIL import ImageFont
@@ -67,7 +67,7 @@ class CheckCase(TmpCase):
         write(p, json.dumps(d, indent=2))
 
     def setting(self, data, section, key, value):
-        self.edit(data, "settings.json", lambda d: d[section].__setitem__(key, value))
+        edit_settings(data, lambda d: d[section].__setitem__(key, value))
 
 
 class GoldenTests(CheckCase):

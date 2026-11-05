@@ -8,7 +8,7 @@
 
 --against compares the built text with a plain-text file in the shape `resume_data.py TARGET --with-contact` prints
 (tab = 8 spaces, bullets start with "* "). Nothing is written to the data folder.
-Stdlib only. Rendering needs LibreOffice (`soffice` or `libreoffice` on PATH); the font is settings.json output.font, and
+Stdlib only. Rendering needs LibreOffice (`soffice` or `libreoffice` on PATH); the font is settings.yaml output.font, and
 page counts match Word only when that font is installed (Times New Roman needs Microsoft's core fonts).
 Exit 0 when every requested check passes, 1 when one fails or the command line is wrong (message on stderr), 2 when
 LibreOffice is missing or fails (the line says "PAGES not checked: <reason>"; pages are never guessed).

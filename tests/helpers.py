@@ -6,6 +6,8 @@ SKILL = os.path.join(ROOT, "skills", "resume-skill")
 SCRIPTS = os.path.join(SKILL, "scripts")
 EXAMPLE = os.path.join(ROOT, "examples", "data")
 FIXTURES = os.path.join(ROOT, "tests", "fixtures")
+sys.path.insert(0, SCRIPTS)
+import miniyaml  # noqa: E402
 
 
 def write(path, text):
@@ -21,6 +23,27 @@ def run(script, *args, env=None, cwd=None, root=SCRIPTS):
     path = script if os.path.isabs(script) else os.path.join(root, script)
     return subprocess.run([sys.executable, "-B", path, *map(str, args)], capture_output=True, text=True, env=e,
                           cwd=cwd, stdin=subprocess.DEVNULL, timeout=120)
+
+
+def edit_settings(data_dir, fn):
+    """Load the folder's settings (settings.yaml, settings.yml or the legacy settings.json), apply fn to the dict, write it back
+    in the same format. A yaml file keeps the shipped hints (comments); the user's own comments are replaced, as setup.py does."""
+    for name in ("settings.yaml", "settings.yml", "settings.json"):
+        path = os.path.join(data_dir, name)
+        if os.path.isfile(path):
+            break
+    else:
+        raise FileNotFoundError(f"no settings file in {data_dir}")
+    comments = {}
+    data = miniyaml.load(path, comments)
+    fn(data)
+    if name == "settings.json":
+        write(path, json.dumps(data, indent=2) + "\n")
+    else:
+        shipped = {}
+        miniyaml.load(os.path.join(SKILL, "assets", "defaults", "settings.yaml"), shipped)
+        write(path, miniyaml.dumps(data, shipped))
+    return data
 
 
 class TmpCase(unittest.TestCase):

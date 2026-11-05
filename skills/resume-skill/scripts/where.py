@@ -7,13 +7,14 @@ Order: the RESUME_SKILL_DATA environment variable, then the folder saved by setu
 ~/.config/resume-skill/location, then the default ~/.config/resume-skill/data/.
 (RESUME_SKILL_CONFIG_DIR replaces ~/.config/resume-skill, mainly for tests.)
 
-Exit 0: the folder is ready (it holds settings.json). Output: its path, then "source: env|saved|default".
+Exit 0: the folder is ready (it holds settings.yaml, settings.yml or the older settings.json). Output: its path, then "source: env|saved|default".
 Exit 1: something is set but wrong (mistyped variable, saved folder gone, folder is not a data folder).
 Exit 2: nothing is set up yet. Ask the user where the data should live, then run setup.py.
 """
 import json, os, sys
 
-MARKER = "settings.json"
+SETTINGS_FILES = ("settings.yaml", "settings.yml", "settings.json")  # the first one found is the user's settings
+MARKER = "settings.yaml"  # the name used in messages
 ENV = "RESUME_SKILL_DATA"
 
 
@@ -29,6 +30,10 @@ def saved_location():
     return None
 
 
+def has_settings(path):
+    return any(os.path.isfile(os.path.join(path, n)) for n in SETTINGS_FILES)
+
+
 def resolve():
     """Returns dict(path, source, saved, state). state is ready | missing | not_data | unset. Creates nothing."""
     saved = saved_location()
@@ -39,7 +44,7 @@ def resolve():
         path, source = os.path.abspath(os.path.expanduser(saved)), "saved"
     else:
         path, source = os.path.join(config_dir(), "data"), "default"
-    if os.path.isfile(os.path.join(path, MARKER)):
+    if has_settings(path):
         state = "ready"
     elif os.path.isdir(path):
         state = "not_data" if (source != "default" or os.listdir(path)) else "unset"
@@ -61,7 +66,7 @@ def message(r):
     if r["state"] == "missing":
         return f"error: {name} points to {r['path']}, which does not exist. Fix it or run setup.py --data PATH --yes."
     if r["state"] == "not_data":
-        return f"error: {r['path']} (from {name}) is not a resume-skill data folder: it has no {MARKER}."
+        return f"error: {r['path']} (from {name}) is not a resume-skill data folder: it has no {MARKER} (or the older settings.json)."
     if r["state"] == "unset":
         return f"no data folder yet (looked at {r['path']}). Ask the user where it should live, then run: setup.py --data PATH --yes"
     return ""

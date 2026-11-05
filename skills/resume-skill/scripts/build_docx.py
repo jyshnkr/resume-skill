@@ -4,7 +4,7 @@
     python3 build_docx.py full-time out.docx
     python3 build_docx.py tailoring:acme-backend out.docx
     python3 build_docx.py full-time out.docx --no-contact   # placeholder contact line: paste the real one before sending
-    python3 build_docx.py full-time out.docx --font Arial   # default font: settings.json output.font (Times New Roman)
+    python3 build_docx.py full-time out.docx --font Arial   # default font: settings.yaml output.font (Times New Roman)
 
 Without private/contact.json the build stops unless --no-contact is given: the file would carry "<phone>" and no
 email or links.
@@ -31,7 +31,7 @@ ZIP_DATE = (1980, 1, 1, 0, 0, 0)  # fixed, so the same resume always gives the s
 
 
 def default_font(root=None):
-    """settings.json output.font (Times New Roman unless the user changed it)."""
+    """settings.yaml output.font (Times New Roman unless the user changed it)."""
     return rd.settings(root)["output"]["font"]
 
 
