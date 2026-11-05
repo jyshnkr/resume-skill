@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.DS_Store
+# a data folder must never be committed
+.data/
+data/
+out/
+backups/
+*.docx
+!tests/fixtures/*.docx
