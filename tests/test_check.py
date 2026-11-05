@@ -561,7 +561,9 @@ class PagesTests(CheckCase):
     def test_unreadable_page_count_is_a_note_and_exits_2(self):
         docx = os.path.join(self.tmp, "r.docx")
         write(docx, "not a real docx")
-        env = {**self.env_for(EXAMPLE), "PATH": "/usr/bin:/bin"}  # no soffice on the path
+        empty = os.path.join(self.tmp, "empty-path")  # an empty folder as PATH: no soffice anywhere, whatever the machine has installed
+        os.makedirs(empty)
+        env = {**self.env_for(EXAMPLE), "PATH": empty}
         r = run("check.py", "--pages", "2", docx, env=env)
         self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
         self.assertIn("NOTE rule 32: pages: not checked (no PDF renderer)", r.stdout)

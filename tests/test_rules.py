@@ -7,6 +7,11 @@ WHEN = {"preflight", "posting", "tailoring", "final", "reading"}
 ENFORCED = {"check", "build", "reading"}
 
 
+def read(path):
+    with open(path, encoding="utf-8") as f:
+        return f.read()
+
+
 def rules():
     with open(REGISTRY, encoding="utf-8") as f:
         return json.load(f)["rules"]
@@ -37,7 +42,7 @@ class RegistryTests(unittest.TestCase):
                 self.assertTrue(os.path.isfile(os.path.join(SCRIPTS, r["by"])), f"rule {r['n']} names {r.get('by')}")
 
     def test_no_personal_wording_in_the_registry(self):
-        text = open(REGISTRY, encoding="utf-8").read()
+        text = read(REGISTRY)
         for word in ("Master", "Contract"):  # version names of the research source; employers are covered by tools/leak_scan.py
             self.assertNotIn(word, text)
 
@@ -50,10 +55,10 @@ class GeneratedFilesTests(unittest.TestCase):
     def test_each_file_is_under_five_thousand_characters(self):
         for n in (1, 2, 3):
             p = os.path.join(SKILL, "references", f"rules-{n}.md")
-            self.assertLess(len(open(p, encoding="utf-8").read()), 5000, p)
+            self.assertLess(len(read(p)), 5000, p)
 
     def test_every_live_rule_appears_once_across_the_files(self):
-        body = "".join(open(os.path.join(SKILL, "references", f"rules-{n}.md"), encoding="utf-8").read() for n in (1, 2, 3))
+        body = "".join(read(os.path.join(SKILL, "references", f"rules-{n}.md")) for n in (1, 2, 3))
         for r in rules():
             self.assertEqual(len(re.findall(rf"^\*\*{r['n']}\*\*", body, flags=re.M)), 1, r["n"])
 
