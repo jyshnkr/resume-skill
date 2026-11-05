@@ -76,6 +76,9 @@ class StructureTests(unittest.TestCase):
     def test_frontmatter_fields_only(self):
         self.assertTrue(set(FM) <= {"name", "description", "compatibility", "metadata"}, set(FM))
         self.assertTrue(set(FM["metadata"]) <= {"author", "version", "tags"}, set(FM["metadata"]))
+        for k, v in FM["metadata"].items():
+            self.assertIsInstance(v, str, f"metadata.{k}: the spec says metadata maps string keys to string values")
+            self.assertFalse(v.startswith("["), f"metadata.{k} is a YAML list; write it as one quoted string")
         self.assertNotIn("license", FM, "no license line until the user picks one")
         self.assertNotIn("allowed-tools", FM)
         self.assertLessEqual(len(FM["compatibility"]), 500)
@@ -222,28 +225,36 @@ class UserDataTests(TmpCase):
         for forbidden in ("bank.json", "profile.md", "contact.json", "terms.json", "summaries.json", "tailoring.json"):
             self.assertNotIn(forbidden, names)
 
-    def test_reinstall_keeps_the_data_folder_byte_identical(self):
+    def test_reinstall_keeps_the_data_folder_and_scripts_never_write_into_the_skill_folder(self):
         data = self.example_copy()
-        before = _tree_hash(data)
         for i in range(2):  # install, then re-install: replace the skill folder with a fresh copy
             dest = os.path.join(self.tmp, "installed", "resume-skill")
             shutil.rmtree(dest, ignore_errors=True)
             shutil.copytree(SKILL, dest, ignore=shutil.ignore_patterns("__pycache__"))
-            r = run(os.path.join(dest, "scripts", "where.py"), env=self.env_for(data))
-            self.assertEqual(r.returncode, 0, r.stderr)
-            self.assertEqual(r.stdout.splitlines()[0], data)
-        self.assertEqual(_tree_hash(data), before)
+            skill_before = _tree_hash(dest)
+            env = self.env_for(data)
+            outdir = os.path.join(self.tmp, "resumes")
+            for args in (("where.py",), ("validate.py",), ("preflight.py",), ("check.py", "--all"), ("check.py", "--stack", "full-time"),
+                         ("export.py", "full-time", outdir, "--no-contact"), ("setup.py", "--data", os.path.join(self.tmp, "x"), "--dry-run")):
+                r = run(os.path.join(dest, "scripts", args[0]), *args[1:], env=env, cwd=dest)
+                self.assertIn(r.returncode, (0, 2), f"{args[0]}: {r.stdout[-200:]} {r.stderr[-200:]}")
+            self.assertEqual(_tree_hash(dest), skill_before, "a script wrote into the installed skill folder")
+        # the data folder changes only under out/ (the pre-flight result), never in saved data
+        before = _tree_hash(EXAMPLE)
+        self.assertEqual(_tree_hash(data, skip=("out",)), _tree_hash(EXAMPLE, skip=("out",)))
+        self.assertEqual(_tree_hash(EXAMPLE), before)
 
 
-def _tree_hash(root):
+def _tree_hash(root, skip=()):
     import hashlib
     h = hashlib.sha256()
-    for dp, dn, fn in sorted(os.walk(root)):
-        dn.sort()
+    for dp, dn, fn in os.walk(root):
+        dn[:] = sorted(d for d in dn if not (dp == root and d in skip))
         for f in sorted(fn):
             p = os.path.join(dp, f)
             h.update(os.path.relpath(p, root).encode())
-            h.update(open(p, "rb").read())
+            with open(p, "rb") as fh:
+                h.update(fh.read())
     return h.hexdigest()
 
 

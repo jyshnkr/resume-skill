@@ -1,5 +1,5 @@
 """save.py: plan -> validate -> confirm -> apply -> verify, with a backup and an undo."""
-import datetime, json, os, unittest
+import datetime, json, os, shutil, unittest
 
 from helpers import TmpCase, run, write
 
@@ -183,6 +183,51 @@ class Refusals(SaveCase):
         self.assertEqual(r.returncode, 1)
         self.assertEqual(len(r.stderr.strip().splitlines()), 1)
 
+    def case_insensitive(self):
+        probe = os.path.join(self.tmp, "CaseProbe")
+        write(probe, "x")
+        return os.path.exists(os.path.join(self.tmp, "caseprobe"))
+
+    def test_reserved_names_in_another_case(self):
+        self.assertEqual(self.save(self.plan([{"path": "a.txt", "text": "a"}], id="s1", name="s1.json"), "--yes").returncode, 0)
+        for bad in ("Backups/s1/manifest.json", "BACKUPS/new/x.txt", "Changes/s1.md", "Manifest.json"):
+            with self.subTest(bad):
+                before = snapshot(self.data)
+                r = self.save(self.plan([{"path": bad, "text": "no"}], id="s2", name="s2.json"), "--yes")
+                self.assertEqual(r.returncode, 1, r.stdout)
+                self.assertNotIn("Traceback", r.stderr)
+                self.assertEqual(snapshot(self.data), before)
+
+    def test_case_variant_of_a_sent_tailoring(self):
+        if not self.case_insensitive():
+            self.skipTest("this volume is case sensitive")
+        self.freeze()
+        before = snapshot(self.data)
+        r = self.save(self.plan([{"path": "jobs/acme-backend/Tailoring.json", "content": self.tailoring_with(client="X")}]), "--yes")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertEqual(snapshot(self.data), before)
+
+    def test_symlinked_folder_routing_to_a_sent_tailoring(self):
+        self.freeze()
+        os.symlink(os.path.join(self.data, "jobs", "acme-backend"), os.path.join(self.data, "out", "link"))
+        before = snapshot(self.data)
+        r = self.save(self.plan([{"path": "out/link/tailoring.json", "content": self.tailoring_with(client="X")}]), "--yes")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertIn("symlink", r.stderr)
+        self.assertEqual(len(r.stderr.strip().splitlines()), 1)
+        self.assertEqual(snapshot(self.data), before)
+
+    def test_hard_link_to_a_sent_tailoring(self):
+        self.freeze()
+        os.link(os.path.join(self.data, TAILORING), os.path.join(self.data, "jobs", "acme-backend", "alias.json"))
+        before = snapshot(self.data)
+        r = self.save(self.plan([{"path": "jobs/acme-backend/alias.json", "content": self.tailoring_with(client="X")}]), "--yes")
+        self.assertEqual(r.returncode, 1, r.stdout)
+        self.assertEqual(snapshot(self.data), before)
+
+    def test_paths_that_differ_only_in_case_are_duplicates(self):
+        self.refused([{"path": "a.json", "text": "1"}, {"path": "A.json", "text": "2"}], "twice")
+
     def test_help(self):
         r = run("save.py", "--help")
         self.assertEqual(r.returncode, 0)
@@ -309,6 +354,93 @@ class Undo(SaveCase):
     def test_undo_unknown_id(self):
         r = run("save.py", "--undo", "nope", env=self.env)
         self.assertEqual(r.returncode, 1)
+
+    def saved(self, pid="2026-11-04-test", path="a.txt"):
+        self.assertEqual(self.save(self.plan([{"path": path, "text": "a"}], id=pid, name=pid + ".json"), "--yes").returncode, 0)
+
+    def manifest_path(self, pid="2026-11-04-test"):
+        return os.path.join(self.data, "backups", pid, "manifest.json")
+
+    def test_damaged_manifests_give_one_line_errors(self):
+        damages = {"not json": "{no", "empty list": "[]", "missing keys": json.dumps({"id": "2026-11-04-test"}),
+                   "wrong id": json.dumps({"id": "other", "saved_at": "x", "changed": [], "deleted": [], "created": [],
+                                           "created_dirs": [], "after": {}, "undone": False}),
+                   "path escape": json.dumps({"id": "2026-11-04-test", "saved_at": "2026-11-04T10:00:00", "changed": ["../x"],
+                                              "deleted": [], "created": [], "created_dirs": [], "after": {"../x": "0"}, "undone": False})}
+        for label, text in damages.items():
+            with self.subTest(label):
+                self.saved()
+                write(self.manifest_path(), text)
+                for args in (("--undo", "2026-11-04-test"), ("--undo",)):
+                    r = run("save.py", *args, env=self.env)
+                    self.assertEqual(r.returncode, 1, r.stdout)
+                    self.assertNotIn("Traceback", r.stderr)
+                    self.assertIn("2026-11-04-test", r.stderr)
+                    self.assertTrue(os.path.exists(os.path.join(self.data, "a.txt")))
+                shutil.rmtree(os.path.join(self.data, "backups", "2026-11-04-test"))
+                os.remove(os.path.join(self.data, "changes", "2026-11-04-test.md"))
+                os.remove(os.path.join(self.data, "a.txt"))
+
+    def test_bare_undo_skips_a_damaged_backup_and_says_so(self):
+        self.saved("2026-11-04-a", "a.txt")
+        self.saved("2026-11-04-b", "b.txt")
+        write(self.manifest_path("2026-11-04-b"), "{no")
+        r = run("save.py", "--undo", env=self.env)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("2026-11-04-b", r.stderr)
+        self.assertFalse(os.path.exists(os.path.join(self.data, "a.txt")))
+        self.assertTrue(os.path.exists(os.path.join(self.data, "b.txt")))
+
+
+class UndoFrozen(SaveCase):
+    def correct_a_sent_tailoring(self):
+        self.freeze()
+        old = self.read(TAILORING)
+        plan = self.plan([{"path": TAILORING, "content": self.tailoring_with(client="Acme Freight Co")}],
+                         correction=True, note="Correction: fixed the client name.")
+        self.assertEqual(self.save(plan, "--yes").returncode, 0)
+        return old
+
+    def test_undo_refuses_to_touch_a_sent_tailoring(self):
+        self.correct_a_sent_tailoring()
+        now = self.read(TAILORING)
+        for args in (("--undo",), ("--undo", "--yes")):
+            r = run("save.py", *args, env=self.env)
+            self.assertEqual(r.returncode, 1, r.stdout)
+            self.assertIn("--unfreeze", r.stderr)
+            self.assertEqual(len(r.stderr.strip().splitlines()), 1)
+            self.assertEqual(self.read(TAILORING), now)
+
+    def test_unfreeze_needs_yes(self):
+        self.correct_a_sent_tailoring()
+        now = self.read(TAILORING)
+        r = run("save.py", "--undo", "--unfreeze", env=self.env)
+        self.assertEqual(r.returncode, 1)
+        self.assertEqual(self.read(TAILORING), now)
+
+    def test_unfreeze_with_yes_undoes_and_says_so(self):
+        old = self.correct_a_sent_tailoring()
+        r = run("save.py", "--undo", "--unfreeze", "--yes", env=self.env)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("unfroze", r.stdout.lower())
+        self.assertIn(TAILORING, r.stdout)
+        self.assertEqual(self.read(TAILORING), old)
+
+    def test_unfreeze_outside_undo_is_an_error(self):
+        r = self.save(self.plan([{"path": "a.txt", "text": "a"}]), "--unfreeze", "--yes")
+        self.assertEqual(r.returncode, 1)
+        self.assertFalse(os.path.exists(os.path.join(self.data, "a.txt")))
+
+    def test_undo_of_a_save_that_created_a_tailoring_is_refused_once_it_is_sent(self):
+        plan = self.plan([{"path": "jobs/new-job/tailoring.json", "content": self.tailoring_with(slug="new-job", client="N")},
+                          {"path": "jobs/new-job/posting.md", "text": "Backend engineer posting.\n"}])
+        self.assertEqual(self.save(plan, "--yes").returncode, 0)
+        sent = self.tailoring_with(slug="new-job", client="N", status="submitted", sent_on="2026-11-05")
+        write(os.path.join(self.data, "jobs", "new-job", "tailoring.json"), json.dumps(sent))
+        r = run("save.py", "--undo", "--yes", env=self.env)
+        self.assertEqual(r.returncode, 1)
+        self.assertIn("--unfreeze", r.stderr)
+        self.assertTrue(os.path.exists(os.path.join(self.data, "jobs", "new-job", "tailoring.json")))
 
 
 if __name__ == "__main__":

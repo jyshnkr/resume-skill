@@ -16,7 +16,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 
 def tree_hash(root, skip=("out",)):
     h = hashlib.sha256()
-    for dp, dn, fn in sorted(os.walk(root)):
+    for dp, dn, fn in os.walk(root):
         dn[:] = sorted(d for d in dn if not (dp == root and d in skip))
         for f in sorted(fn):
             if f == ".keep":

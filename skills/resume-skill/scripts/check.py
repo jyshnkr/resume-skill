@@ -45,6 +45,7 @@ CHECKS = {
     "repeated_word": {"rule": 6, "level": "FAIL", "when": "bullet", "doc": "The same word appears twice in one bullet."},
     "repeated_stem": {"rule": 6, "level": "WARN", "when": "bullet", "doc": "Two forms of one word appear in one bullet."},
     "internal_name": {"rule": 16, "level": "FAIL", "when": "bullet", "doc": "A private codename from private/terms.json appears (also checked in a summary)."},
+    "private_pattern": {"rule": 16, "level": "FAIL", "when": "bullet", "doc": "Text matches a private pattern from private/terms.json (the match is not printed in full)."},
     "stage_word": {"rule": 16, "level": "NOTE", "when": "bullet", "doc": "A stage word from private/terms.json appears; it may be an internal stage name."},
     "adr_number": {"rule": 16, "level": "FAIL", "when": "bullet", "doc": "An architecture decision record number appears."},
     "bold": {"rule": 29, "level": "FAIL", "when": "bullet", "doc": "Bold markers (**) were pasted into the text."},
@@ -108,8 +109,13 @@ def common(t, terms):  # internal names, ADR numbers, bold markers
     rx = internal_re(terms)
     hit = [m.span() for m in rx.finditer(t)] if rx else []
     stages = terms.get("stage_words", [])
+    pats = []
+    for pat in terms.get("patterns", []):  # private patterns (regex strings); one that does not compile is skipped
+        try: pats += [m.group() for m in re.finditer(pat, t) if m.group()]
+        except re.error: pass
     stage = re.compile(r"(?i)\b(?:" + "|".join(map(re.escape, stages)) + r")\b") if stages else None  # bare word: maybe a stage name, maybe "public beta"
     return ([F("FAIL", 16, "internal_name", f"'{t[a:b]}' is an internal name; remove it or use a public term.") for a, b in hit]
+            + [F("FAIL", 16, "private_pattern", f"private pattern matched: {g[:2]}...; remove it or use a public term.") for g in pats]
             + [F("NOTE", 16, "stage_word", f"'{m.group()}' may be an internal stage name; if it is, say 'pre-production'.") for m in (stage.finditer(t) if stage else []) if m.span() not in hit]
             + [F("FAIL", 16, "adr_number", "an ADR number is internal; remove it.")] * bool(re.search(r"\bADR[ -]?\d", t))
             + [F("FAIL", 29, "bold", "** bold markers; paste plain text.")] * ("**" in t))
@@ -154,7 +160,7 @@ def summary(t, cfg, terms):
     lim, sm, bl = cfg["limits"], cfg["summary"], cfg["bullets"]
     s = re.split(r"(?<=[.!?])\s+", t); res = [] if len(s) == lim["summary_sentences"] else [F("FAIL", 23, "summary_sentences", f"{len(s)} sentences; the summary needs {lim['summary_sentences']}.")]
     if sm["opening_pattern"] and not re.match(sm["opening_pattern"], t): res.append(F("FAIL", 23, "summary_opening", "sentence 1 does not open as required by the opening pattern in settings."))
-    res += [F("FAIL", 24, "summary_past", f"sentence {i} must open in past tense.") for i, x in enumerate(s[1:], 2) if not past(x.split()[0].lower(), bl)]
+    res += [F("FAIL", 24, "summary_past", f"sentence {i} must open in past tense.") for i, x in enumerate(s[1:], 2) if not past(re.sub(r"\W", "", x.split()[0]).lower(), bl)]
     retired = "|".join(sm["retired_wording"])
     res += [F("FAIL", 25, "summary_retired", f"retired wording '{r.group()}'.") for r in re.finditer(retired, t)] if retired else []
     return res + common(t, terms) + wrap(t, lim["text_pt"], lim["summary_lines"], lim["summary_lines"], 23)
@@ -385,6 +391,9 @@ def main(a):
             item["label"], item["version"] = b["id"], v; done.append(item)
             code = CODE[item["status"]]
             worst = 1 if 1 in (worst, code) else max(worst, code)
+        if as_json:
+            out = [dict({"id": it["label"], "version": it["version"], "exit": CODE[it["status"]]}, **{k: v for k, v in it.items() if k not in ("kind", "label", "version", "head")}) for it in done]
+            print(json.dumps(out, indent=1, ensure_ascii=False)); sys.exit(worst)
         short = short_last_lines(done)  # removes the per-bullet notes from the results
         for item in done:
             print(f"## {item['label']} ({item['version'] or 'none'}) exit={CODE[item['status']]}")

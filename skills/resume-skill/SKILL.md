@@ -5,7 +5,7 @@ compatibility: Requires Python 3.9+ (standard library only). Pillow is optional 
 metadata:
   author: resume-skill contributors
   version: "0.1.0"
-  tags: [resume, job-description, tailoring]
+  tags: "resume, job-description, tailoring"
 ---
 
 # Resume Skill
@@ -81,12 +81,12 @@ File: out/Jordan_Ellis_Acme-backend.docx   (pages: not checked, no LibreOffice)
 ## Workflow
 
 - [ ] 1. Find the data: `python3 scripts/where.py` (see User data).
-- [ ] 2. Pre-flight: `python3 scripts/preflight.py --if-stale`. Silent means nothing changed. Bullets listed under `hold_back` in `out/preflight.json` are never offered as swaps.
+- [ ] 2. Pre-flight: `python3 scripts/preflight.py --if-stale`. Silent means nothing changed since the last run; the exit code still gives the stored verdict (1 = a bullet is held back, 2 = warnings only). Bullets listed under `hold_back` in `out/preflight.json` are never offered as swaps.
 - [ ] 3. Read `profile.md` (claim boundaries, do-not-claim), `settings.json`, the version files and the bank, then `references/rules-1.md`, `rules-2.md`, `rules-3.md`.
 - [ ] 4. Read the posting and pick the version (`references/workflow.md`). Several postings: one short table (posting, lean, version) and the user picks.
 - [ ] 5. Fit: fill requirement rows and run `scripts/fit_score.py` (`references/fit.md`).
 - [ ] 6. Edits and checks: draft from the bank only, run `scripts/check.py` on every bullet and summary (`references/tailoring.md`). Show before/after and why each stays accurate.
-- [ ] 7. Build: `python3 scripts/export.py tailoring:SLUG OUTDIR`. Do not go to step 8 until the build ran.
+- [ ] 7. Build: `python3 scripts/export.py file:DATA/out/SLUG/tailoring.json DATA/out/SLUG --label SLUG`, where DATA is the path `where.py` printed. Do not go to step 8 until the build ran.
 - [ ] 8. Reply in the output order, then the final read list (`references/final-read.md`).
 - [ ] 9. After the user's OK, save with `scripts/save.py` (`references/save.md`).
 
@@ -113,7 +113,7 @@ Each is one level deep. Open it only when its line applies.
 - `references/fit.md`: fill the requirement rows, the 1-5 score and its legend, flags, the fit card.
 - `references/tailoring.md`: choose bullets, edit the summary and skills, the check loop, build, frozen copies.
 - `references/save.md`: the plan file, `save.py`, undo, sent copies and corrections.
-- `references/rules-1.md`, `references/rules-2.md`, `references/rules-3.md`: the 67 rules (generated from the registry). Read all three before editing.
+- `references/rules-1.md`, `references/rules-2.md`, `references/rules-3.md`: the rules, 65 live ones numbered up to 67 (generated from the registry). Read all three before editing.
 - `references/brackets.md`: only when the posting names a platform the user has not used.
 - `references/final-read.md`: the 12 last-look items; never blocks.
 - `references/platforms.md`: install and run on Claude Code, Codex and other agents that read a skills folder.
@@ -128,7 +128,7 @@ RUN these; do not reimplement them and do not read them unless one fails. Script
 - `python3 scripts/preflight.py --if-stale`: check every bank bullet once; silent when unchanged.
 - `python3 scripts/check.py "bullet text"`: check one bullet (`--leads "Cut Ended"` for the other leads in the version, `--summary` for a summary, `--stack VERSION` for stack coverage, `--json`).
 - `python3 scripts/fit_score.py ROWS.json --slug SLUG --write`: the score, counts, lean and the fit card.
-- `python3 scripts/export.py tailoring:SLUG OUTDIR`: build the `.docx`; exit 2 means pages are not checked.
+- `python3 scripts/export.py TARGET OUTDIR`: build the `.docx`. TARGET is a draft `file:PATH`, a saved `tailoring:SLUG` or a version name. OUTDIR must be outside this skill folder. Exit 2 means pages are not checked.
 - `python3 scripts/save.py PLAN.json --dry-run`, then `--yes`: save an approved change with a backup; `--undo` reverts.
 - `python3 scripts/render_check.py TARGET`: page count when LibreOffice is installed.
 
@@ -136,7 +136,7 @@ If a script fails, report its exact error, fix the cause and re-run it. Do not h
 
 ## Validation
 
-1. `check.py` exits 0 for every bullet and summary shown. A WARN or NOTE is named in the reply; a FAIL is fixed first.
+1. `check.py` shows no FAIL for any bullet or summary (exit 0, or 2 when only warnings). Name each WARN and NOTE in the reply; fix a FAIL first.
 2. Every number and claim appears in the bank or profile; nothing on the do-not-claim list is claimed.
 3. Page counts are within the version's cap or reported "not checked".
 4. Before saving: write the plan file, run `save.py PLAN.json --dry-run` (it runs `validate.py` on the result), show the user, wait for OK.

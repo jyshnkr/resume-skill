@@ -4,7 +4,7 @@
     python3 render_check.py full-time                      # build + render, print the page count vs the page cap
     python3 render_check.py tailoring:acme-backend --against resume.txt --expect-pages 2
     python3 render_check.py file:/tmp/draft.json --spare   # a draft outside the data folder; also report spare bullet lines
-    add --out FILE to keep the built .docx (otherwise it is built in a temporary folder and removed)
+    add --out FILE to keep the built .docx (otherwise it is built in a temporary folder and removed); not inside the skill folder
 
 --against compares the built text with a plain-text file in the shape `resume_data.py TARGET --with-contact` prints
 (tab = 8 spaces, bullets start with "* "). Nothing is written to the data folder.
@@ -43,6 +43,18 @@ def docx_lines(path):
         if text.strip():
             out.append(text.rstrip())
     return out
+
+
+def inside_skill(path):
+    """True when path (symlinks, `..` and a relative path resolved) is the skill folder or in it."""
+    path, skill = os.path.realpath(path), os.path.realpath(rd.SKILL_DIR)
+    return os.path.commonpath([path, skill]) == skill
+
+
+def refuse_skill_folder(path, what):
+    if inside_skill(path):
+        raise SystemExit(f"error: {what} {os.path.abspath(path)} is inside the skill folder ({rd.SKILL_DIR}); a skill update "
+                         "would erase it. Pick a folder outside it.")
 
 
 class NotChecked(Exception):
@@ -123,6 +135,8 @@ def main(a):
     target = a[0]
     against, out = option(a, "--against"), option(a, "--out")
     expect = option(a, "--expect-pages")
+    if out:
+        refuse_skill_folder(out, "--out")
     if expect is not None:
         try:
             expect = int(expect)

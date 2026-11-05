@@ -13,7 +13,8 @@ stored result is stale as soon as any of them changes.
   --json      print the result file instead of the text summary
   --quiet     print nothing (the exit code still tells)
 
-Exit 0 no FAIL and no WARN, 1 some FAIL, 2 WARN only. An unchanged --if-stale run exits with the stored verdict.
+Exit 0 no FAIL and no WARN, 1 some FAIL, 2 WARN only. An unchanged --if-stale run is silent and its exit code is the stored verdict
+(0 clean, 1 a bullet is held back, 2 warnings only).
 """
 import datetime, hashlib, json, os, sys, tempfile
 

@@ -434,5 +434,47 @@
    ]
   ],
   "needs_pillow": true
+ },
+ {
+  "rule": 24,
+  "check": "summary_past",
+  "kind": "summary",
+  "text": "Senior engineer with 8+ years of experience in cloud systems. Cut costs 10% by tuning. Shipped.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "FAIL",
+    24
+   ]
+  ]
+ },
+ {
+  "rule": 24,
+  "check": "summary_past",
+  "kind": "summary",
+  "text": "Senior engineer with 8+ years of experience in cloud systems. Cut report runtime in half. Led, with a team of 3, releases for 4 teams.",
+  "leads": "",
+  "expect": [],
+  "must_not": [
+   [
+    "FAIL",
+    24
+   ]
+  ]
+ },
+ {
+  "rule": 24,
+  "check": "summary_past",
+  "kind": "summary",
+  "text": "Senior engineer with 8+ years of experience in cloud systems. Cut report runtime in half. Building releases for 4 teams.",
+  "leads": "",
+  "expect": [
+   [
+    "FAIL",
+    24
+   ]
+  ],
+  "must_not": []
  }
 ]

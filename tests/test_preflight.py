@@ -192,6 +192,7 @@ class RobustnessTests(PreflightCase):
         self.assertEqual(r.returncode, 0)
         self.assertIn("--if-stale", r.stdout)
         self.assertIn("Exit", r.stdout)
+        self.assertIn("silent and its exit code is the stored verdict", r.stdout.replace("\n", " "))
 
     def test_unknown_option_is_a_one_line_error(self):
         r = self.pre("--nope")

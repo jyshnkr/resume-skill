@@ -36,6 +36,12 @@ class SmokeRunTests(TmpCase):
         self.assertEqual((res["score"], res["pct"]), (3, 73.33))
         self.assertTrue(os.path.isfile(os.path.join(data, "out", "acme-backend", "fit.json")))
         self.assertTrue(os.path.isfile(os.path.join(data, "out", "acme-backend", "fit.html")))
+        draft = self.jload(data, "jobs", "acme-backend", "tailoring.json")
+        draft["slug"] = "orbit-draft"
+        write(os.path.join(data, "out", "orbit-draft", "tailoring.json"), json.dumps(draft))
+        r = run("export.py", "file:" + os.path.join(data, "out", "orbit-draft", "tailoring.json"), os.path.join(data, "out", "orbit-draft"), "--label", "orbit-draft", env=env)
+        self.assertIn(r.returncode, (0, 2), r.stdout + r.stderr)
+        self.assertTrue(os.path.isfile(os.path.join(data, "out", "orbit-draft", "Jordan_Ellis_orbit-draft.docx")), os.listdir(os.path.join(data, "out", "orbit-draft")))
         outdir = os.path.join(self.tmp, "resumes")
         r = run("export.py", "tailoring:acme-backend", outdir, env=env)
         self.assertIn(r.returncode, (0, 2), r.stdout + r.stderr)  # 2 = pages not checked (no LibreOffice)

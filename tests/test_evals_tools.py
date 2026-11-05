@@ -40,6 +40,16 @@ class GradeTests(TmpCase):
         self.assertEqual(bad.returncode, 1)
         self.assertIn("FAIL data folder unchanged", bad.stdout)
 
+    def test_tree_hash_ignores_out_but_sees_everything_else(self):
+        sys.path.insert(0, os.path.join(ROOT, "evals"))
+        import grade
+        d = self.example_copy()
+        base = grade.tree_hash(d)
+        write(os.path.join(d, "out", "x", "new.docx"), "derived")
+        self.assertEqual(grade.tree_hash(d), base, "out/ is derived output")
+        write(os.path.join(d, "jobs", "new", "posting.md"), "saved data")
+        self.assertNotEqual(grade.tree_hash(d), base)
+
     def test_folder_not_created_case(self):
         out, data = self.case_run("e13", "There is no data folder yet. Where should the data live? Run setup after you choose.", make_data=False)
         self.assertEqual(sh(GRADE, "--case", "e13", "--output", out, "--data", data).returncode, 0)

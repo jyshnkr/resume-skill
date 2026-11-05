@@ -126,6 +126,19 @@ class DataDrivenTests(CheckCase):
         r = run("check.py", "--leads", "", "Cut report runtime 80% by tuning queries.", env=self.base_env)
         self.assertEqual(r.returncode, 1)  # default limits still apply
 
+    def test_private_patterns_from_terms_json_fail_without_echoing_the_match(self):
+        d = self.example_copy()
+        self.edit(d, "private/terms.json", lambda t: t.__setitem__("patterns", ["[unclosed", r"Zeta\d+"]))  # the bad regex is skipped
+        text = GOOD.replace("nightly report", "Zeta42 report")
+        r = self.bullet(text, data=d)
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn("    FAIL rule 16: private pattern matched: Ze...", r.stdout)
+        self.assertNotIn("Zeta42", [l for l in r.stdout.splitlines() if "private pattern" in l][0])
+        self.assertNotIn("Traceback", r.stderr)
+        self.assertNotIn("private pattern", self.bullet(GOOD, data=d).stdout)
+        s = self.chk("--summary", "Senior engineer with 8+ years of experience in cloud systems. Cut report runtime in half. Led the Zeta7 releases.", data=d)
+        self.assertIn("FAIL rule 16: private pattern matched: Ze...", s.stdout)
+
     # 3
     def test_jargon_list_comes_from_settings(self):
         d = self.example_copy()
@@ -502,6 +515,30 @@ class StackTests(CheckCase):
         r = run("check.py", "--stack", "full-time", env=self.base_env)
         self.assertEqual(r.returncode, 1)
         self.assertIn("--stack needs a data folder", r.stderr)
+
+
+class AllJsonTests(CheckCase):
+    def test_all_honours_json(self):
+        r = self.chk("--all", "--json")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        out = json.loads(r.stdout)
+        self.assertEqual([o["id"] for o in out], ["b%03d" % i for i in range(1, 13)])
+        o = out[0]
+        self.assertEqual((o["version"], o["status"], o["exit"]), ("contract", "OK", 0))
+        self.assertEqual(sorted(o), ["chars", "exit", "findings", "id", "status", "text", "version", "words"])
+        self.assertEqual(next(x for x in out if x["id"] == "b012")["findings"][0]["check"], "no_metric")
+
+    def test_all_json_exit_follows_the_worst_bullet(self):
+        d = self.example_copy()
+        self.edit(d, "bank.json", lambda bk: bk["bullets"][2].__setitem__("text", "x"))
+        r = self.chk("--all", "--json", data=d)
+        self.assertEqual(r.returncode, 1)
+        out = json.loads(r.stdout)
+        self.assertEqual((out[2]["status"], out[2]["exit"], out[2]["version"]), ("FAIL", 1, "contract"))
+
+    def test_all_text_form_is_unchanged(self):
+        r = self.chk("--all")
+        self.assertTrue(r.stdout.startswith("## b001 (contract) exit=0\n"))
 
 
 class PagesTests(CheckCase):

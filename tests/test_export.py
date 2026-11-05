@@ -3,8 +3,8 @@
 LibreOffice is not needed for most tests: a stand-in `soffice` on PATH writes a PDF with a chosen number of pages, so the
 exit codes and the PAGES lines are tested everywhere. Tests that need the real LibreOffice are skipped when it is missing.
 """
-import json, os, re, shutil, stat, sys, unittest, zipfile
-from helpers import TmpCase, run, write, EXAMPLE
+import hashlib, json, os, re, shutil, stat, sys, unittest, zipfile
+from helpers import TmpCase, run, write, EXAMPLE, SKILL
 
 HAVE_LO = bool(shutil.which("soffice") or shutil.which("libreoffice"))
 
@@ -220,6 +220,69 @@ class CopyFolderTests(ExportBase):
         dest = os.path.join(self.tmp, "mirror")
         r = self.export("contract", self.out, "--json", data=self.data_with_copy_to(dest), pages=2)
         self.assertEqual(json.loads(r.stdout)["copy"], os.path.join(dest, "Jordan_Ellis_contract.docx"))
+
+
+def tree_hash(folder):
+    h = hashlib.sha256()
+    for dirpath, dirs, files in sorted(os.walk(folder)):
+        dirs.sort()
+        h.update(dirpath[len(folder):].encode() + b"/")
+        for f in sorted(files):
+            h.update(f.encode())
+            with open(os.path.join(dirpath, f), "rb") as fh:
+                h.update(fh.read())
+    return h.hexdigest()
+
+
+class SkillFolderGuardTests(ExportBase):
+    """User data must never land in the skill folder: a skill update would erase it."""
+
+    def setUp(self):
+        super().setUp()
+        self.skill = os.path.join(self.tmp, "skillcopy")
+        shutil.copytree(SKILL, self.skill, ignore=shutil.ignore_patterns("__pycache__"))
+        self.before = tree_hash(self.skill)
+
+    def run_copy(self, script, *args, cwd=None, data=None):
+        env = {**self.env_for(data or EXAMPLE), **self.fake_path(2)}
+        return run(os.path.join(self.skill, "scripts", script), *args, env=env, cwd=cwd or self.skill)
+
+    def assert_refused(self, r):
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertNotIn("Traceback", r.stderr)
+        self.assertEqual(len(r.stderr.strip().splitlines()), 1)
+        self.assertIn("skill folder", r.stderr)
+        self.assertEqual(r.stdout, "")
+        self.assertEqual(tree_hash(self.skill), self.before)
+
+    def test_relative_outdir_run_from_inside_the_skill_folder(self):
+        self.assert_refused(self.run_copy("export.py", "full-time", "out/"))
+        self.assert_refused(self.run_copy("export.py", "full-time", "."))
+
+    def test_absolute_dotdot_and_symlinked_outdirs_are_refused(self):
+        link = os.path.join(self.tmp, "link-to-skill")
+        os.symlink(self.skill, link)
+        for outdir in (os.path.join(self.skill, "out"), os.path.join(self.tmp, "elsewhere", "..", "skillcopy", "out"),
+                       os.path.join(link, "out"), os.path.join(self.skill, "scripts")):
+            with self.subTest(outdir=outdir):
+                self.assert_refused(self.run_copy("export.py", "full-time", outdir, cwd=self.tmp))
+
+    def test_an_outdir_beside_the_skill_folder_is_fine(self):
+        r = self.run_copy("export.py", "full-time", os.path.join(self.tmp, "skillcopy-out"))
+        self.assertEqual(r.returncode, 0, r.stderr)
+
+    def test_copy_resumes_to_inside_the_skill_folder_is_refused_and_nothing_is_written(self):
+        data = self.example_copy()
+        s = self.jload(data, "settings.json")
+        s["output"]["copy_resumes_to"] = os.path.join(self.skill, "assets")
+        write(os.path.join(data, "settings.json"), json.dumps(s))
+        r = self.run_copy("export.py", "full-time", self.out, data=data, cwd=self.tmp)
+        self.assert_refused(r)
+        self.assertFalse(os.path.exists(self.out))
+
+    def test_render_check_out_inside_the_skill_folder_is_refused(self):
+        self.assert_refused(self.run_copy("render_check.py", "full-time", "--out", "kept.docx"))
+        self.assert_refused(self.run_copy("render_check.py", "full-time", "--out", os.path.join(self.skill, "x", "kept.docx"), cwd=self.tmp))
 
 
 class RenderCheckBase(ExportBase):

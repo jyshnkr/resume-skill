@@ -2,7 +2,7 @@
 """Save an approved change to the data folder safely, with a backup and an undo. Never prompts.
 
     python3 save.py PLAN.json [--dry-run] [--yes] [--json]
-    python3 save.py --undo [ID] [--yes]
+    python3 save.py --undo [ID] [--yes] [--unfreeze]
 
 PLAN.json:
     {"id": "2026-11-04-acme-backend", "reason": "one line", "note": "text of the dated note",
@@ -25,12 +25,20 @@ A tailoring whose status is submitted or archived is frozen. A plan touching it 
 "correction": true and its note starts with "Correction".
 
 --undo restores the newest backup (or the ID given) exactly, removes the files that save created, and writes
-changes/<id>-undo.md. It refuses when those files changed since the save, unless --yes.
+changes/<id>-undo.md. It refuses when those files changed since the save, unless --yes. A backup whose manifest.json
+is unreadable or incomplete is unusable: --undo ID names it and stops; a bare --undo skips it and says so.
+--undo also refuses when a file it would overwrite or delete is currently a submitted or archived tailoring (an undo
+could turn a sent resume back into a draft). Add --unfreeze together with --yes to undo anyway; the reply says which
+sent files were unfrozen.
+
+Paths are judged on the real file, not the spelling: a different letter case, a hard link or a folder symlink cannot
+reach backups/, changes/ or a sent tailoring. A path that goes through a symlink is refused. Two plan paths that differ
+only in letter case count as the same path.
 
 Exit 0: done (or a dry run). Exit 2: the plan was printed and waits for --yes. Exit 1: refused or an error (one line each).
 Writes only inside the data folder (and the optional backup_copy_to folder).
 """
-import datetime, hashlib, json, os, re, shutil, subprocess, sys, tempfile
+import datetime, glob, hashlib, json, os, re, shutil, subprocess, sys, tempfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import resume_data as rd  # noqa: E402
@@ -90,12 +98,38 @@ def load_plan(path):
     return plan
 
 
+def same_file(a, b):
+    try:
+        return os.path.samefile(a, b)
+    except OSError:
+        return False
+
+
+def reserved_reason(root, rel):
+    """Why a plan may not write rel (judged on the real file and folders, and on letter case), or None."""
+    first = rel.split("/")[0]
+    if first.casefold() in RESERVED_DIRS:
+        return f"under {first.casefold()}/, which save.py manages itself"
+    if rel.casefold() == "manifest.json":
+        return "manifest.json at the top of the data folder is reserved"
+    target = os.path.join(root, *rel.split("/"))
+    d = os.path.dirname(target)
+    while len(d) > len(root):  # a folder that is the real backups/ or changes/ under another spelling
+        if os.path.isdir(d) and any(same_file(d, os.path.join(root, r)) for r in RESERVED_DIRS):
+            return "inside backups/ or changes/, which save.py manages itself"
+        d = os.path.dirname(d)
+    if os.path.exists(target) and same_file(target, os.path.join(root, "manifest.json")):
+        return "manifest.json at the top of the data folder is reserved"
+    return None
+
+
 def check_plan(plan, root):
     """Returns [(relative path, action, bytes or None)] in plan order, or exits with one line."""
     pid = plan["id"]
     if os.path.exists(os.path.join(root, "changes", pid + ".md")) or os.path.exists(os.path.join(root, "backups", pid)):
         fail(f"id {pid!r} is already used; pick a new id (see changes/ and backups/)")
-    items, seen = [], set()
+    base = os.path.realpath(root)
+    items, seen, seen_files = [], set(), []
     for w in plan["writes"]:
         if not isinstance(w, dict) or not isinstance(w.get("path"), str) or not w["path"]:
             fail("every write needs a \"path\"")
@@ -108,16 +142,21 @@ def check_plan(plan, root):
         rel = "/".join(x for x in parts if x not in ("", "."))
         if not rel:
             fail(f"path {p!r} is empty")
-        if rel.split("/")[0] in RESERVED_DIRS:
-            fail(f"path {p!r} is under {rel.split('/')[0]}/, which save.py manages itself")
-        if rel == "manifest.json":
-            fail("manifest.json at the top of the data folder is reserved")
-        if rel in seen:
-            fail(f"path {rel!r} appears twice in the plan")
-        seen.add(rel)
-        target = os.path.join(root, *rel.split("/"))
-        if not inside(root, target):
+        if rel.casefold() in seen:
+            fail(f"path {rel!r} appears twice in the plan (paths that differ only in letter case count as the same)")
+        seen.add(rel.casefold())
+        target = os.path.join(base, *rel.split("/"))
+        if not inside(base, target):
             fail(f"path {p!r} must stay inside the data folder")
+        if os.path.realpath(target) != target:
+            fail(f"path {p!r} goes through a symlink; write to the real path instead")
+        why = reserved_reason(base, rel)
+        if why:
+            fail(f"path {p!r}: {why}")
+        if os.path.exists(target):
+            if any(same_file(target, f) for f in seen_files):
+                fail(f"path {rel!r} is the same file as another path in the plan")
+            seen_files.append(target)
         kinds = [k for k in ("content", "text", "delete") if k in w and not (k == "delete" and not w[k])]
         if len(kinds) != 1:
             fail(f"write {p!r} needs exactly one of content, text or delete")
@@ -136,25 +175,35 @@ def check_plan(plan, root):
             else:
                 fail(f"text for {rel!r} must be a string")
             items.append((rel, "change" if exists else "create", data))
-    check_frozen(plan, root, items)
+    check_frozen(plan, base, items)
     return items
+
+
+def frozen_tailoring(root, rel):
+    """(real tailoring path relative to root, status, sent_on) when rel is, on disk, a submitted or archived tailoring."""
+    target = os.path.join(root, *rel.split("/"))
+    if not os.path.isfile(target):
+        return None
+    for f in sorted(glob.glob(os.path.join(root, "jobs", "*", "tailoring.json"))):
+        if same_file(target, f):
+            try:
+                t = json.loads(read_bytes(f).decode("utf-8"))
+            except ValueError:
+                return None
+            status = t.get("status") if isinstance(t, dict) else None
+            if status in FROZEN:
+                return os.path.relpath(f, root).replace(os.sep, "/"), status, t.get("sent_on")
+    return None
 
 
 def check_frozen(plan, root, items):
     ok_correction = plan.get("correction") is True and plan["note"].startswith("Correction")
     for rel, _, _ in items:
-        m = re.fullmatch(r"jobs/([^/]+)/tailoring\.json", rel)
-        target = os.path.join(root, *rel.split("/"))
-        if not m or not os.path.isfile(target):
-            continue
-        try:
-            t = json.loads(read_bytes(target).decode("utf-8"))
-        except ValueError:
-            continue
-        status = t.get("status") if isinstance(t, dict) else None
-        if status in FROZEN and not ok_correction:
-            sent = f" (sent {t['sent_on']})" if t.get("sent_on") else ""
-            fail(f"{rel} is {status}{sent} and frozen. To fix a mistake in a sent resume, set \"correction\": true "
+        hit = frozen_tailoring(root, rel)
+        if hit and not ok_correction:
+            name, status, sent_on = hit
+            sent = f" (sent {sent_on})" if sent_on else ""
+            fail(f"{name} is {status}{sent} and frozen. To fix a mistake in a sent resume, set \"correction\": true "
                  f"in the plan and start the note with \"Correction\".")
 
 
@@ -295,33 +344,75 @@ def restore(root, manifest):
             pass
 
 
+def safe_rel(rel):
+    return (isinstance(rel, str) and rel and not os.path.isabs(rel) and not rel.startswith(("/", "~", "\\"))
+            and ".." not in rel.replace("\\", "/").split("/") and not re.match(r"^[A-Za-z]:", rel))
+
+
+def load_manifest(root, name):
+    """(manifest, None) for a usable backup folder, else (None, reason). Checks the keys, the paths and the backed-up files."""
+    bdir = os.path.join(root, "backups", name)
+    try:
+        m = json.loads(read_bytes(os.path.join(bdir, "manifest.json")).decode("utf-8"))
+    except OSError:
+        return None, "manifest.json is missing or unreadable"
+    except ValueError:
+        return None, "manifest.json is not valid JSON"
+    if not isinstance(m, dict):
+        return None, "manifest.json is not an object"
+    for key in ("id", "saved_at"):
+        if not isinstance(m.get(key), str):
+            return None, f"manifest.json has no \"{key}\""
+    if m["id"] != name:
+        return None, f"manifest.json says id {m['id']!r}"
+    for key in ("changed", "deleted", "created", "created_dirs"):
+        if not isinstance(m.get(key), list) or not all(safe_rel(x) for x in m[key]):
+            return None, f"manifest.json has a bad \"{key}\" list"
+    if not isinstance(m.get("after"), dict) or not all(safe_rel(k) and (v is None or isinstance(v, str)) for k, v in m["after"].items()):
+        return None, "manifest.json has a bad \"after\" entry"
+    if set(m["after"]) != set(m["changed"] + m["deleted"] + m["created"]):
+        return None, "manifest.json file lists do not match"
+    m.setdefault("reason", "")
+    m["undone"] = bool(m.get("undone", False))
+    for rel in m["changed"] + m["deleted"]:
+        if not os.path.isfile(os.path.join(bdir, *rel.split("/"))):
+            return None, f"the backed-up copy of {rel} is missing"
+    return m, None
+
+
 def manifests(root):
-    out = []
+    """(usable manifests, [(folder, reason)] for the unusable ones)."""
+    out, bad = [], []
     b = os.path.join(root, "backups")
     for name in sorted(os.listdir(b)) if os.path.isdir(b) else []:
-        p = os.path.join(b, name, "manifest.json")
-        if os.path.isfile(p):
-            try:
-                out.append(json.loads(read_bytes(p).decode("utf-8")))
-            except ValueError:
-                pass
-    return out
+        if not os.path.isdir(os.path.join(b, name)):
+            continue
+        m, why = load_manifest(root, name)
+        if m:
+            out.append(m)
+        else:
+            bad.append((name, why))
+    return out, bad
 
 
-def undo(root, pid, yes):
-    ms = manifests(root)
+def undo(root, pid, yes, unfreeze):
     if pid:
         if not ID_RE.fullmatch(pid):
             fail(f"id {pid!r} is not a valid id")
-        m = next((x for x in ms if x["id"] == pid), None)
-        if m is None:
+        if not os.path.isdir(os.path.join(root, "backups", pid)):
             fail(f"no backup named {pid!r} in backups/")
-        if m.get("undone"):
+        m, why = load_manifest(root, pid)
+        if m is None:
+            fail(f"backups/{pid} is unusable: {why}")
+        if m["undone"]:
             fail(f"{pid} was already undone")
     else:
-        live = [x for x in ms if not x.get("undone")]
+        ms, bad = manifests(root)
+        for name, why in bad:
+            print(f"warning: skipped unusable backup backups/{name}: {why}", file=sys.stderr)
+        live = [x for x in ms if not x["undone"]]
         if not live:
-            fail("nothing to undo: no saved backup in backups/")
+            fail("nothing to undo: no usable saved backup in backups/")
         m = max(live, key=lambda x: x["saved_at"])
     moved = []
     for rel, digest in m["after"].items():
@@ -333,6 +424,11 @@ def undo(root, pid, yes):
         print(f"error: {', '.join(moved)} changed since {m['id']} was saved; undoing would overwrite that. "
               f"Run again with --yes to undo anyway.", file=sys.stderr)
         sys.exit(1)
+    sent = [(rel, hit) for rel in m["after"] for hit in [frozen_tailoring(root, rel)] if hit]
+    if sent and not (unfreeze and yes):
+        names = ", ".join(f"{h[0]} ({h[1]})" for _, h in sent)
+        fail(f"undoing {m['id']} would change {names}, a sent tailoring. Add --unfreeze together with --yes to undo "
+             f"anyway; that puts the sent file back to the older saved content or removes it.")
     restore(root, m)
     bdir = os.path.join(root, "backups", m["id"])
     for rel in m["changed"] + m["deleted"]:
@@ -345,23 +441,31 @@ def undo(root, pid, yes):
     note += [f"- {r} (removed, it was created by the save)" for r in m["created"]]
     if moved:
         note += ["", "Changed since the save and overwritten by this undo: " + ", ".join(moved)]
+    if sent:
+        note += ["", "Unfroze (--unfreeze): " + ", ".join(f"{h[0]} was {h[1]}" for _, h in sent)]
     write_atomic(os.path.join(root, "changes", m["id"] + "-undo.md"), ("\n".join(note) + "\n").encode("utf-8"))
     preflight(root)
     print(f"Undid {m['id']}: {len(m['changed']) + len(m['deleted'])} file(s) restored, {len(m['created'])} removed.")
+    if sent:
+        print("Unfroze " + ", ".join(f"{h[0]} (it was {h[1]})" for _, h in sent) + ": --unfreeze changed a sent tailoring.")
 
 
 def main(argv):
     if {"-h", "--help"} & set(argv):
         print(__doc__)
         return 0
-    yes, dry, as_json = "--yes" in argv, "--dry-run" in argv, "--json" in argv
-    rest = [a for a in argv if a not in ("--yes", "--dry-run", "--json")]
+    yes, dry, as_json, unfreeze = "--yes" in argv, "--dry-run" in argv, "--json" in argv, "--unfreeze" in argv
+    rest = [a for a in argv if a not in ("--yes", "--dry-run", "--json", "--unfreeze")]
+    if unfreeze and "--undo" not in rest:
+        fail("--unfreeze only applies to --undo")
+    if unfreeze and not yes:
+        fail("--unfreeze needs --yes")
     root = rd.data_root()
     if "--undo" in rest:
         rest.remove("--undo")
         if len(rest) > 1 or any(a.startswith("--") for a in rest):
             fail("usage: save.py --undo [ID] [--yes]")
-        undo(root, rest[0] if rest else None, yes)
+        undo(root, rest[0] if rest else None, yes, unfreeze)
         return 0
     if len(rest) != 1 or rest[0].startswith("--"):
         fail("usage: save.py PLAN.json [--dry-run] [--yes] [--json]")

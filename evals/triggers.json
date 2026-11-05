@@ -20,7 +20,7 @@
   {
    "id": "t04",
    "kind": "indirect",
-   "query": "Is this worth applying to? [pastes a long posting for a platform engineer]"
+   "query": "Is this worth applying to? Platform Engineer at Orbit Cloud, on-site in Denver, 6-month contract, 4+ years of Kubernetes in production, strong Go, Prometheus and Grafana."
   },
   {
    "id": "t05",
@@ -40,12 +40,12 @@
   {
    "id": "t08",
    "kind": "contextual",
-   "query": "ok now do the second posting the same way"
+   "query": "We just finished the Acme fit check with my full-time resume. Now do the second posting the same way: Platform Engineer, Orbit Cloud, Kubernetes and Go required."
   },
   {
    "id": "t09",
    "kind": "contextual",
-   "query": "use the contract version for this one too"
+   "query": "For the Orbit Cloud posting we just discussed, use my contract version this time and build the file."
   },
   {
    "id": "t10",

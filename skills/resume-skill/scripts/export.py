@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Write a resume as the recruiter-ready .docx and check its page count.
 
-    python3 export.py full-time out/                       # out/Jordan_Ellis_full-time.docx
-    python3 export.py tailoring:acme-backend out/          # out/Jordan_Ellis_Acme-backend.docx
-    python3 export.py file:/tmp/draft.json out/ --label Acme   # a draft outside the data folder, before anything is saved
-    python3 export.py full-time out/ --no-contact          # placeholder contact line: paste the real one before sending
+    python3 export.py full-time ~/Documents/resumes                  # ~/Documents/resumes/Jordan_Ellis_full-time.docx
+    python3 export.py tailoring:acme-backend ~/Documents/resumes     # .../Jordan_Ellis_Acme-backend.docx
+    python3 export.py file:/tmp/draft.json ~/Documents/resumes --label Acme   # a draft outside the data folder
+    python3 export.py full-time ~/Documents/resumes --no-contact     # placeholder contact line: paste the real one before sending
     add --json to print one JSON object (docx, copy, pages, page_cap, pages_status, reason) instead of lines
 
 The name is the contact name with underscores; the label is the version name, or the tailoring slug with a capital
@@ -14,6 +14,8 @@ render_check.py and needs LibreOffice (`soffice` or `libreoffice` on PATH):
     PAGES OK: 2 (cap 2)  |  PAGES FAIL: 4 (cap 3)  |  PAGES not checked: LibreOffice not installed
 Setting output.copy_resumes_to: a folder path; the .docx is also copied there and its path printed. The folder is created
 when its parent exists. Nothing else is written outside OUTDIR (the temporary render folder is removed).
+OUTDIR, and the copy folder, must not be inside the skill folder (a skill update would erase it): the run stops with a
+one-line error before writing anything.
 Exit 0 within the cap (or no cap), 1 over the cap or on an error (one line on stderr; a copy error comes after the main
 file was written), 2 pages not checked (LibreOffice missing or failed; the .docx is still written: say pages are "not checked").
 """
@@ -52,6 +54,10 @@ def atomic_write(path, data):
 
 def export(target, outdir, label=None, allow_placeholder=False, root=None):
     """Write the .docx into outdir. Returns (docx path, resolved resume)."""
+    render_check.refuse_skill_folder(outdir, "OUTDIR")
+    copy_dest = rd.settings(root)["output"].get("copy_resumes_to")
+    if copy_dest:
+        render_check.refuse_skill_folder(os.path.expanduser(copy_dest), "output.copy_resumes_to")
     try:
         r = rd.resolve(target, root)
     except (OSError, ValueError, KeyError) as e:

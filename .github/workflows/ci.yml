@@ -3,7 +3,17 @@ on:
   push:
   pull_request:
 jobs:
-  test:
+  floor:
+    # the declared Python floor (3.9) runs the unit tests without Pillow or LibreOffice
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+      - name: Unit tests on the Python floor
+        run: python3 -m unittest discover -s tests
+  full:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4

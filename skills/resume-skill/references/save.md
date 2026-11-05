@@ -15,5 +15,10 @@ Paths are relative to the data folder. Include the posting, `fit.json`, `fit.htm
 ## Sent copies
 A plan that touches a submitted or archived tailoring is refused. The one exception is a correction of a claim found untrue: the user says yes explicitly, the plan has `"correction": true`, and its note starts with "Correction".
 
+## What save.py will not do
+- It judges every path on the real file: a different letter case, a hard link or a folder symlink cannot reach `backups/`, `changes/` or a sent tailoring, and a path through a symlink is refused.
+- A backup with a damaged `manifest.json` is unusable: `--undo ID` names it and stops; a bare `--undo` skips it and says so.
+- `--undo` will not touch a submitted or archived tailoring. To undo anyway (for example a copy marked sent by mistake), run `save.py --undo ID --unfreeze --yes`; the reply names every sent file it unfroze. Only do this on the user's explicit yes.
+
 ## Optional settings
 `output.backup_copy_to` copies each backup to a second folder. `output.copy_resumes_to` copies each built `.docx` to a folder you choose. Both are off by default.
